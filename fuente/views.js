@@ -117,7 +117,7 @@ function sigueBloque(p) {
 function dueno(d) {
   const n = diag(d.id).resp.filter(x => x != null).length, e = S.encuesta[d.id] || {}, k = kit(d.id), cm = compromisos(d.id).length;
   const b = (h, t, s, m, ok, extra) => `<a class="big" href="#${h}"${extra || ''}><b>${t}</b><span>${s}</span><span class="meta-b ${ok ? 'ok' : ''}">${m}</span></a>`;
-  return `<div><h2>Para el dueño o socio</h2><p class="nota" style="margin:4px 0 12px">Lo contesta una sola persona por despacho. Los dos primeros, <b>antes</b> de la reunión de entrega; los otros dos, <b>en</b> la reunión.</p><div class="dueno">
+  return `<div><h2>Para el dueño o socio</h2><p class="nota" style="margin:4px 0 12px">Lo contesta una sola persona por despacho. Los dos primeros, <b>antes</b> de la reunión de entrega; los otros dos, <b>en</b> la reunión. Al terminar cada uno, la app te muestra un código para enviarlo al Equipo DELTA.</p><div class="dueno">
     ${b('diagnostico', 'Diagnóstico', '30 preguntas sobre cómo opera hoy el despacho. 15 min o menos.', n === 30 ? '✓ Completo' : n ? n + ' de 30 contestadas →' : 'Empezar →', n === 30)}
     ${b('capacitacion', 'Calculadora de costo', 'Cuánto le costaría al despacho un día sin operar. 8 min, con sus propios números.', calcListo(k.calculadora) ? '✓ Capturada' : 'Capturar →', calcListo(k.calculadora), ' data-a="calc"')}
     ${b('reporte', 'Mi reporte y plan de 30 días', 'Hallazgos, plan con responsables y fechas, prueba de restauración y kit.', cm ? '✓ ' + cm + ' acciones en el plan' : n ? 'Ver reporte →' : 'Se arma con el diagnóstico', !!cm)}
@@ -337,7 +337,7 @@ const UPD = {
     return `<div class="card resumen"><div class="rh"><div><h2>Resultado</h2><p>${st.contestadas} de 30 preguntas contestadas${st.total == null ? '' : ' · madurez general ' + Math.round(st.total) + '%'}</p></div>${sem(st.sem, st.total)}</div>
       <div class="doms">${st.dom.map(d => `<div class="dom"><span>${d.n}</span><div class="bar"><i class="b-${d.sem}" style="width:${d.pct == null ? 0 : Math.max(4, d.pct)}%"></i></div>${sem(d.sem, d.pct)}</div>`).join('')}</div>
       <p class="nota">Semáforo: rojo menos de 40%, amarillo de 40% a 70%, verde más de 70%.</p>
-      <h3>${hs.length} hallazgo(s) generados por el diagnóstico</h3>${hs.length ? `<ul class="hall">${hs.map(h => `<li><b>${h.id}</b> ${esc(h.titulo)} ${gpill(h.g)}</li>`).join('')}</ul><p><a class="btn" href="#reporte">Ver mi reporte</a></p>` : '<p class="nota">Cada respuesta "No" o "Parcialmente" genera un hallazgo con acciones sugeridas.</p>'}</div>`;
+      <h3>${hs.length} hallazgo(s) generados por el diagnóstico</h3>${hs.length ? `<ul class="hall">${hs.map(h => `<li><b>${h.id}</b> ${esc(h.titulo)} ${gpill(h.g)}</li>`).join('')}</ul><div class="row"><a class="btn" href="#reporte">Ver mi reporte</a>${st.contestadas === 30 ? '<button class="btn p" data-a="codigo" data-v="diag">Enviar mis resultados al Equipo DELTA</button>' : ''}</div>` : '<p class="nota">Cada respuesta "No" o "Parcialmente" genera un hallazgo con acciones sugeridas.</p>'}</div>`;
   },
   prochall: () => listaHall(hallazgos(S.ui.did).filter(h => h.origen === 'Proceso'), 'Marca un riesgo en cualquier paso para generar un hallazgo.'),
   invhall: () => listaHall(hallazgos(S.ui.did).filter(h => h.origen === 'Inventario'), 'Las reglas se aplican solas al capturar cada equipo.')

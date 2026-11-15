@@ -131,10 +131,10 @@ const ACC = {
   hecho: v => {
     const n = +v, k = kit(S.ui.did);
     if (n === 5) { if (!calcListo(k.calculadora)) return toast('Faltan datos para calcular el costo.'); k.calculadora.fecha = hoy(); k.calculadora.ts = Date.now(); }
-    marcar(P(), n); T.mod = null; if (!P()) { toast(n === 5 ? 'Calculadora guardada.' : 'Guardado.'); location.hash = 'inicio'; return; } render(); arriba(); toast('Módulo ' + n + ' completado.');
+    marcar(P(), n); T.mod = null; if (!P()) { location.hash = 'inicio'; if (n === 5) ACC.codigo('calc'); else toast('Guardado.'); return; } render(); arriba(); if (n === 5) ACC.codigo('calc'); else toast('Módulo ' + n + ' completado.');
   },
   accfila: () => { const a = kit(S.ui.did).accesos; a.filas.push({ puesto: '', s: {} }); a.ts = Date.now(); save(); render(); },
-  encuesta: () => { const e = S.encuesta[S.ui.did] || {}; if (!e.utilidad) return toast('Falta calificar la utilidad del servicio (1 a 5).'); if (!pagoOrden(e)) return toast('Revisa los cuatro precios: deberían ir de menor a mayor.'); e.ts = Date.now(); e.fecha = hoy(); save(); toast('Gracias. Tu encuesta quedó guardada.'); },
+  encuesta: () => { const e = S.encuesta[S.ui.did] || {}; if (!e.utilidad) return toast('Falta calificar la utilidad del servicio (1 a 5).'); if (!pagoOrden(e)) return toast('Revisa los cuatro precios: deberían ir de menor a mayor.'); e.ts = Date.now(); e.fecha = hoy(); save(); render(); ACC.codigo('encuesta'); },
   pdf: v => { const did = S.ui.did, n = slug(S.despachos[did].nombre); if (v === 'plan') pdf(planHTML(did), 'plan-de-respuesta-' + n); else if (v === 'politica') pdf(politicaHTML(did), 'politica-de-ia-' + n); else pdf(reporteHTML(did), 'reporte-' + n); },
   nuevo: () => {
     let id = codigo(); while (S.despachos[id]) id = codigo();
@@ -148,7 +148,7 @@ const ACC = {
   eqadd: () => { const e = equipos(S.ui.did); e.items.push({ id: rid('e'), nombre: '', marca: '', anios: '', so: '', act: '', av: '', resp: '', comp: '', pass: '' }); e.ts = Date.now(); save(); render(); },
   eqdel: v => { const e = equipos(S.ui.did); e.items.splice(+v, 1); e.ts = Date.now(); save(); render(); },
   csv: () => guardar('tablero-piloto-' + hoy() + '.csv', csvTablero(), 'text/csv'),
-  codigo: async v => { if (!S.ui.did) return toast('Primero elige tu despacho.'); const c = await codigoResultados(S.ui.did), p = P(); const ant = v === 'quizInicial' ? `<b>Quiz inicial guardado.</b> Ahora envía este código al Equipo DELTA: es lo que permite medir tu avance al final. ` : v === 'quizFinal' ? `<b>Quiz final guardado${p && p.quizInicial ? ': pasaste de ' + r1(p.quizInicial.pct) + '% a ' + r1(p.quizFinal.pct) + '%' : ''}.</b> Envía este código al Equipo DELTA para que tu resultado cuente. ` : ''; copiaManual(v ? 'Envía tus resultados' : 'Tus resultados', c, ant + 'Cópialo y pégalo en un mensaje (WhatsApp o correo). Contiene tu alias y tus respuestas; no incluye datos de clientes.'); try { await navigator.clipboard.writeText(c); toast('Código copiado. Pégalo en un mensaje al Equipo DELTA.'); } catch (e) {} },
+  codigo: async v => { if (!S.ui.did) return toast('Primero elige tu despacho.'); const c = await codigoResultados(S.ui.did), p = P(); const ant = v === 'quizInicial' ? `<b>Quiz inicial guardado.</b> Ahora envía este código al Equipo DELTA: es lo que permite medir tu avance al final. ` : v === 'quizFinal' ? `<b>Quiz final guardado${p && p.quizInicial ? ': pasaste de ' + r1(p.quizInicial.pct) + '% a ' + r1(p.quizFinal.pct) + '%' : ''}.</b> Envía este código al Equipo DELTA para que tu resultado cuente. ` : v === 'diag' ? `<b>Diagnóstico completo.</b> Envía este código al Equipo DELTA antes de la reunión de entrega: con él preparan tu reporte. ` : v === 'calc' ? `<b>Calculadora guardada.</b> Envía este código al Equipo DELTA para que tu estimación aparezca en el reporte. ` : v === 'encuesta' ? `<b>Gracias, tu encuesta quedó guardada.</b> Envía este código al Equipo DELTA para que la reciban. ` : ''; copiaManual(v ? 'Envía tus resultados' : 'Tus resultados', c, ant + 'Cópialo y pégalo en un mensaje (WhatsApp o correo). Contiene tu alias y tus respuestas; no incluye datos de clientes.'); try { await navigator.clipboard.writeText(c); toast('Código copiado. Pégalo en un mensaje al Equipo DELTA.'); } catch (e) {} },
   impcod: async () => { try { const n = await leerCodigo(document.getElementById('in-cod').value); render(); toast('Resultados combinados: ' + n + ' registro(s) nuevos o actualizados.'); } catch (e) { toast('No se pudo importar: ' + e.message); } },
   exportar: () => guardar('datos-piloto-' + hoy() + '.json', exportar(), 'application/json'),
   demo: () => { cargarDemo(); render(); toast('Despacho de ejemplo cargado.'); },
@@ -165,6 +165,7 @@ function onBind(el) {
   setPath(el.dataset.bind, v);
   if (el.dataset.upd) el.dataset.upd.split(' ').forEach(k => { const t = document.getElementById('upd-' + k); if (t) t.innerHTML = UPD[k](); });
   if (el.hasAttribute('data-r')) render();
+  if (/^diagnostico\./.test(el.dataset.bind)) { const dg = diag(S.ui.did); if (!dg.aviso && dg.resp.every(x => x != null)) { dg.aviso = true; save(); ACC.codigo('diag'); } }
 }
 const DISCRETO = t => t.type === 'checkbox' || t.type === 'radio' || t.tagName === 'SELECT';
 document.addEventListener('click', e => {
