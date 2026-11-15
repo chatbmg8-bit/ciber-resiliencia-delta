@@ -16,7 +16,7 @@ El enlace de cada despacho lo da la app en **Acceso Equipo DELTA → Despachos �
 
 ## Dónde quedan los datos
 
-En el navegador de cada persona. Esta página no tiene servidor ni base de datos y no recibe lo que se captura. Los resultados llegan al equipo cuando cada participante copia su código (empieza con `DELTA1`) y lo envía por mensaje. El equipo lo importa en **Acceso Equipo DELTA → Datos**.
+En el navegador de cada persona. Esta página no tiene servidor ni base de datos y no recibe lo que se captura. Los resultados llegan al equipo cuando cada participante toca **Enviar por WhatsApp** (o copia su código, que empieza con `DELTA1`) y lo manda al chat del equipo. El equipo pega los mensajes, uno o varios a la vez, en **Acceso Equipo DELTA → Datos**, y revisa quién falta en **Despachos → Quién ha enviado resultados**.
 
 ## Si GitHub falla o no sabemos usarlo
 

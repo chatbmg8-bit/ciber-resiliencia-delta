@@ -1,4 +1,5 @@
 /* ===== Eventos, archivos y arranque ===== */
+const ETQ = { quizInicial: 'quiz inicial', quizFinal: 'quiz final', diag: 'diagnóstico', calc: 'calculadora', encuesta: 'encuesta' };
 const EMBEBIDO = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
 const DLP = (window.claude && typeof window.claude.use === 'function') ? window.claude.use('downloads').catch(() => null) : Promise.resolve(null);
 
@@ -28,9 +29,9 @@ async function guardar(nombre, data, mime) {
     toast('Descarga iniciada: ' + nombre); return true;
   } catch (e) { toast('Este visor no permite descargas. Abre la versión de archivo de la app.'); return false; }
 }
-function copiaManual(nombre, texto, msg) {
+function copiaManual(nombre, texto, msg, envio) {
   const m = document.getElementById('modal');
-  m.innerHTML = `<div class="mbox" role="dialog" aria-label="Copiar datos"><h2>${esc(nombre)}</h2><p>${msg || 'Este visor no permite descargar archivos. Copia el contenido y pégalo en un archivo de texto con ese nombre.'}</p><textarea id="m-txt" readonly rows="10">${esc(texto)}</textarea><div class="row end"><button class="btn" data-a="mcerrar">Cerrar</button><button class="btn p" data-a="mcopiar">Copiar</button></div></div>`;
+  m.innerHTML = `<div class="mbox" role="dialog" aria-label="Copiar datos"><h2>${esc(nombre)}</h2><p>${msg || 'Este visor no permite descargar archivos. Copia el contenido y pégalo en un archivo de texto con ese nombre.'}</p><textarea id="m-txt" readonly rows="${envio ? 4 : 10}">${esc(texto)}</textarea><div class="row end">${envio ? '<button class="btn" data-a="mcerrar">Cerrar</button><button class="btn" data-a="mcopiar">Copiar</button><button class="btn p wa-btn" data-a="compartir">Enviar por WhatsApp</button>' : '<button class="btn" data-a="mcerrar">Cerrar</button><button class="btn p" data-a="mcopiar">Copiar</button>'}</div></div>`;
   m.className = 'on';
 }
 function pedirAcceso() {
@@ -148,8 +149,15 @@ const ACC = {
   eqadd: () => { const e = equipos(S.ui.did); e.items.push({ id: rid('e'), nombre: '', marca: '', anios: '', so: '', act: '', av: '', resp: '', comp: '', pass: '' }); e.ts = Date.now(); save(); render(); },
   eqdel: v => { const e = equipos(S.ui.did); e.items.splice(+v, 1); e.ts = Date.now(); save(); render(); },
   csv: () => guardar('tablero-piloto-' + hoy() + '.csv', csvTablero(), 'text/csv'),
-  codigo: async v => { if (!S.ui.did) return toast('Primero elige tu despacho.'); const c = await codigoResultados(S.ui.did), p = P(); const ant = v === 'quizInicial' ? `<b>Quiz inicial guardado.</b> Ahora envía este código al Equipo DELTA: es lo que permite medir tu avance al final. ` : v === 'quizFinal' ? `<b>Quiz final guardado${p && p.quizInicial ? ': pasaste de ' + r1(p.quizInicial.pct) + '% a ' + r1(p.quizFinal.pct) + '%' : ''}.</b> Envía este código al Equipo DELTA para que tu resultado cuente. ` : v === 'diag' ? `<b>Diagnóstico completo.</b> Envía este código al Equipo DELTA antes de la reunión de entrega: con él preparan tu reporte. ` : v === 'calc' ? `<b>Calculadora guardada.</b> Envía este código al Equipo DELTA para que tu estimación aparezca en el reporte. ` : v === 'encuesta' ? `<b>Gracias, tu encuesta quedó guardada.</b> Envía este código al Equipo DELTA para que la reciban. ` : ''; copiaManual(v ? 'Envía tus resultados' : 'Tus resultados', c, ant + 'Cópialo y pégalo en un mensaje (WhatsApp o correo). Contiene tu alias y tus respuestas; no incluye datos de clientes.'); try { await navigator.clipboard.writeText(c); toast('Código copiado. Pégalo en un mensaje al Equipo DELTA.'); } catch (e) {} },
-  impcod: async () => { try { const n = await leerCodigo(document.getElementById('in-cod').value); render(); toast('Resultados combinados: ' + n + ' registro(s) nuevos o actualizados.'); } catch (e) { toast('No se pudo importar: ' + e.message); } },
+  codigo: async v => { if (!S.ui.did) return toast('Primero elige tu despacho.'); const c = await codigoResultados(S.ui.did), p = P(); const ant = v === 'quizInicial' ? `<b>Quiz inicial guardado.</b> Ahora envía este código al Equipo DELTA: es lo que permite medir tu avance al final. ` : v === 'quizFinal' ? `<b>Quiz final guardado${p && p.quizInicial ? ': pasaste de ' + r1(p.quizInicial.pct) + '% a ' + r1(p.quizFinal.pct) + '%' : ''}.</b> Envía este código al Equipo DELTA para que tu resultado cuente. ` : v === 'diag' ? `<b>Diagnóstico completo.</b> Envía este código al Equipo DELTA antes de la reunión de entrega: con él preparan tu reporte. ` : v === 'calc' ? `<b>Calculadora guardada.</b> Envía este código al Equipo DELTA para que tu estimación aparezca en el reporte. ` : v === 'encuesta' ? `<b>Gracias, tu encuesta quedó guardada.</b> Envía este código al Equipo DELTA para que la reciban. ` : ''; const d = D(), txt = 'Resultados para el Equipo DELTA · ' + (p ? p.alias : 'Dueño o socio') + ' · ' + (d ? d.nombre + ' (' + d.id + ')' : '') + (ETQ[v] ? ' · ' + ETQ[v] : '') + '\n' + c; T.envio = txt;
+    copiaManual(v ? 'Envía tus resultados' : 'Tus resultados', txt, ant + 'Toca <b>Enviar por WhatsApp</b> y elige el chat del Equipo DELTA. Si no se abre, usa <b>Copiar</b> y pégalo en un mensaje (WhatsApp o correo). Contiene tu alias y tus respuestas; no incluye datos de clientes.', true); },
+  compartir: () => {
+    const txt = T.envio || (document.getElementById('m-txt') || {}).value || '';
+    const wa = () => { const w = window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank', 'noopener'); if (!w) toast('No se pudo abrir WhatsApp. Usa Copiar y pégalo en el chat.'); };
+    if (navigator.share && !EMBEBIDO) { navigator.share({ text: txt }).then(() => toast('Listo. Gracias por enviar tus resultados.'), e => { if (!e || e.name !== 'AbortError') wa(); }); }
+    else wa();
+  },
+  impcod: async () => { try { const r = await leerCodigos(document.getElementById('in-cod').value); render(); toast(r.codigos + ' código(s) importado(s): ' + r.n + ' registro(s) nuevos o actualizados.'); } catch (e) { toast('No se pudo importar: ' + e.message); } },
   exportar: () => guardar('datos-piloto-' + hoy() + '.json', exportar(), 'application/json'),
   demo: () => { cargarDemo(); render(); toast('Despacho de ejemplo cargado.'); },
   reset: () => { const ui = S.ui; S = blank(); S.ui.modo = ui.modo; T.confirm = null; save(); render(); toast('Datos borrados.'); },

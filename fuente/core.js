@@ -184,7 +184,7 @@ function filaTablero(did) {
   const dias = d.fechaSesion && d.fechaEntrega ? Math.round((new Date(d.fechaEntrega) - new Date(d.fechaSesion)) / 864e5) : null;
   return { did, nombre: d.nombre, fechaSesion: d.fechaSesion || '', fechaEntrega: d.fechaEntrega || '', dias, participantes: c.n, pares: c.pares, ini: c.ini, fin: c.fin, mejora: c.mejora,
     madurez: dg.total, contestadas: dg.contestadas, hallazgos: hs.length, oportunidades: oportunidadesVivas(did).length,
-    utilidad: en.utilidad || null, contrataria: en.contrataria || '', pago: pagoTxt(en), pagos: PAGOS.map(x => en[x[0]] === '' || en[x[0]] == null ? '' : num(en[x[0]])), pagoInicial: en.pagoInicial === '' || en.pagoInicial == null ? '' : num(en.pagoInicial), horas: d.horas || '',
+    utilidad: en.utilidad || null, contrataria: en.contrataria || '', pago: pagoTxt(en), pagos: PAGOS.map(x => en[x[0]] === '' || en[x[0]] == null ? '' : num(en[x[0]])), pagoInicial: en.pagoInicial === '' || en.pagoInicial == null ? '' : num(en.pagoInicial), horas: d.horas || '', esperados: d.esperados || '',
     comp: cm.length, compHechos: cm.filter(x => x.c.hecho).length, seguimiento: (S.plan30[did] || {}).seguimiento || '',
     phishing: c.phishing, mfa: c.mfa, reporte: c.reporte, restauracion: !!k.restauracion.ok, plan: !!k.plan.listo, calculadora: calcListo(k.calculadora), politica: !!k.politica.listo };
 }
@@ -214,8 +214,8 @@ function tablero() {
 }
 function csvTablero() {
   const t = tablero(); const q = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
-  const head = ['Despacho', 'Fecha de sesión', 'Fecha de entrega', 'Días entre sesión y entrega', 'Participantes', 'Participantes con ambos quiz', 'Promedio inicial (%)', 'Promedio final (%)', 'Mejora (puntos porcentuales)', 'Madurez (%)', 'Hallazgos', 'Oportunidades Dell', 'Utilidad (1-5)', 'Contrataría', 'Precio mensual barato (MXN)', 'Precio mensual razonable (MXN)', 'Precio mensual caro (MXN)', 'Precio mensual demasiado caro (MXN)', 'Precio razonable del paquete inicial (MXN)', 'Acciones comprometidas a 30 días', 'Acciones cumplidas', 'Fecha de seguimiento', 'Horas invertidas por el equipo', 'Phishing identificado (%)', 'Sabe dónde activar MFA (%)', 'Identifica a quién reportar (%)', 'Prueba de restauración', 'Plan de respuesta', 'Calculadora', 'Política de IA'];
-  const rows = t.filas.map(f => [f.nombre, f.fechaSesion, f.fechaEntrega, f.dias, f.participantes, f.pares, f.ini == null ? '' : r1(f.ini), f.fin == null ? '' : r1(f.fin), f.mejora == null ? '' : r1(f.mejora), f.madurez == null ? '' : r1(f.madurez), f.hallazgos, f.oportunidades, f.utilidad, f.contrataria, ...f.pagos, f.pagoInicial, f.comp, f.compHechos, f.seguimiento, f.horas, f.phishing == null ? '' : r1(f.phishing), f.mfa == null ? '' : r1(f.mfa), f.reporte == null ? '' : r1(f.reporte), f.restauracion ? 'Sí' : 'No', f.plan ? 'Sí' : 'No', f.calculadora ? 'Sí' : 'No', f.politica ? 'Sí' : 'No']);
+  const head = ['Despacho', 'Fecha de sesión', 'Fecha de entrega', 'Días entre sesión y entrega', 'Participantes esperados', 'Participantes', 'Participantes con ambos quiz', 'Promedio inicial (%)', 'Promedio final (%)', 'Mejora (puntos porcentuales)', 'Madurez (%)', 'Hallazgos', 'Oportunidades Dell', 'Utilidad (1-5)', 'Contrataría', 'Precio mensual barato (MXN)', 'Precio mensual razonable (MXN)', 'Precio mensual caro (MXN)', 'Precio mensual demasiado caro (MXN)', 'Precio razonable del paquete inicial (MXN)', 'Acciones comprometidas a 30 días', 'Acciones cumplidas', 'Fecha de seguimiento', 'Horas invertidas por el equipo', 'Phishing identificado (%)', 'Sabe dónde activar MFA (%)', 'Identifica a quién reportar (%)', 'Prueba de restauración', 'Plan de respuesta', 'Calculadora', 'Política de IA'];
+  const rows = t.filas.map(f => [f.nombre, f.fechaSesion, f.fechaEntrega, f.dias, f.esperados, f.participantes, f.pares, f.ini == null ? '' : r1(f.ini), f.fin == null ? '' : r1(f.fin), f.mejora == null ? '' : r1(f.mejora), f.madurez == null ? '' : r1(f.madurez), f.hallazgos, f.oportunidades, f.utilidad, f.contrataria, ...f.pagos, f.pagoInicial, f.comp, f.compHechos, f.seguimiento, f.horas, f.phishing == null ? '' : r1(f.phishing), f.mfa == null ? '' : r1(f.mfa), f.reporte == null ? '' : r1(f.reporte), f.restauracion ? 'Sí' : 'No', f.plan ? 'Sí' : 'No', f.calculadora ? 'Sí' : 'No', f.politica ? 'Sí' : 'No']);
   const ET = { si: 'Cumplido', no: 'No cumplido', pendiente: 'Pendiente', parcial: 'Cumplido con datos parciales' };
   const extra = [[], ['Cumplimiento del objetivo SMART'], ...t.metas.map(m => [m.t, ET[m.e], m.d]), [], ['Aprendizaje aplicado (metas sugeridas, no estándares)'], ...INDICADORES.map((x, i) => [x[0] + ': ' + x[1], ET[t.ind[i].e], t.ind[i].d])];
   return '﻿' + [head, ...rows, ...extra].map(r => r.map(q).join(',')).join('\r\n');
@@ -280,6 +280,14 @@ async function codigoResultados(did) {
   const u8 = new TextEncoder().encode(JSON.stringify(pk));
   try { if (typeof CompressionStream === 'function') return 'DELTA1Z.' + b64u.enc(await pasar(u8, CompressionStream, 'deflate-raw')); } catch (e) {}
   return 'DELTA1J.' + b64u.enc(u8);
+}
+/* Acepta uno o varios códigos pegados tal como llegan por WhatsApp o correo, con su encabezado */
+async function leerCodigos(txt) {
+  const t = String(txt || ''); let ms = t.match(/DELTA1[ZJ]\.[A-Za-z0-9_-]+/g);
+  if (!ms) ms = t.replace(/\s+/g, '').match(/DELTA1[ZJ]\.[A-Za-z0-9_-]+/g);
+  if (!ms) throw new Error('No encontré ningún código. Cada código empieza con DELTA1 y debe estar completo.');
+  let n = 0; for (const c of ms) n += await leerCodigo(c);
+  return { codigos: ms.length, n };
 }
 async function leerCodigo(txt) {
   const t = String(txt || '').replace(/\s+/g, ''); const m = /^DELTA1([ZJ])\.([A-Za-z0-9_-]+)$/.exec(t);

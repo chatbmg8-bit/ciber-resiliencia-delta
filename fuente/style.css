@@ -358,3 +358,9 @@ code.url{display:inline-block;margin-top:8px;font-size:.95rem;word-break:break-a
 .repaso .lista{font-size:.93rem}
 h2.sep small{display:block;margin:4px 0 0;font-size:.82rem}
 .mbox p b{color:var(--osc)}
+.segui{border-top:1px solid var(--borde);padding-top:14px;display:flex;flex-direction:column;gap:10px}
+.segui h3{margin:0}
+.segt td,.segt th{white-space:nowrap}
+.ok-t{color:var(--verde);font-weight:600}
+.falta{color:var(--rojo);font-weight:600}
+.wa-btn{background:#1f7a4d;border-color:#1f7a4d}

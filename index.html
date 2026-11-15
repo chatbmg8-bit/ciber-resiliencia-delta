@@ -367,6 +367,12 @@ code.url{display:inline-block;margin-top:8px;font-size:.95rem;word-break:break-a
 .repaso .lista{font-size:.93rem}
 h2.sep small{display:block;margin:4px 0 0;font-size:.82rem}
 .mbox p b{color:var(--osc)}
+.segui{border-top:1px solid var(--borde);padding-top:14px;display:flex;flex-direction:column;gap:10px}
+.segui h3{margin:0}
+.segt td,.segt th{white-space:nowrap}
+.ok-t{color:var(--verde);font-weight:600}
+.falta{color:var(--rojo);font-weight:600}
+.wa-btn{background:#1f7a4d;border-color:#1f7a4d}
 
 </style>
 </head>
@@ -1045,7 +1051,7 @@ function filaTablero(did) {
   const dias = d.fechaSesion && d.fechaEntrega ? Math.round((new Date(d.fechaEntrega) - new Date(d.fechaSesion)) / 864e5) : null;
   return { did, nombre: d.nombre, fechaSesion: d.fechaSesion || '', fechaEntrega: d.fechaEntrega || '', dias, participantes: c.n, pares: c.pares, ini: c.ini, fin: c.fin, mejora: c.mejora,
     madurez: dg.total, contestadas: dg.contestadas, hallazgos: hs.length, oportunidades: oportunidadesVivas(did).length,
-    utilidad: en.utilidad || null, contrataria: en.contrataria || '', pago: pagoTxt(en), pagos: PAGOS.map(x => en[x[0]] === '' || en[x[0]] == null ? '' : num(en[x[0]])), pagoInicial: en.pagoInicial === '' || en.pagoInicial == null ? '' : num(en.pagoInicial), horas: d.horas || '',
+    utilidad: en.utilidad || null, contrataria: en.contrataria || '', pago: pagoTxt(en), pagos: PAGOS.map(x => en[x[0]] === '' || en[x[0]] == null ? '' : num(en[x[0]])), pagoInicial: en.pagoInicial === '' || en.pagoInicial == null ? '' : num(en.pagoInicial), horas: d.horas || '', esperados: d.esperados || '',
     comp: cm.length, compHechos: cm.filter(x => x.c.hecho).length, seguimiento: (S.plan30[did] || {}).seguimiento || '',
     phishing: c.phishing, mfa: c.mfa, reporte: c.reporte, restauracion: !!k.restauracion.ok, plan: !!k.plan.listo, calculadora: calcListo(k.calculadora), politica: !!k.politica.listo };
 }
@@ -1075,8 +1081,8 @@ function tablero() {
 }
 function csvTablero() {
   const t = tablero(); const q = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
-  const head = ['Despacho', 'Fecha de sesión', 'Fecha de entrega', 'Días entre sesión y entrega', 'Participantes', 'Participantes con ambos quiz', 'Promedio inicial (%)', 'Promedio final (%)', 'Mejora (puntos porcentuales)', 'Madurez (%)', 'Hallazgos', 'Oportunidades Dell', 'Utilidad (1-5)', 'Contrataría', 'Precio mensual barato (MXN)', 'Precio mensual razonable (MXN)', 'Precio mensual caro (MXN)', 'Precio mensual demasiado caro (MXN)', 'Precio razonable del paquete inicial (MXN)', 'Acciones comprometidas a 30 días', 'Acciones cumplidas', 'Fecha de seguimiento', 'Horas invertidas por el equipo', 'Phishing identificado (%)', 'Sabe dónde activar MFA (%)', 'Identifica a quién reportar (%)', 'Prueba de restauración', 'Plan de respuesta', 'Calculadora', 'Política de IA'];
-  const rows = t.filas.map(f => [f.nombre, f.fechaSesion, f.fechaEntrega, f.dias, f.participantes, f.pares, f.ini == null ? '' : r1(f.ini), f.fin == null ? '' : r1(f.fin), f.mejora == null ? '' : r1(f.mejora), f.madurez == null ? '' : r1(f.madurez), f.hallazgos, f.oportunidades, f.utilidad, f.contrataria, ...f.pagos, f.pagoInicial, f.comp, f.compHechos, f.seguimiento, f.horas, f.phishing == null ? '' : r1(f.phishing), f.mfa == null ? '' : r1(f.mfa), f.reporte == null ? '' : r1(f.reporte), f.restauracion ? 'Sí' : 'No', f.plan ? 'Sí' : 'No', f.calculadora ? 'Sí' : 'No', f.politica ? 'Sí' : 'No']);
+  const head = ['Despacho', 'Fecha de sesión', 'Fecha de entrega', 'Días entre sesión y entrega', 'Participantes esperados', 'Participantes', 'Participantes con ambos quiz', 'Promedio inicial (%)', 'Promedio final (%)', 'Mejora (puntos porcentuales)', 'Madurez (%)', 'Hallazgos', 'Oportunidades Dell', 'Utilidad (1-5)', 'Contrataría', 'Precio mensual barato (MXN)', 'Precio mensual razonable (MXN)', 'Precio mensual caro (MXN)', 'Precio mensual demasiado caro (MXN)', 'Precio razonable del paquete inicial (MXN)', 'Acciones comprometidas a 30 días', 'Acciones cumplidas', 'Fecha de seguimiento', 'Horas invertidas por el equipo', 'Phishing identificado (%)', 'Sabe dónde activar MFA (%)', 'Identifica a quién reportar (%)', 'Prueba de restauración', 'Plan de respuesta', 'Calculadora', 'Política de IA'];
+  const rows = t.filas.map(f => [f.nombre, f.fechaSesion, f.fechaEntrega, f.dias, f.esperados, f.participantes, f.pares, f.ini == null ? '' : r1(f.ini), f.fin == null ? '' : r1(f.fin), f.mejora == null ? '' : r1(f.mejora), f.madurez == null ? '' : r1(f.madurez), f.hallazgos, f.oportunidades, f.utilidad, f.contrataria, ...f.pagos, f.pagoInicial, f.comp, f.compHechos, f.seguimiento, f.horas, f.phishing == null ? '' : r1(f.phishing), f.mfa == null ? '' : r1(f.mfa), f.reporte == null ? '' : r1(f.reporte), f.restauracion ? 'Sí' : 'No', f.plan ? 'Sí' : 'No', f.calculadora ? 'Sí' : 'No', f.politica ? 'Sí' : 'No']);
   const ET = { si: 'Cumplido', no: 'No cumplido', pendiente: 'Pendiente', parcial: 'Cumplido con datos parciales' };
   const extra = [[], ['Cumplimiento del objetivo SMART'], ...t.metas.map(m => [m.t, ET[m.e], m.d]), [], ['Aprendizaje aplicado (metas sugeridas, no estándares)'], ...INDICADORES.map((x, i) => [x[0] + ': ' + x[1], ET[t.ind[i].e], t.ind[i].d])];
   return '﻿' + [head, ...rows, ...extra].map(r => r.map(q).join(',')).join('\r\n');
@@ -1141,6 +1147,14 @@ async function codigoResultados(did) {
   const u8 = new TextEncoder().encode(JSON.stringify(pk));
   try { if (typeof CompressionStream === 'function') return 'DELTA1Z.' + b64u.enc(await pasar(u8, CompressionStream, 'deflate-raw')); } catch (e) {}
   return 'DELTA1J.' + b64u.enc(u8);
+}
+/* Acepta uno o varios códigos pegados tal como llegan por WhatsApp o correo, con su encabezado */
+async function leerCodigos(txt) {
+  const t = String(txt || ''); let ms = t.match(/DELTA1[ZJ]\.[A-Za-z0-9_-]+/g);
+  if (!ms) ms = t.replace(/\s+/g, '').match(/DELTA1[ZJ]\.[A-Za-z0-9_-]+/g);
+  if (!ms) throw new Error('No encontré ningún código. Cada código empieza con DELTA1 y debe estar completo.');
+  let n = 0; for (const c of ms) n += await leerCodigo(c);
+  return { codigos: ms.length, n };
 }
 async function leerCodigo(txt) {
   const t = String(txt || '').replace(/\s+/g, ''); const m = /^DELTA1([ZJ])\.([A-Za-z0-9_-]+)$/.exec(t);
@@ -1629,10 +1643,22 @@ V.despachos = () => {
       ${fld('Quién decide las compras', inp(b + '.decide', { ph: 'Puesto, por ejemplo: socio director' }))}${fld('Responsable del Equipo DELTA', inp(b + '.responsable', { ph: POR_DEFINIR }))}${fld('Horas invertidas por el equipo', inp(b + '.horas', { type: 'number', min: 0 }))}
       ${fld('Fecha de la sesión en vivo', inp(b + '.fechaSesion', { type: 'date' }))}${fld('Fecha de la reunión de entrega', inp(b + '.fechaEntrega', { type: 'date' }))}</div>
       <div class="f"><label>Enlace para el personal</label><div class="enlace"><input readonly value="${esc(enlaceDespacho(d.id))}" aria-label="Enlace para el personal"><button class="btn sm" data-a="copiar" data-v="${esc(enlaceDespacho(d.id))}">Copiar enlace</button></div><small>Quien lo abre entra directo a este despacho, sin escribir el código. Sirve cuando la app esté publicada en una dirección web; si se comparte como archivo, el personal escribe el código.</small></div>
-      <p class="mini">Participantes en este dispositivo: ${ps.length ? ps.map(p => esc(p.alias)).join(', ') : 'ninguno'}.</p>
+      ${seguimiento(d)}
       <div class="row end">${T.confirm === d.id ? `<button class="btn no" data-a="borrar" data-v="${esc(d.id)}">Sí, eliminar el despacho y sus datos</button><button class="btn" data-a="conf" data-v="">Cancelar</button>` : `<button class="btn" data-a="conf" data-v="${esc(d.id)}">Eliminar</button>`}<button class="btn ${d.id === S.ui.did ? '' : 'p'}" data-a="usar" data-v="${esc(d.id)}">${d.id === S.ui.did ? 'Despacho activo' : 'Trabajar con este despacho'}</button></div></div>`; }).join('')}
     <div class="card"><h2>Datos pendientes del equipo</h2>${fld('Distribuidor o socio de canal Dell', inp('config.distribuidor', { ph: POR_DEFINIR }))}<p class="mini">Los rangos de precio ya no se capturan aquí: la encuesta pregunta al dueño cuatro precios abiertos, sin mostrarle cifras. Los resultados están en el Tablero y en el CSV.</p></div>`;
 };
+/* Quién ha enviado qué: para saber a quién recordar */
+function seguimiento(d) {
+  const ps = participantesDe(d.id).sort((a, b) => a.alias.localeCompare(b.alias, 'es')), esp = num(d.esperados), dg = diag(d.id), nd = dg.resp.filter(x => x != null).length, k = kit(d.id), en = S.encuesta[d.id] || {};
+  const ini = ps.filter(p => p.quizInicial).length, fin = ps.filter(p => p.quizFinal).length, par = ps.filter(p => p.quizInicial && p.quizFinal).length;
+  const de = n => esp ? `<b>${n} de ${esp}</b>` : `<b>${n}</b>`, si = (x, t) => x ? `<span class="ok-t">✓ ${t || ''}</span>` : '<span class="falta">Falta</span>';
+  const ult = p => { const t = p.ts; if (!t) return '—'; const f = new Date(t); return String(f.getDate()).padStart(2, '0') + '/' + String(f.getMonth() + 1).padStart(2, '0') + ' ' + String(f.getHours()).padStart(2, '0') + ':' + String(f.getMinutes()).padStart(2, '0'); };
+  return `<div class="segui"><div class="row between"><h3>Quién ha enviado resultados</h3><div class="f" style="max-width:220px">${fld('Participantes esperados', inp('despachos.' + d.id + '.esperados', { type: 'number', min: 0, ph: 'Ej. 6' }))}</div></div>
+    <div class="grid4 res"><div class="tile ${esp && ini >= esp ? 'ok' : ''}"><span>Quiz inicial</span><b>${de(ini)}</b></div><div class="tile ${esp && fin >= esp ? 'ok' : ''}"><span>Quiz final</span><b>${de(fin)}</b></div><div class="tile"><span>Con los dos (cuentan para la mejora)</span><b>${de(par)}</b></div><div class="tile ${nd === 30 && en.ts ? 'ok' : ''}"><span>Dueño o socio</span><b style="font-size:1rem">Diagnóstico ${nd}/30 · ${en.ts ? 'encuesta ✓' : 'sin encuesta'}</b></div></div>
+    ${esp && ini < esp ? `<p class="fb mal">Faltan ${esp - ini} persona(s) por enviar el quiz inicial. Si alguien no aparece en la lista, todavía no ha mandado ningún código.</p>` : ''}
+    ${ps.length ? `<div class="scroll"><table class="t segt"><thead><tr><th>Alias</th><th>Quiz inicial</th><th>Módulo 1</th><th>Sesión en vivo (4 y 6)</th><th>Quiz final</th><th>Última actividad</th></tr></thead><tbody>${ps.map(p => { const av = p.avance || []; return `<tr><th>${esc(p.alias)}</th><td>${si(p.quizInicial, p.quizInicial ? r1(p.quizInicial.pct) + '%' : '')}</td><td>${si(av[0])}</td><td>${av[3] && av[5] ? si(1) : av[3] || av[5] ? '<span class="ok-t">1 de 2</span>' : '<span class="falta">Falta</span>'}</td><td>${si(p.quizFinal, p.quizFinal ? r1(p.quizFinal.pct) + '%' : '')}</td><td>${ult(p)}</td></tr>`; }).join('')}</tbody></table></div>` : '<p class="nota">Aún no llega ningún código de este despacho. Se importan en Datos.</p>'}
+    <p class="mini">Diagnóstico ${nd === 30 ? 'completo' : nd + ' de 30'} · calculadora ${calcListo(k.calculadora) ? 'capturada' : 'pendiente'} · encuesta ${en.ts ? 'enviada' : 'pendiente'}. "Última actividad" es la hora en que la persona contestó algo en su dispositivo, según el último código recibido.</p></div>`;
+}
 const enlaceDespacho = id => location.href.split(/[?#]/)[0] + '?d=' + id;
 const sinDespachoC = () => `<div class="card aviso"><h2>Elige un despacho</h2><p>Registra o selecciona un despacho en la pantalla <a href="#despachos">Despachos</a>.</p></div>`;
 V.proceso = () => {
@@ -1673,12 +1699,13 @@ V.tablero = () => {
 V.datos = () => `<h1>Datos</h1>
   <div class="grid2"><div class="card"><h2>Exportar</h2><p>Guarda todo lo capturado en este dispositivo en un archivo JSON. Sirve como respaldo y para juntar los datos de los 2 despachos.</p><button class="btn p" data-a="exportar">Exportar datos (JSON)</button></div>
   <div class="card"><h2>Importar</h2><p>Combina un archivo JSON con lo que ya hay aquí. No borra nada: de cada registro conserva la versión más reciente.</p><input type="file" id="in-json" accept=".json,application/json" aria-label="Archivo JSON"></div></div>
-  <div class="card"><h2>Importar resultados de un participante</h2><p>Pega aquí el código que te envió cada persona (empieza con DELTA1). Se combina con lo que ya hay; no borra nada.</p><textarea id="in-cod" rows="4" placeholder="DELTA1Z.…" aria-label="Código de resultados"></textarea><div class="row end"><button class="btn p" data-a="impcod">Importar código</button></div></div>
+  <div class="card"><h2>Importar resultados de un participante</h2><p>Pega aquí los mensajes que te enviaron, tal como llegaron: uno o varios a la vez, con todo y su encabezado. La app encuentra cada código (empieza con DELTA1) y lo combina con lo que ya hay; no borra nada. Después revisa en Despachos quién falta.</p><textarea id="in-cod" rows="6" placeholder="DELTA1Z.…" aria-label="Código de resultados"></textarea><div class="row end"><button class="btn p" data-a="impcod">Importar código</button></div></div>
   <div class="card"><h2>Probar la app</h2><p>Carga un despacho de ejemplo con respuestas ficticias para revisar el reporte, las oportunidades y el tablero. Elimínalo antes de medir el piloto.</p><div class="row"><button class="btn" data-a="demo">Cargar despacho de ejemplo</button>${T.confirm === 'todo' ? '<button class="btn no" data-a="reset">Sí, borrar todos los datos de este dispositivo</button><button class="btn" data-a="conf" data-v="">Cancelar</button>' : '<button class="btn" data-a="conf" data-v="todo">Borrar todos los datos</button>'}</div></div>
   <div class="card"><h2>Acceso del equipo en este dispositivo</h2><p>Este dispositivo recuerda el código del Equipo DELTA. Si es un equipo compartido o de un despacho, cierra el acceso al terminar.</p><div class="row"><button class="btn" data-a="bloquear">Cerrar el acceso del equipo</button></div></div>
   <div class="card"><h2>Dónde se guardan los datos</h2><p>En el navegador de este dispositivo. No se envían a ningún servidor. Si se borra el historial del navegador, se pierden: guarda un respaldo JSON al terminar cada encuentro.</p></div>`;
 
 /* ===== Eventos, archivos y arranque ===== */
+const ETQ = { quizInicial: 'quiz inicial', quizFinal: 'quiz final', diag: 'diagnóstico', calc: 'calculadora', encuesta: 'encuesta' };
 const EMBEBIDO = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
 const DLP = (window.claude && typeof window.claude.use === 'function') ? window.claude.use('downloads').catch(() => null) : Promise.resolve(null);
 
@@ -1708,9 +1735,9 @@ async function guardar(nombre, data, mime) {
     toast('Descarga iniciada: ' + nombre); return true;
   } catch (e) { toast('Este visor no permite descargas. Abre la versión de archivo de la app.'); return false; }
 }
-function copiaManual(nombre, texto, msg) {
+function copiaManual(nombre, texto, msg, envio) {
   const m = document.getElementById('modal');
-  m.innerHTML = `<div class="mbox" role="dialog" aria-label="Copiar datos"><h2>${esc(nombre)}</h2><p>${msg || 'Este visor no permite descargar archivos. Copia el contenido y pégalo en un archivo de texto con ese nombre.'}</p><textarea id="m-txt" readonly rows="10">${esc(texto)}</textarea><div class="row end"><button class="btn" data-a="mcerrar">Cerrar</button><button class="btn p" data-a="mcopiar">Copiar</button></div></div>`;
+  m.innerHTML = `<div class="mbox" role="dialog" aria-label="Copiar datos"><h2>${esc(nombre)}</h2><p>${msg || 'Este visor no permite descargar archivos. Copia el contenido y pégalo en un archivo de texto con ese nombre.'}</p><textarea id="m-txt" readonly rows="${envio ? 4 : 10}">${esc(texto)}</textarea><div class="row end">${envio ? '<button class="btn" data-a="mcerrar">Cerrar</button><button class="btn" data-a="mcopiar">Copiar</button><button class="btn p wa-btn" data-a="compartir">Enviar por WhatsApp</button>' : '<button class="btn" data-a="mcerrar">Cerrar</button><button class="btn p" data-a="mcopiar">Copiar</button>'}</div></div>`;
   m.className = 'on';
 }
 function pedirAcceso() {
@@ -1828,8 +1855,15 @@ const ACC = {
   eqadd: () => { const e = equipos(S.ui.did); e.items.push({ id: rid('e'), nombre: '', marca: '', anios: '', so: '', act: '', av: '', resp: '', comp: '', pass: '' }); e.ts = Date.now(); save(); render(); },
   eqdel: v => { const e = equipos(S.ui.did); e.items.splice(+v, 1); e.ts = Date.now(); save(); render(); },
   csv: () => guardar('tablero-piloto-' + hoy() + '.csv', csvTablero(), 'text/csv'),
-  codigo: async v => { if (!S.ui.did) return toast('Primero elige tu despacho.'); const c = await codigoResultados(S.ui.did), p = P(); const ant = v === 'quizInicial' ? `<b>Quiz inicial guardado.</b> Ahora envía este código al Equipo DELTA: es lo que permite medir tu avance al final. ` : v === 'quizFinal' ? `<b>Quiz final guardado${p && p.quizInicial ? ': pasaste de ' + r1(p.quizInicial.pct) + '% a ' + r1(p.quizFinal.pct) + '%' : ''}.</b> Envía este código al Equipo DELTA para que tu resultado cuente. ` : v === 'diag' ? `<b>Diagnóstico completo.</b> Envía este código al Equipo DELTA antes de la reunión de entrega: con él preparan tu reporte. ` : v === 'calc' ? `<b>Calculadora guardada.</b> Envía este código al Equipo DELTA para que tu estimación aparezca en el reporte. ` : v === 'encuesta' ? `<b>Gracias, tu encuesta quedó guardada.</b> Envía este código al Equipo DELTA para que la reciban. ` : ''; copiaManual(v ? 'Envía tus resultados' : 'Tus resultados', c, ant + 'Cópialo y pégalo en un mensaje (WhatsApp o correo). Contiene tu alias y tus respuestas; no incluye datos de clientes.'); try { await navigator.clipboard.writeText(c); toast('Código copiado. Pégalo en un mensaje al Equipo DELTA.'); } catch (e) {} },
-  impcod: async () => { try { const n = await leerCodigo(document.getElementById('in-cod').value); render(); toast('Resultados combinados: ' + n + ' registro(s) nuevos o actualizados.'); } catch (e) { toast('No se pudo importar: ' + e.message); } },
+  codigo: async v => { if (!S.ui.did) return toast('Primero elige tu despacho.'); const c = await codigoResultados(S.ui.did), p = P(); const ant = v === 'quizInicial' ? `<b>Quiz inicial guardado.</b> Ahora envía este código al Equipo DELTA: es lo que permite medir tu avance al final. ` : v === 'quizFinal' ? `<b>Quiz final guardado${p && p.quizInicial ? ': pasaste de ' + r1(p.quizInicial.pct) + '% a ' + r1(p.quizFinal.pct) + '%' : ''}.</b> Envía este código al Equipo DELTA para que tu resultado cuente. ` : v === 'diag' ? `<b>Diagnóstico completo.</b> Envía este código al Equipo DELTA antes de la reunión de entrega: con él preparan tu reporte. ` : v === 'calc' ? `<b>Calculadora guardada.</b> Envía este código al Equipo DELTA para que tu estimación aparezca en el reporte. ` : v === 'encuesta' ? `<b>Gracias, tu encuesta quedó guardada.</b> Envía este código al Equipo DELTA para que la reciban. ` : ''; const d = D(), txt = 'Resultados para el Equipo DELTA · ' + (p ? p.alias : 'Dueño o socio') + ' · ' + (d ? d.nombre + ' (' + d.id + ')' : '') + (ETQ[v] ? ' · ' + ETQ[v] : '') + '\n' + c; T.envio = txt;
+    copiaManual(v ? 'Envía tus resultados' : 'Tus resultados', txt, ant + 'Toca <b>Enviar por WhatsApp</b> y elige el chat del Equipo DELTA. Si no se abre, usa <b>Copiar</b> y pégalo en un mensaje (WhatsApp o correo). Contiene tu alias y tus respuestas; no incluye datos de clientes.', true); },
+  compartir: () => {
+    const txt = T.envio || (document.getElementById('m-txt') || {}).value || '';
+    const wa = () => { const w = window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank', 'noopener'); if (!w) toast('No se pudo abrir WhatsApp. Usa Copiar y pégalo en el chat.'); };
+    if (navigator.share && !EMBEBIDO) { navigator.share({ text: txt }).then(() => toast('Listo. Gracias por enviar tus resultados.'), e => { if (!e || e.name !== 'AbortError') wa(); }); }
+    else wa();
+  },
+  impcod: async () => { try { const r = await leerCodigos(document.getElementById('in-cod').value); render(); toast(r.codigos + ' código(s) importado(s): ' + r.n + ' registro(s) nuevos o actualizados.'); } catch (e) { toast('No se pudo importar: ' + e.message); } },
   exportar: () => guardar('datos-piloto-' + hoy() + '.json', exportar(), 'application/json'),
   demo: () => { cargarDemo(); render(); toast('Despacho de ejemplo cargado.'); },
   reset: () => { const ui = S.ui; S = blank(); S.ui.modo = ui.modo; T.confirm = null; save(); render(); toast('Datos borrados.'); },
