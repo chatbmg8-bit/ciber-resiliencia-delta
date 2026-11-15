@@ -364,3 +364,16 @@ h2.sep small{display:block;margin:4px 0 0;font-size:.82rem}
 .ok-t{color:var(--verde);font-weight:600}
 .falta{color:var(--rojo);font-weight:600}
 .wa-btn{background:#1f7a4d;border-color:#1f7a4d}
+/* ===== Resultados ===== */
+.selrp{display:flex;flex-wrap:wrap;gap:8px}
+.chip.on{background:var(--osc);border-color:var(--osc);color:#fff}
+.chip.on small{color:rgba(255,255,255,.7)}
+.t.det td,.t.det th{font-size:.86rem}
+.t.det tr.mal-f td:first-child,.t.det tr.mal-f th:first-child{box-shadow:inset 3px 0 0 var(--rojo)}
+.t.det td small{color:var(--suave)}
+.tok-r{display:inline-block;border-radius:5px;padding:1px 7px;margin:2px 0;font-size:.85rem;border:1px solid}
+.tok-r.si{background:var(--verde-f);border-color:var(--verde);color:var(--verde)}
+.tok-r.no{background:var(--rojo-f);border-color:var(--rojo);color:var(--rojo)}
+.tok-r.de-mas{background:#eef0ee;border-color:var(--linea-in);color:var(--suave);text-decoration:line-through}
+.docp .grid3.res .tile b{font-size:1.05rem}
+@media print{.t.det tr{break-inside:avoid}}

@@ -102,13 +102,13 @@ const ACC = {
   copiar: v => { try { navigator.clipboard.writeText(v).then(() => toast('Enlace copiado.'), () => copiaManual('Enlace para el personal', v, 'Copia este enlace y envíalo al personal del despacho.')); } catch (e) { copiaManual('Enlace para el personal', v, 'Copia este enlace y envíalo al personal del despacho.'); } },
   mod: v => { T.mod = v ? +v : null; T.st = null; T.ph = null; T.sal = null; T.an = null; render(); arriba(); },
   phini: () => { T.ph = { i: 0, eleg: null, sen: {}, ok: 0, r: [], fin: false }; T.st = null; render(); arriba(); },
-  phop: v => { const s = T.ph; s.eleg = v === '1'; s.r[s.i] = s.eleg === CORREOS[s.i].fraude; if (s.r[s.i]) s.ok++; render(); },
+  phop: v => { const s = T.ph; s.eleg = v === '1'; s.r[s.i] = s.eleg === CORREOS[s.i].fraude; if (s.r[s.i]) s.ok++; regEj('ph', s.i, { e: s.eleg, s: Object.keys(s.sen).filter(k => s.sen[k]).map(Number) }); render(); },
   phsig: () => {
     const s = T.ph;
     if (s.i < CORREOS.length - 1) { s.i++; s.eleg = null; s.sen = {}; render(); return; }
     s.fin = true; const p = P(); p.phishing = { pct: s.ok / CORREOS.length * 100, fraudes: CORREOS.filter((c, i) => c.fraude && s.r[i]).length, legitimos: CORREOS.filter((c, i) => !c.fraude && s.r[i]).length, fecha: hoy() }; marcar(p, 1); render();
   },
-  stop: v => { const s = T.st, it = ITEMS[s.key][s.i]; s.eleg = +v; if (s.eleg === it.c) s.ok++; if (it.h) s.h += it.h[s.eleg]; render(); },
+  stop: v => { const s = T.st, it = ITEMS[s.key][s.i]; s.eleg = +v; if (s.eleg === it.c) s.ok++; if (it.h) s.h += it.h[s.eleg]; regEj(s.key, s.i, s.eleg); render(); },
   stsig: () => {
     const s = T.st, n = ITEMS[s.key].length;
     if (s.i < n - 1) { s.i++; s.eleg = null; render(); return; }
@@ -116,14 +116,16 @@ const ACC = {
     render();
   },
   strein: () => { T.st = null; render(); },
+  rp: v => { T.rp = v || null; if (location.hash === '#resultados') { render(); arriba(); } else location.hash = 'resultados'; },
+  pdfres: () => { const did = S.ui.did, p = T.rp && S.participantes[T.rp]; if (!did) return; pdf(p ? repIndividual(p) : repColectivo(did), p ? 'reporte-individual-' + slug(p.alias) + '-' + slug(S.despachos[did].nombre) : 'reporte-colectivo-' + slug(S.despachos[did].nombre)); },
   alinicio: () => { T.mod = null; location.hash = 'inicio'; },
   repsalir: () => { T.repaso = null; render(); arriba(); },
   repfin: () => { const p = P(); p.repaso = true; p.ts = Date.now(); save(); T.repaso = null; if (!p.quizFinal && p.quizInicial) ACC.paso('q:quizFinal'); else { render(); arriba(); } },
   calc: () => { T.mod = 5; T.quiz = T.ph = T.st = T.repaso = null; if (location.hash === '#capacitacion') { render(); arriba(); } else location.hash = 'capacitacion'; },
-  salrev: () => { T.sal.rev = true; render(); },
+  salrev: () => { T.sal.rev = true; regEj('sal', null, Object.assign({}, T.sal.m)); render(); },
   salre: () => { T.sal = null; render(); },
   antog: v => { const z = T.an; z.sel[v] = !z.sel[v]; render(); },
-  anrev: () => { T.an.rev = true; render(); },
+  anrev: () => { T.an.rev = true; regEj('an', null, Object.assign({}, T.an.sel)); render(); },
   anre: () => { T.an = null; render(); },
   plan30auto: () => { const n = proponerPlan(S.ui.did); render(); toast(n ? 'Propuesta lista: ajusta responsables y fechas.' : 'Aún no hay hallazgos.'); },
   plantodos: () => { T.planTodos = !T.planTodos; render(); },

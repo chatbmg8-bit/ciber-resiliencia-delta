@@ -1,7 +1,7 @@
 import pathlib
 d = pathlib.Path(__file__).parent
 css = (d / 'style.css').read_text(encoding='utf-8')
-js = '\n'.join((d / f).read_text(encoding='utf-8') for f in ['content.js', 'core.js', 'views.js', 'main.js'])
+js = '\n'.join((d / f).read_text(encoding='utf-8') for f in ['content.js', 'core.js', 'views.js', 'resultados.js', 'main.js'])
 assert '</script' not in js
 html = f'''<!DOCTYPE html>
 <html lang="es-MX">

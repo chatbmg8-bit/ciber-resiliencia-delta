@@ -162,6 +162,14 @@ function capStats(did) {
   };
 }
 
+/* --- Respuestas por ejercicio: p.ej[clave].r[i] = lo que eligió (último intento). sal y an guardan el conjunto marcado --- */
+function regEj(k, i, v) {
+  const p = P(); if (!p) return;
+  p.ej = p.ej || {}; const o = p.ej[k] || (p.ej[k] = { r: [] });
+  if (i == null) o.v = v; else o.r[i] = v;
+  o.ts = Date.now(); p.ts = Date.now(); save();
+}
+
 /* --- Calculadora de costo de interrupción --- */
 function calcListo(c) { return num(c.empleados) > 0 && num(c.costoHora) > 0 && num(c.horasDia) > 0 && c.ingresosDia !== '' && c.ingresosDia != null; }
 function calcCosto(c, dias) {
@@ -247,6 +255,7 @@ function cargarDemo() {
   S.despachos[id] = { id, nombre: 'Despacho de ejemplo (DEMO)', empleados: 6, computadoras: 5, decide: 'Socio director', responsable: '', fechaSesion: hoy(), fechaEntrega: '', horas: '', demo: true, ts: Date.now() };
   const mk = (alias, ini, fin, ph, ord) => { const pid = rid('p_'); const resp = (n, f) => FORMAS[f].map((q, i) => (i < n ? q.c : (q.c + 1) % 4)); S.participantes[pid] = { id: pid, alias, despachoId: id, orden: ord, quizInicial: { forma: ord[0], resp: resp(ini, ord[0]), pct: calificar(resp(ini, ord[0]), ord[0]), fecha: hoy() }, quizFinal: { forma: ord[1], resp: resp(fin, ord[1]), pct: calificar(resp(fin, ord[1]), ord[1]), fecha: hoy() }, phishing: { pct: ph, fecha: hoy() }, avance: [true, true, true, true, false, true, true], ts: Date.now() }; };
   mk('Auxiliar 1 (ejemplo)', 7, 12, 80, 'AB'); mk('Auxiliar 2 (ejemplo)', 8, 13, 90, 'BA'); mk('Titular (ejemplo)', 9, 14, 90, 'AB');
+  participantesDe(id).forEach((p, j) => demoEj(p, j));
   S.diagnostico[id] = { resp: [1, 0, 0, 0, 2, 1, 0, 1, 2, 0, 0, 1, 0, 0, 1, 2, 1, 2, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0], ts: Date.now() };
   const pr = proceso(id); pr.pasos[0].canales = { WhatsApp: true, Correo: true }; pr.pasos[0].riesgos = { canal: true }; pr.pasos[1].riesgos = { respaldo: true }; pr.ts = Date.now();
   S.equipos[id] = { items: [
@@ -260,6 +269,22 @@ function cargarDemo() {
   S.encuesta[id] = { utilidad: 4, modulo: '4', contrataria: 'Tal vez', comentarios: 'Datos de ejemplo. Los precios se dejan en blanco a propósito.', ts: Date.now() };
   S.ui.did = id; delete S.plan30[id]; proponerPlan(id); Object.values(plan30(id).items).forEach((c, i) => { c.resp = i ? 'Auxiliar 1' : 'Titular del despacho'; c.hecho = i === 0; });
   S.ui.did = id; save();
+}
+/* Respuestas ficticias y deterministas para revisar los reportes con el despacho de ejemplo */
+function demoEj(p, j) {
+  let x = 7 + j * 13; const rnd = () => (x = (x * 1103515245 + 12345) % 2147483648) / 2147483648, nivel = 0.62 + j * 0.12;
+  const elige = (n, c) => rnd() < nivel ? c : (c + 1 + Math.floor(rnd() * (n - 1))) % n;
+  p.ej = {
+    ph: { r: CORREOS.map((c, i) => { const ok = rnd() < nivel + (c.fraude ? 0 : 0.15); return { e: ok ? c.fraude : !c.fraude, s: c.s.filter(() => rnd() < nivel) }; }) },
+    rs: { r: ITEMS.rs.map(it => elige(it.o.length, it.c)) },
+    ia: { r: ITEMS.ia.map(it => elige(3, it.c)) },
+    an: { v: Object.fromEntries(ANON.filter(t => typeof t !== 'string').map((t, k) => [k, t.s ? rnd() < nivel : rnd() < 0.15])) }
+  };
+  if (j > 0) { p.ej.bk = { r: ITEMS.bk.map(it => elige(3, it.c)) }; p.ej.dl = { r: ITEMS.dl.map(it => elige(it.o.length, it.c)) }; p.ej.sal = { v: Object.fromEntries(SALIDA.items.map((t, k) => [k, rnd() < nivel ? t[1] : !t[1]])) }; }
+  p.ej.url = { r: ITEMS.url.map(it => elige(2, it.c)) };
+  const ph = p.ej.ph.r; p.phishing = { pct: ph.filter((r, i) => r.e === CORREOS[i].fraude).length / CORREOS.length * 100, fraudes: ph.filter((r, i) => CORREOS[i].fraude && r.e).length, legitimos: ph.filter((r, i) => !CORREOS[i].fraude && !r.e).length, fecha: hoy() };
+  p.ia = { pct: p.ej.ia.r.filter((v, i) => v === ITEMS.ia[i].c).length / ITEMS.ia.length * 100, fecha: hoy() };
+  p.repaso = true;
 }
 function borrarDespacho(did) {
   delete S.despachos[did];

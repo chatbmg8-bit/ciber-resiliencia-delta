@@ -16,7 +16,7 @@ El enlace de cada despacho lo da la app en **Acceso Equipo DELTA → Despachos �
 
 ## Dónde quedan los datos
 
-En el navegador de cada persona. Esta página no tiene servidor ni base de datos y no recibe lo que se captura. Los resultados llegan al equipo cuando cada participante toca **Enviar por WhatsApp** (o copia su código, que empieza con `DELTA1`) y lo manda al chat del equipo. El equipo pega los mensajes, uno o varios a la vez, en **Acceso Equipo DELTA → Datos**, y revisa quién falta en **Despachos → Quién ha enviado resultados**.
+En el navegador de cada persona. Esta página no tiene servidor ni base de datos y no recibe lo que se captura. Los resultados llegan al equipo cuando cada participante toca **Enviar por WhatsApp** (o copia su código, que empieza con `DELTA1`) y lo manda al chat del equipo. El equipo pega los mensajes, uno o varios a la vez, en **Acceso Equipo DELTA → Datos**, y revisa quién falta en **Despachos → Quién ha enviado resultados**. En **Resultados** ve el reporte colectivo de cada despacho y el reporte individual de cada alias, con cada respuesta; ambos se guardan en PDF.
 
 ## Si GitHub falla o no sabemos usarlo
 
@@ -33,4 +33,4 @@ Los datos que ya capturó cada persona no se borran al actualizar.
 
 ## Carpeta `fuente`
 
-El código por partes (`content.js` contenido, `core.js` cálculos, `views.js` pantallas, `main.js` acciones, `style.css` estilos). `python3 build.py` los une en `dist/index.html`. Solo hace falta para editar a fondo; para usar la app basta `index.html`.
+El código por partes (`content.js` contenido, `core.js` cálculos, `views.js` pantallas, `resultados.js` reportes del equipo, `main.js` acciones, `style.css` estilos). `python3 build.py` los une en `dist/index.html`. Solo hace falta para editar a fondo; para usar la app basta `index.html`.
