@@ -33,6 +33,11 @@ function copiaManual(nombre, texto, msg) {
   m.innerHTML = `<div class="mbox" role="dialog" aria-label="Copiar datos"><h2>${esc(nombre)}</h2><p>${msg || 'Este visor no permite descargar archivos. Copia el contenido y pégalo en un archivo de texto con ese nombre.'}</p><textarea id="m-txt" readonly rows="10">${esc(texto)}</textarea><div class="row end"><button class="btn" data-a="mcerrar">Cerrar</button><button class="btn p" data-a="mcopiar">Copiar</button></div></div>`;
   m.className = 'on';
 }
+function pedirAcceso() {
+  const m = document.getElementById('modal');
+  m.innerHTML = `<div class="mbox" role="dialog" aria-label="Acceso Equipo DELTA"><h2>Acceso Equipo DELTA</h2><p>Esta sección es para el equipo que acompaña a los despachos. Escribe el código de acceso.</p><input id="in-acceso" type="password" autocomplete="off" aria-label="Código de acceso" placeholder="Código"><p id="m-err" class="nota" role="alert" style="color:var(--rojo)"></p><div class="row end"><button class="btn" data-a="mcerrar">Cancelar</button><button class="btn p" data-a="acceso">Entrar</button></div></div>`;
+  m.className = 'on'; setTimeout(() => { const i = document.getElementById('in-acceso'); if (i) i.focus(); }, 30);
+}
 function cargarLib() {
   return new Promise((ok, no) => {
     if (window.html2pdf) return ok();
@@ -59,7 +64,9 @@ const TITULO = 'Ciber Resiliencia como Servicio';
 const slug = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-|-$/g, '').toLowerCase() || 'despacho';
 
 const ACC = {
-  modo: v => { S.ui.modo = v; save(); T.confirm = null; ir(NAV[v][0][0]); },
+  modo: v => { if (v === 'consultor' && !accesoOk()) return pedirAcceso(); S.ui.modo = v; save(); T.confirm = null; ir(NAV[v][0][0]); },
+  acceso: () => { const i = document.getElementById('in-acceso'); if (!abrirAcceso(i.value)) { i.value = ''; i.focus(); document.getElementById('m-err').textContent = 'El código no es correcto.'; return; } document.getElementById('modal').className = ''; ACC.modo('consultor'); toast('Acceso del Equipo DELTA abierto en este dispositivo.'); },
+  bloquear: () => { cerrarAcceso(); S.ui.modo = 'despacho'; save(); ir('inicio'); toast('Acceso del equipo cerrado en este dispositivo.'); },
   unir: () => {
     const c = (document.getElementById('in-codigo').value || '').trim().toUpperCase();
     if (!/^D-[A-Z0-9]{4}$/.test(c)) return toast('El código tiene la forma D-AB12. Revísalo con el Equipo DELTA.');
@@ -177,7 +184,7 @@ document.addEventListener('change', e => {
     fr.readAsText(t.files[0]);
   }
 });
-document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.id === 'in-codigo') ACC.unir(); if (e.key === 'Enter' && e.target.id === 'in-alias') ACC.alias(); });
+document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.id === 'in-codigo') ACC.unir(); if (e.key === 'Enter' && e.target.id === 'in-alias') ACC.alias(); if (e.key === 'Enter' && e.target.id === 'in-acceso') ACC.acceso(); if (e.key === 'Escape' && document.getElementById('modal').className === 'on') ACC.mcerrar(); });
 window.addEventListener('hashchange', () => { T.confirm = null; render(); arriba(); });
 window.addEventListener('afterprint', () => { document.getElementById('print-area').innerHTML = ''; });
 (function entrarPorEnlace() {

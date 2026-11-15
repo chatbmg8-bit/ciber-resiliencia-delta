@@ -74,7 +74,7 @@ small,.mini{font-size:.82rem;color:var(--suave)}
 
 /* Controles */
 input,select,textarea,button{font:inherit}
-input[type=text],input[type=number],input[type=date],input:not([type]),select,textarea{width:100%;padding:9px 11px;border:1px solid var(--linea-in);border-radius:8px;background:#fff;color:var(--tinta);min-height:42px}
+input[type=text],input[type=password],input[type=number],input[type=date],input:not([type]),select,textarea{width:100%;padding:9px 11px;border:1px solid var(--linea-in);border-radius:8px;background:#fff;color:var(--tinta);min-height:42px}
 textarea{resize:vertical}
 :focus-visible{outline:3px solid var(--anillo);outline-offset:2px}
 .f{display:flex;flex-direction:column;gap:5px;min-width:0}

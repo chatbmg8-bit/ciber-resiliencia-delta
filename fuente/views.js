@@ -5,7 +5,11 @@ const NAV = {
 };
 function ruta() {
   const h = (location.hash || '').replace('#', '');
-  for (const m of ['despacho', 'consultor']) if (NAV[m].some(x => x[0] === h)) { if (S.ui.modo !== m) { S.ui.modo = m; save(); } return h; }
+  for (const m of ['despacho', 'consultor']) if (NAV[m].some(x => x[0] === h)) {
+    if (m === 'consultor' && !accesoOk()) { S.ui.modo = 'despacho'; save(); setTimeout(pedirAcceso, 0); return 'inicio'; }
+    if (S.ui.modo !== m) { S.ui.modo = m; save(); } return h;
+  }
+  if (S.ui.modo === 'consultor' && !accesoOk()) { S.ui.modo = 'despacho'; save(); }
   return NAV[S.ui.modo][0][0];
 }
 function ir(r) { if (location.hash === '#' + r) render(); else location.hash = r; }
@@ -519,4 +523,5 @@ V.datos = () => `<h1>Datos</h1>
   <div class="card"><h2>Importar</h2><p>Combina un archivo JSON con lo que ya hay aquí. No borra nada: de cada registro conserva la versión más reciente.</p><input type="file" id="in-json" accept=".json,application/json" aria-label="Archivo JSON"></div></div>
   <div class="card"><h2>Importar resultados de un participante</h2><p>Pega aquí el código que te envió cada persona (empieza con DELTA1). Se combina con lo que ya hay; no borra nada.</p><textarea id="in-cod" rows="4" placeholder="DELTA1Z.…" aria-label="Código de resultados"></textarea><div class="row end"><button class="btn p" data-a="impcod">Importar código</button></div></div>
   <div class="card"><h2>Probar la app</h2><p>Carga un despacho de ejemplo con respuestas ficticias para revisar el reporte, las oportunidades y el tablero. Elimínalo antes de medir el piloto.</p><div class="row"><button class="btn" data-a="demo">Cargar despacho de ejemplo</button>${T.confirm === 'todo' ? '<button class="btn no" data-a="reset">Sí, borrar todos los datos de este dispositivo</button><button class="btn" data-a="conf" data-v="">Cancelar</button>' : '<button class="btn" data-a="conf" data-v="todo">Borrar todos los datos</button>'}</div></div>
+  <div class="card"><h2>Acceso del equipo en este dispositivo</h2><p>Este dispositivo recuerda el código del Equipo DELTA. Si es un equipo compartido o de un despacho, cierra el acceso al terminar.</p><div class="row"><button class="btn" data-a="bloquear">Cerrar el acceso del equipo</button></div></div>
   <div class="card"><h2>Dónde se guardan los datos</h2><p>En el navegador de este dispositivo. No se envían a ningún servidor. Si se borra el historial del navegador, se pierden: guarda un respaldo JSON al terminar cada encuentro.</p></div>`;

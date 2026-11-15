@@ -8,7 +8,9 @@ Proyecto académico. No es un producto de Dell y no cuenta con su respaldo ni pa
 
 https://chatbmg8-bit.github.io/ciber-resiliencia-delta/
 
-El enlace de cada despacho lo da la app en **Acceso Equipo DELTA → Despachos → Enlace para el personal**. Tiene esta forma:
+El enlace de cada despacho lo da la app en **Acceso Equipo DELTA → Despachos → Enlace para el personal**.
+
+**Acceso Equipo DELTA** pide un código. El equipo lo tiene; no lo publiquen en este repositorio ni en mensajes al personal. Es una barrera para que el personal no entre por error, no una protección fuerte: la app es una página estática y cada dispositivo guarda solo sus propios datos. Para quitar el acceso de un dispositivo: Acceso Equipo DELTA → Datos → Cerrar el acceso del equipo. Tiene esta forma:
 
 `https://chatbmg8-bit.github.io/ciber-resiliencia-delta/?d=D-AB12`
 

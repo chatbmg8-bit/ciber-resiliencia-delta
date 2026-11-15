@@ -43,6 +43,28 @@ function setPath(path, val) {
   save();
 }
 
+/* --- Acceso del Equipo DELTA: código verificado por su huella SHA-256 (no se guarda el código en el archivo).
+   Es una barrera de uso, no seguridad: la app es estática y los datos viven en cada dispositivo. --- */
+const ACCESO_H = 'e59a804a14310ae011859287d552c51f2fcf9676302c6ee281d970de11588313', ACCESO_K = 'delta_crs_acceso';
+function sha256(txt) {
+  const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  const b = Array.from(new TextEncoder().encode(txt)), l = b.length * 8; b.push(0x80); while (b.length % 64 !== 56) b.push(0);
+  for (let i = 7; i >= 0; i--) b.push(i > 3 ? 0 : (l >>> (i * 8)) & 255);
+  let H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19]; const r = (x, n) => (x >>> n) | (x << (32 - n)), W = new Array(64);
+  for (let o = 0; o < b.length; o += 64) {
+    for (let t = 0; t < 16; t++) W[t] = (b[o + 4 * t] << 24) | (b[o + 4 * t + 1] << 16) | (b[o + 4 * t + 2] << 8) | b[o + 4 * t + 3];
+    for (let t = 16; t < 64; t++) { const s0 = r(W[t - 15], 7) ^ r(W[t - 15], 18) ^ (W[t - 15] >>> 3), s1 = r(W[t - 2], 17) ^ r(W[t - 2], 19) ^ (W[t - 2] >>> 10); W[t] = (W[t - 16] + s0 + W[t - 7] + s1) | 0; }
+    let [a, bb, c, d, e, f, g, h] = H;
+    for (let t = 0; t < 64; t++) { const t1 = (h + (r(e, 6) ^ r(e, 11) ^ r(e, 25)) + ((e & f) ^ (~e & g)) + K[t] + W[t]) | 0, t2 = ((r(a, 2) ^ r(a, 13) ^ r(a, 22)) + ((a & bb) ^ (a & c) ^ (bb & c))) | 0; h = g; g = f; f = e; e = (d + t1) | 0; d = c; c = bb; bb = a; a = (t1 + t2) | 0; }
+    H = H.map((x, i) => (x + [a, bb, c, d, e, f, g, h][i]) | 0);
+  }
+  return H.map(x => (x >>> 0).toString(16).padStart(8, '0')).join('');
+}
+let accesoMem = false;
+const accesoOk = () => { if (accesoMem) return true; try { return localStorage.getItem(ACCESO_K) === ACCESO_H; } catch (e) { return false; } };
+function abrirAcceso(cod) { if (sha256(String(cod || '').trim()) !== ACCESO_H) return false; accesoMem = true; try { localStorage.setItem(ACCESO_K, ACCESO_H); } catch (e) {} return true; }
+function cerrarAcceso() { accesoMem = false; try { localStorage.removeItem(ACCESO_K); } catch (e) {} }
+
 /* --- Accesos rápidos --- */
 const D = () => S.despachos[S.ui.did] || null;
 const P = () => { const p = S.participantes[S.ui.pid]; return p && p.despachoId === S.ui.did ? p : null; };
