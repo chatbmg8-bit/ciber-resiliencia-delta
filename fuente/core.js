@@ -5,7 +5,7 @@ const ESTADOS = ['Por validar con distribuidor Dell', 'Validado', 'Descartado'];
 const GVAL = { alta: 0, media: 1, baja: 2 };
 
 function blank() {
-  return { v: 1, despachos: {}, participantes: {}, diagnostico: {}, proceso: {}, equipos: {}, kit: {}, encuesta: {}, hids: {}, estados: {}, plan30: {},
+  return { v: 2, despachos: {}, participantes: {}, diagnostico: {}, proceso: {}, equipos: {}, kit: {}, encuesta: {}, hids: {}, estados: {}, plan30: {},
     config: { rangos: '', distribuidor: '' }, ui: { modo: 'despacho', did: null, pid: null } };
 }
 let memStore = null;
@@ -13,7 +13,16 @@ function load() {
   try { const t = localStorage.getItem(LS_KEY); if (t) return Object.assign(blank(), JSON.parse(t)); } catch (e) {}
   return memStore ? JSON.parse(memStore) : blank();
 }
-let S = load();
+/* ¿Este navegador guarda datos? (modo privado o sin espacio = no) */
+const ALMACEN_OK = (() => { try { const k = LS_KEY + '_t'; localStorage.setItem(k, '1'); localStorage.removeItem(k); return true; } catch (e) { return false; } })();
+/* Migración de datos guardados con versiones anteriores de la app */
+function migrar(x) {
+  ['despachos', 'participantes', 'diagnostico', 'proceso', 'equipos', 'kit', 'encuesta', 'hids', 'estados', 'plan30'].forEach(k => { if (!x[k] || typeof x[k] !== 'object') x[k] = {}; });
+  x.ui = Object.assign({ modo: 'despacho', did: null, pid: null }, x.ui || {});
+  Object.values(x.participantes).forEach(p => { if (!Array.isArray(p.avance)) p.avance = []; });
+  x.v = 2; return x;
+}
+let S = migrar(load());
 const T = { mod: null, quiz: null, ph: null, rs: null, ia: null, dl: null, confirm: null }; // estado temporal de pantalla
 function save() {
   const t = JSON.stringify(S);
@@ -285,6 +294,14 @@ function demoEj(p, j) {
   const ph = p.ej.ph.r; p.phishing = { pct: ph.filter((r, i) => r.e === CORREOS[i].fraude).length / CORREOS.length * 100, fraudes: ph.filter((r, i) => CORREOS[i].fraude && r.e).length, legitimos: ph.filter((r, i) => !CORREOS[i].fraude && !r.e).length, fecha: hoy() };
   p.ia = { pct: p.ej.ia.r.filter((v, i) => v === ITEMS.ia[i].c).length / ITEMS.ia.length * 100, fecha: hoy() };
   p.repaso = true;
+  p.ej.ej8 = { r: ITEMS.ej8.map(it => elige(2, it.c)) };
+  p.ej.lab8 = { v: Object.fromEntries(LAB8.ops.map((o, k) => [k, rnd() < nivel ? o[1] : !o[1]])) };
+  p.ej.err8 = { v: Object.fromEntries(ERR8.ops.map((o, k) => [k, rnd() < nivel ? o[1] : !o[1]])) };
+  p.avance[7] = true;
+  p.conf = { pre: Object.fromEntries(CONFIANZA.map((t, i) => [i, 2 + ((j + i) % 2)])), post: Object.fromEntries(CONFIANZA.map((t, i) => [i, 3 + ((j + i) % 3 === 0 ? 1 : 0) + (j === 2 ? 1 : 0)])) };
+  p.meta = { habitos: [[0, 3], [1], [0, 4]][j % 3], propio: j === 1 ? 'Revisar el respaldo cada viernes' : '', fecha: hoy() };
+  if (j > 0) p.retos = [{ k: 0, fecha: hoy(), items: [0, 4, 9, 15, 21], resp: [1, 1, j === 1 ? 0 : 1, 1, 1], ok: j === 1 ? 4 : 5, n: 5 }];
+  p.caps = Object.fromEntries(CAPSULAS.slice(0, 2 + j * 2).map(c => [c.id, { fecha: hoy(), ok: true }]));
 }
 function borrarDespacho(did) {
   delete S.despachos[did];

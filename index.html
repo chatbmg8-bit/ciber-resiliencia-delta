@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ciber Resiliencia como Servicio</title>
+<meta name="theme-color" content="#18211e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ciber DELTA">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -387,6 +391,54 @@ h2.sep small{display:block;margin:4px 0 0;font-size:.82rem}
 .docp .grid3.res .tile b{font-size:1.05rem}
 @media print{.t.det tr{break-inside:avoid}}
 
+/* ===== Módulo 8 y Seguir aprendiendo ===== */
+.pill.ind{background:#e9f1f7;color:#2c5a78}
+.prompt{border-radius:10px;padding:12px 14px;font-size:.95rem;line-height:1.5;border:1px solid var(--borde);background:#fbfbfa;font-family:ui-monospace,Consolas,monospace;white-space:pre-wrap}
+.prompt.mal-p{border-left:4px solid var(--rojo)}
+.prompt.bien-p{border-left:4px solid var(--verde);background:var(--verde-f)}
+.prompt.ia-p{border-left:4px solid var(--amarillo);font-family:var(--fuente)}
+.banda{background:var(--amarillo-f);color:#6b3a07;font-size:.9rem;padding:8px 0;border-bottom:1px solid #f0dcb8}
+.banda.mal{background:var(--rojo-f);color:var(--rojo);border-color:#f3c9c5}
+details.rec{margin-top:4px}
+details.rec summary{cursor:pointer;color:var(--pri);font-size:.9rem}
+details.rec textarea{width:100%;font-family:ui-monospace,Consolas,monospace;font-size:.8rem}
+.f.conf{padding:8px 0;border-bottom:1px solid var(--borde)}
+.card.nivel{border-top:4px solid var(--pri)}
+.niveles{display:flex;gap:6px}
+.nv{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--linea-in);font-weight:700;color:var(--suave);font-size:.85rem}
+.nv.on{background:var(--pri);border-color:var(--pri);color:#fff}
+ul.req{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:4px}
+ul.req li{color:var(--suave)} ul.req li.ok{color:var(--verde);font-weight:600}
+.retos{display:flex;flex-direction:column;gap:8px}
+.reto{display:grid;grid-template-columns:70px 1fr auto;gap:10px;align-items:center;border:1px solid var(--borde);border-radius:10px;padding:10px 12px}
+.reto span{font-size:.88rem;color:var(--suave)}
+.reto.hecho{background:var(--verde-f);border-color:#bfe0cb} .reto.hecho span{color:var(--verde)}
+.reto.listo{border-color:var(--pri);box-shadow:0 0 0 3px var(--pri-f)}
+.cfila{display:grid;grid-template-columns:1fr 120px;gap:10px;align-items:center;font-size:.85rem;padding:3px 0}
+.cbar{position:relative;height:14px;background:#eef0ee;border-radius:7px;overflow:hidden}
+.cbar i{position:absolute;left:0;height:7px;border-radius:4px}
+.cbar i.pre{top:0;background:#a9b3ae}.cbar i.post{bottom:0;background:var(--pri)}
+.ley{display:inline-block;padding:0 6px;border-radius:4px;font-size:.78rem}
+.ley.pre{background:#a9b3ae;color:#fff}.ley.post{background:var(--pri);color:#fff}
+.habs{display:flex;flex-direction:column;gap:2px}
+.revhab{border-top:1px solid var(--borde);padding-top:10px}
+.caps{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.capb{text-align:left;background:var(--papel);border:1px solid var(--borde);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:4px;cursor:pointer;font:inherit;color:var(--tinta);box-shadow:var(--sombra)}
+.capb:hover{border-color:var(--pri)}
+.capb b{color:var(--osc);line-height:1.3}
+.capb em{font-style:normal;font-size:.8rem;color:var(--suave)}
+.capb.hecho{background:#f7faf8}
+.docp.const{text-align:center;padding:24px 8px}
+.docp.const h1{font-size:1.7rem;margin:6px 0 18px}
+.docp.const .c-a{color:var(--suave);max-width:60ch;margin:6px auto}
+.docp.const .c-n{font-size:1.6rem;font-weight:700;color:var(--osc);margin:10px 0;border-bottom:1px solid var(--borde);display:inline-block;padding:0 24px 6px}
+.docp.const table{margin:18px auto;max-width:560px;text-align:left}
+.firmas{display:flex;justify-content:center;margin:28px 0 14px}
+.firmas div{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:.9rem;color:var(--suave)}
+.firmas span{width:220px;border-top:1px solid var(--tinta)}
+@media (max-width:640px){.reto{grid-template-columns:60px 1fr}.reto .btn{grid-column:1/-1}.cfila{grid-template-columns:1fr}}
+.firmas span{display:block;height:0}
+
 </style>
 </head>
 <body>
@@ -504,10 +556,24 @@ const MODULOS = [
     ],
     clave: ['La IA propone; tú decides y tú respondes por lo que firmas.', 'Con los clientes, transparencia: para qué se usa y con qué cuidados.', 'La IA no se usa para evadir obligaciones ni para fabricar soportes.'],
     fuentes: ['lfpdppp']
+  },
+  {
+    n: 8, titulo: 'La IA en el día a día del despacho: así sí y así no', tema: 'Ejemplos de buen y mal uso de la IA', lugar: 'Después de la sesión (individual)', min: 12,
+    solo: 'Se hace por tu cuenta después de la sesión en vivo. Continúa lo que viste en el Módulo 6 con ejemplos del trabajo diario.',
+    ejercicio: 'Así sí o así no, laboratorio de instrucciones y detecta el error',
+    leccion: [
+      ['Por qué le importa a tu despacho', 'En el Módulo 6 viste qué información no se pega en una IA. Aquí verás ejemplos del trabajo diario: dónde la IA ahorra tiempo sin riesgo, dónde no conviene usarla y cómo pedirle las cosas para que la respuesta sirva.'],
+      ['Así sí: usos que suelen funcionar', '<ul><li><b>Redactar y corregir</b> correos, avisos y recordatorios genéricos a clientes ("envía tus estados de cuenta antes del día 5"), sin nombres ni montos reales.</li><li><b>Explicar en lenguaje sencillo</b> un concepto para un cliente, por ejemplo qué es un CFDI de egreso, y revisar la explicación antes de mandarla.</li><li><b>Resumir un texto público</b>, como una publicación oficial, y cotejar el resumen con el original.</li><li><b>Armar plantillas y listas:</b> la checklist del cierre mensual, el orden del día de una junta, el formato para pedir documentos.</li><li><b>Ayuda con hojas de cálculo:</b> pedir una fórmula describiendo las columnas, sin pegar los datos.</li></ul>'],
+      ['Así no: usos que traen problemas', '<ul><li><b>Decidir un criterio fiscal</b> o cómo tratar una operación: la IA puede sonar segura y estar equivocada. El criterio es tuyo.</li><li><b>Pegar documentos con datos:</b> XML, estados de cuenta, nóminas o contratos sin anonimizar.</li><li><b>Usar una cita sin abrirla:</b> los artículos, reglas o tesis que menciona la IA pueden no existir o no decir eso.</li><li><b>Fabricar soportes:</b> justificaciones, contratos o recibos de operaciones que no ocurrieron.</li><li><b>Confiar en una voz o un video</b> porque suena como el titular o un cliente: también se usa IA para imitar personas.</li><li><b>Usar cuentas personales</b> o herramientas que el despacho no aprobó para trabajo de clientes.</li></ul>'],
+      ['Cómo pedirle las cosas', 'Una buena instrucción tiene cuatro partes: <b>el papel</b> ("actúa como asistente de un despacho contable"), <b>la tarea</b> ("redacta un recordatorio breve"), <b>el contexto sin datos</b> ("para clientes personas físicas") y <b>el formato</b> ("máximo 80 palabras, tono cordial"). Al final pide que señale lo que no sabe: "si algo depende del caso, dilo en vez de suponer".'],
+      ['Cómo revisar lo que responde', '<ol><li>¿Cita algo? Ábrelo en la fuente oficial antes de usarlo.</li><li>¿Trae cifras, fechas o tasas? Compruébalas.</li><li>¿Afirma con total certeza algo que depende del caso? Desconfía.</li><li>¿Lo va a leer un cliente? Lo revisa y lo firma una persona del despacho.</li></ol>']
+    ],
+    clave: ['Úsala para redactar, explicar, resumir y armar plantillas; no para decidir criterios ni fabricar soportes.', 'Pídele con papel, tarea, contexto sin datos y formato, y que diga lo que no sabe.', 'Toda cita, cifra o fecha que dé se verifica en la fuente oficial antes de usarse.'],
+    fuentes: []
   }
 ];
 
-/* ---- Quiz: dos formas equivalentes (A y B), 2 preguntas por módulo. Cada participante contesta una al inicio y la otra al final ---- */
+/* ---- Quiz: dos formas equivalentes (A y B) de 16 preguntas, 2 por módulo. Cada participante contesta una al inicio y la otra al final ---- */
 const QUIZ_A = [
   { m: 1, q: 'Recibes un correo que dice ser del SAT, avisa de una "irregularidad" y pide descargar un documento desde un enlace. ¿Qué haces primero?',
     o: ['Descargo el documento en una computadora sin información de clientes, para revisarlo sin riesgo.', 'No uso el enlace y reviso por mi cuenta el portal oficial o el Buzón Tributario.', 'Respondo al remitente pidiendo el número de folio, y solo si lo envía abro el documento.', 'Lo reenvío al contador titular para que lo abra él, que tiene más experiencia con el SAT.'], c: 1,
@@ -550,7 +616,13 @@ const QUIZ_A = [
     e: 'La responsabilidad profesional no se delega. La IA propone; quien firma responde.' },
   { m: 7, q: 'Sobre el uso de IA en el servicio a tus clientes, ¿qué práctica es la más adecuada?',
     o: ['Informarles para qué se usa y con qué cuidados se protege su información.', 'Mencionarlo solo si el cliente pregunta, para no generar dudas innecesarias.', 'No mencionarlo, porque es una herramienta interna como cualquier otro programa.', 'Informarlo únicamente cuando la herramienta haya procesado datos personales suyos.'], c: 0,
-    e: 'La transparencia cuida la confianza: el cliente sabe para qué se usa la IA y que su información se protege.' }
+    e: 'La transparencia cuida la confianza: el cliente sabe para qué se usa la IA y que su información se protege.' },
+  { m: 8, q: 'Quieres que una IA redacte un recordatorio a clientes para que envíen sus documentos. ¿Qué instrucción es la más adecuada?',
+    o: ['"Escribe un recordatorio para Juan Pérez, RFC PEJ800101XX0, que debe los estados de cuenta de enero y febrero."', '"Redacta un recordatorio cordial, de 80 palabras, para que los clientes envíen sus documentos antes del día 5."', '"Escribe un recordatorio para todos los clientes; decide tú el tono, la extensión y la fecha límite."', '"Copia el último recordatorio que enviamos el mes pasado y actualízale la fecha para este mes."'], c: 1,
+    e: 'Una buena instrucción dice la tarea, el tono, la extensión y el contexto, sin datos de clientes.' },
+  { m: 8, q: 'Recibes un audio con la voz del titular que pide una transferencia urgente a una cuenta nueva. ¿Qué haces?',
+    o: ['Haces la transferencia: la voz es inconfundible y el titular suele tener prisa al final del día.', 'Cuelgas y lo confirmas llamándolo a su número conocido o con la palabra clave del despacho.', 'Le pides que te mande también un mensaje de texto desde ese mismo número, para confirmar.', 'Le preguntas a una herramienta de IA si el audio es auténtico y actúas según lo que responda.'], c: 1,
+    e: 'Hoy se pueden imitar voces. La confirmación va por un canal que tú eliges, nunca por el mismo que pide el dinero.' }
 ];
 const QUIZ_B = [
   { m: 1, q: 'Llega un correo con el asunto "Factura pendiente" de un proveedor que no reconoces, con un adjunto llamado Factura.pdf.exe. ¿Qué haces?',
@@ -594,7 +666,13 @@ const QUIZ_B = [
     e: 'Es un límite ético y legal. Que lo pida el cliente o que el monto sea pequeño no lo cambia.' },
   { m: 7, q: 'Una IA propone un criterio fiscal muy favorable para un cliente. ¿Quién decide si se aplica?',
     o: ['La herramienta, si fue entrenada con legislación fiscal mexicana.', 'El cliente, porque es quien se beneficia y quien asume el riesgo.', 'El contador, después de verificarlo; la herramienta solo propone.', 'Se aplica si otra herramienta de IA llega a la misma conclusión.'], c: 2,
-    e: 'El juicio profesional no se delega: la IA propone, el contador verifica y decide.' }
+    e: 'El juicio profesional no se delega: la IA propone, el contador verifica y decide.' },
+  { m: 8, q: '¿Cuál de estas tareas es un buen uso de una herramienta de IA en el despacho?',
+    o: ['Decidir si un gasto de un cliente es deducible, para ahorrar tiempo de revisión.', 'Armar una checklist del cierre mensual que después el equipo adapta y revisa.', 'Redactar un contrato con fecha anterior para respaldar pagos ya realizados.', 'Revisar la nómina de un cliente con una cuenta personal gratuita y rápida.'], c: 1,
+    e: 'Las plantillas y listas ahorran tiempo sin exponer datos ni delegar el criterio. Las otras opciones delegan el juicio, fabrican soportes o exponen datos.' },
+  { m: 8, q: 'Una IA te dio una cifra con total seguridad. ¿Qué le pides para poder revisarla?',
+    o: ['Que repita el cálculo dos veces y te confirme que el resultado coincide.', 'Que muestre los pasos y los supuestos, y diga qué información le falta.', 'Que te dé la cifra redondeada, para que sea más fácil de comunicar.', 'Nada: si la herramienta está segura, la cifra se puede usar tal cual.'], c: 1,
+    e: 'Con los pasos y los supuestos a la vista puedes encontrar el error. Repetir la pregunta puede repetir el mismo error.' }
 ];
 const FORMAS = { A: QUIZ_A, B: QUIZ_B };
 const QUIZ = QUIZ_A;
@@ -878,6 +956,121 @@ const INDICADORES = [
   ['Uso de IA', 'Política de uso de IA generada', 'Módulo 7']
 ];
 
+/* ===================== Módulo 8: ejercicios ===================== */
+const EJ8_OPC = ['Así sí', 'Así no'];
+const EJ8_CASOS = [
+  { t: 'Pedirle: "Redacta un recordatorio cordial de 80 palabras para que los clientes envíen sus estados de cuenta antes del día 5".', c: 0, e: 'Es un texto genérico, sin datos de nadie. Solo revisa el tono y la fecha antes de enviarlo.' },
+  { t: 'Pegar el XML de una factura de un cliente y preguntarle: "¿Esta factura es deducible?".', c: 1, e: 'El XML trae RFC, nombres y montos del cliente, y la deducibilidad depende del caso: decidirla es criterio del contador.', mejor: 'Pídele: "¿Qué requisitos suele revisar un contador para saber si un gasto es deducible? Dame una lista para verificar". Luego revisas tú la factura.' },
+  { t: 'Pedirle: "Explica en lenguaje sencillo, para un cliente sin conocimientos contables, qué es un CFDI de egreso".', c: 0, e: 'Explicar conceptos es un buen uso. Revisa que la explicación sea correcta antes de mandarla.' },
+  { t: 'La IA responde citando un artículo y una regla, y los copias tal cual en la respuesta a tu cliente.', c: 1, e: 'Una cita que no abriste puede no existir o no decir eso.', mejor: 'Abre cada artículo o regla en el texto oficial y cita solo lo que confirmaste.' },
+  { t: 'Describir las columnas de tu hoja (fecha, concepto, importe, IVA) y pedir una fórmula que sume el IVA por mes.', c: 0, e: 'Describir la estructura sin pegar los datos basta para obtener la fórmula. Pruébala primero con pocos renglones.' },
+  { t: 'Pedirle que redacte un contrato de servicios con fecha anterior para "respaldar" pagos que ya se hicieron sin contrato.', c: 1, e: 'Es fabricar un soporte. Ninguna herramienta lo vuelve aceptable.', mejor: 'Documentar la situación real con el cliente y pedir asesoría legal sobre cómo regularizarla.' },
+  { t: 'Pedirle un resumen de una reforma publicada en el Diario Oficial y comentarlo con el equipo después de cotejarlo con la publicación.', c: 0, e: 'Es un texto público y lo verificas contra el original. Buen uso.' },
+  { t: 'Usar tu cuenta personal gratuita de una herramienta de IA para revisar la nómina de un cliente, "porque es más rápida".', c: 1, e: 'Es una cuenta que el despacho no aprobó y la nómina trae datos personales de empleados.', mejor: 'Usar la cuenta que administra el despacho y anonimizar la nómina antes, o no usar IA para esa tarea.' },
+  { t: 'Pedirle una checklist del cierre mensual y adaptarla después a cómo trabajan ustedes.', c: 0, e: 'Plantillas y listas son de los mejores usos. Tú decides qué se queda.' },
+  { t: 'Recibes un audio del "titular" pidiendo una transferencia urgente y le pides a una IA que confirme si la voz es real.', c: 1, e: 'Ninguna herramienta te da certeza sobre una voz o un video. Se confirma por otro canal.', mejor: 'Colgar y llamar al titular a su número conocido, o usar la palabra clave del despacho.' }
+];
+// Laboratorio: mejorar una instrucción. Datos inventados para el ejercicio.
+const LAB8 = {
+  mala: 'Revisa esto y dime cuánto ISR debe pagar: Distribuidora La Esperanza, RFC DLE990101XX0, ingresos de octubre $412,300, gastos $198,450. Rápido.',
+  ops: [
+    ['Quitar la razón social y el RFC, y usar "Cliente A"', true, 'La herramienta no necesita saber quién es el cliente para explicar el cálculo.'],
+    ['Decirle qué papel juega: asistente de un despacho contable en México', true, 'El papel orienta el tipo de respuesta y el vocabulario.'],
+    ['Pedirle los pasos y los supuestos del cálculo, no solo el número', true, 'Sin pasos no puedes revisar dónde se equivocó.'],
+    ['Pedirle que diga qué datos le faltan, en lugar de suponerlos', true, 'Así evitas que invente lo que no le diste.'],
+    ['Agregar el número de cuenta del cliente para que el cálculo sea más preciso', false, 'Un dato bancario no mejora el cálculo y expone al cliente.'],
+    ['Pedirle que la respuesta sea definitiva para no tener que revisarla', false, 'Nada de lo que conteste sustituye tu revisión.']
+  ],
+  buena: 'Actúa como asistente de un despacho contable en México. Para el "Cliente A", persona moral, con ingresos de octubre por $412,300 y gastos por $198,450, explícame paso a paso cómo se estima su pago provisional de ISR y qué supuestos usas. Si falta información (por ejemplo, el coeficiente de utilidad o los pagos anteriores), dímelo en lugar de suponerla. Voy a verificar tu respuesta antes de usarla.'
+};
+// Detecta el error: respuesta ficticia de una IA, escrita para el ejercicio.
+const ERR8 = {
+  pregunta: 'Un auxiliar le preguntó a una IA: "¿Puedo deducir al 100% la comida con un cliente con el que me reuní?"',
+  respuesta: 'Sí, es 100% deducible. Lo establece el artículo 28-B de la Ley del ISR y no requiere ningún requisito adicional. Puedes indicárselo a tu cliente con total seguridad.',
+  ops: [
+    ['Cita un artículo que nadie ha abierto todavía', true, 'Antes de usarlo hay que abrir la Ley del ISR y ver si ese artículo existe y qué dice.'],
+    ['Afirma "100%" y "sin requisitos" en un tema que depende del caso', true, 'La deducibilidad de un consumo depende de límites y requisitos de la ley. Tanta certeza es una señal de alerta.'],
+    ['Te invita a pasárselo al cliente sin revisar', true, 'Lo que llega al cliente lo revisa y lo firma el despacho.'],
+    ['Está escrita en un lenguaje claro y directo', false, 'La claridad no es el problema; el problema es lo que afirma sin sustento.'],
+    ['Es una respuesta breve', false, 'Una respuesta breve puede ser correcta. Aquí falla el sustento, no la extensión.']
+  ]
+};
+
+/* ===================== Seguir aprendiendo ===================== */
+// Autoevaluación de confianza (1 a 5), antes del quiz inicial y antes del quiz final
+const CONFIANZA = [
+  'Reconocer un mensaje fraudulento por correo o WhatsApp',
+  'Saber qué hacer en los primeros minutos de un incidente',
+  'Proteger contraseñas, la e.firma y los accesos',
+  'Saber si nuestros respaldos de verdad funcionan',
+  'Usar la IA sin exponer datos de clientes y revisando lo que responde'
+];
+const HABITOS = [
+  'Confirmar por teléfono, a un número conocido, todo cambio de cuenta o pago urgente',
+  'No reenviar ni dictar a nadie un código de verificación',
+  'Revisar remitente y lo que me piden antes de abrir un enlace o un adjunto',
+  'Anonimizar antes de pegar información en una herramienta de IA',
+  'Verificar en la fuente oficial todo lo que cite una IA',
+  'Bloquear mi pantalla cada vez que me levanto',
+  'Avisar de inmediato si abrí algo sospechoso',
+  'Activar la verificación en dos pasos en mi correo'
+];
+// Retos de repaso espaciado: a los 7, 30 y 90 días del quiz final. 5 preguntas cada uno, elegidas según lo que más falló la persona.
+const RETOS_DIAS = [7, 30, 90];
+const RETOS = [
+  { m: 1, q: 'Un proveedor de siempre escribe desde su correo habitual: "cambiamos de banco, aquí la cuenta nueva". ¿Qué haces?', o: ['Registras la cuenta, porque el correo es el de siempre.', 'Llamas al proveedor a un número que ya tenías antes de registrar nada.', 'Respondes el correo pidiendo una carta con membrete.'], c: 1, e: 'Una cuenta de correo puede estar vulnerada. Los cambios de cuenta se confirman por otro canal.' },
+  { m: 1, q: 'Te escriben por WhatsApp: "te mandé un código de 6 dígitos por error, ¿me lo reenvías?". ¿Qué haces?', o: ['Lo reenvío si el contacto parece conocido.', 'No lo reenvío: es el código de mi propia cuenta.', 'Reenvío solo los primeros tres dígitos.'], c: 1, e: 'Con ese código pueden registrar tu cuenta en otro teléfono. No se comparte nunca.' },
+  { m: 1, q: 'Un correo del "SAT" pide entrar a un enlace hoy mismo para evitar una multa. ¿Qué haces?', o: ['Entro al enlace desde el celular, que es más seguro.', 'Lo reenvío al titular para que él decida.', 'Reviso mi situación entrando yo mismo a sat.gob.mx.'], c: 2, e: 'El SAT indica que no envía enlaces por correo. Se entra directamente al portal oficial.' },
+  { m: 2, q: '¿Dónde se activa la verificación en dos pasos?', o: ['En la configuración de seguridad de cada cuenta.', 'La activa por sí solo el antivirus del equipo.', 'Solo en la computadora del titular del despacho.'], c: 0, e: 'Cada servicio la ofrece en su configuración de seguridad. Empieza por el correo y la banca.' },
+  { m: 2, q: 'Un auxiliar deja el despacho hoy. ¿Cuándo se desactivan sus accesos?', o: ['Al cierre de mes, para no interrumpir el trabajo.', 'Hoy mismo, junto con el cambio de contraseñas compartidas.', 'Cuando el propio auxiliar lo solicite.'], c: 1, e: 'Un usuario activo sin dueño es una puerta abierta. Se desactiva el mismo día.' },
+  { m: 2, q: '¿Cómo se guarda el archivo .key de la e.firma de un cliente?', o: ['Junto con su contraseña, para tenerlos a la mano.', 'En el correo, para consultarlo desde cualquier lugar.', 'En una carpeta restringida, con la contraseña aparte en un gestor.'], c: 2, e: 'El archivo y su contraseña nunca se guardan ni se envían juntos.' },
+  { m: 3, q: 'Tu carpeta de clientes se sincroniza con la nube. ¿Eso es un respaldo?', o: ['Sí, siempre que la sincronización esté activa.', 'No por sí solo: también copia borrados y archivos dañados.', 'Sí, si la carpeta está compartida con el equipo.'], c: 1, e: 'Un respaldo guarda versiones anteriores a las que se puede regresar.' },
+  { m: 3, q: '¿Cómo sabes que tu respaldo funciona?', o: ['Porque el programa dice "copia completada".', 'Porque el disco todavía tiene espacio libre.', 'Porque se restauró un archivo de prueba y abrió.'], c: 2, e: 'Solo una restauración probada demuestra que el respaldo sirve.' },
+  { m: 3, q: 'Según la regla 3-2-1, ¿cuántas copias deben estar fuera de la oficina o desconectadas?', o: ['Al menos una.', 'Ninguna, si el equipo tiene antivirus.', 'Todas, sin excepción.'], c: 0, e: 'Tres copias, en dos medios, y al menos una fuera de la oficina o desconectada.' },
+  { m: 4, q: 'Aparece un mensaje de rescate en un equipo. ¿Cuál es la primera acción?', o: ['Reiniciar el equipo para ver si se arregla.', 'Desconectarlo de la red y avisar al responsable.', 'Pagar para no perder el día de trabajo.'], c: 1, e: 'Aislar evita que el problema llegue a más equipos; avisar activa el plan.' },
+  { m: 4, q: '¿Dónde se restaura un respaldo después de un ransomware?', o: ['En un equipo limpio, verificado por soporte técnico.', 'En el mismo equipo afectado, conectando el disco.', 'En cualquier equipo que esté libre en ese momento.'], c: 0, e: 'Conectar el respaldo a un equipo infectado puede cifrarlo también.' },
+  { m: 4, q: '¿Dónde conviene tener el plan de respuesta?', o: ['Solo en la computadora del titular.', 'En el correo del despacho, para buscarlo rápido.', 'Impreso y a la mano, con los teléfonos.'], c: 2, e: 'Si los equipos no funcionan, un plan digital no se puede abrir.' },
+  { m: 5, q: '¿Qué incluye el costo de un día sin operar?', o: ['Solo la reparación técnica de los equipos.', 'Horas improductivas, ingresos no generados, recuperación y posibles recargos.', 'Solo los recargos de las declaraciones atrasadas.'], c: 1, e: 'Se suman todos los costos, con los números del propio despacho.' },
+  { m: 5, q: '¿Para qué sirve estimar ese costo?', o: ['Para decidir cuánto conviene invertir en prevención.', 'Para cobrárselo después a los clientes afectados.', 'Para reportarlo como pérdida ante la autoridad.'], c: 0, e: 'Es una referencia para decidir, no un pronóstico.' },
+  { m: 5, q: '¿De dónde salen los números de la calculadora?', o: ['De estudios internacionales sobre ciberataques.', 'De lo que cobran otros despachos de la zona.', 'De los datos del propio despacho.'], c: 2, e: 'La app no usa cifras externas: todo sale de lo que captura el despacho.' },
+  { m: 6, q: 'Al pedir ayuda a una IA con una conciliación, ¿qué dato puede quedarse?', o: ['El RFC del cliente.', 'Los montos y los meses.', 'El número de cuenta.'], c: 1, e: 'Montos, conceptos y meses no identifican a nadie y la herramienta los necesita.' },
+  { m: 6, q: '¿Qué nunca se escribe en una herramienta de IA?', o: ['La Contraseña del SAT (CIEC) de un cliente.', 'El concepto de un gasto.', 'El mes de una declaración.'], c: 0, e: 'Las credenciales no se comparten con ninguna herramienta.' },
+  { m: 6, q: '¿Quién guarda la tabla de equivalencias ("Cliente A" es tal empresa)?', o: ['La herramienta de IA, para recordarlo.', 'El despacho, nunca la herramienta.', 'El cliente, por si alguien pregunta.'], c: 1, e: 'Si la tabla se queda en la herramienta, la anonimización no sirve.' },
+  { m: 7, q: 'Una IA propone un criterio fiscal favorable para un cliente. ¿Quién decide si se aplica?', o: ['La herramienta, si fue entrenada con leyes mexicanas.', 'El contador, después de verificarlo.', 'El cliente, porque asume el riesgo.'], c: 1, e: 'La IA propone; quien firma decide y responde.' },
+  { m: 7, q: '¿Se informa a los clientes que se usa IA en su servicio?', o: ['Sí: para qué se usa y con qué cuidados.', 'Solo si lo preguntan directamente.', 'No, porque es una herramienta interna.'], c: 0, e: 'La transparencia cuida la confianza.' },
+  { m: 7, q: 'Un cliente pide usar IA para justificar gastos que no ocurrieron. ¿Qué hace el despacho?', o: ['Acepta si el cliente lo pide por escrito.', 'Acepta si el monto es pequeño.', 'Se niega: es simular operaciones.'], c: 2, e: 'Es un límite ético y legal, lo haga una persona o una herramienta.' },
+  { m: 8, q: '¿Cuál es un buen uso de la IA en el despacho?', o: ['Decidir si un gasto de un cliente es deducible.', 'Redactar un recordatorio genérico a clientes.', 'Revisar el XML de un cliente tal como llegó.'], c: 1, e: 'Redactar textos genéricos sin datos es de los usos más seguros.' },
+  { m: 8, q: 'Una IA cita un artículo de ley. ¿Qué haces antes de usarlo?', o: ['Lo abro en el texto oficial.', 'Le pregunto a otra IA si es correcto.', 'Lo uso si la explicación suena convincente.'], c: 0, e: 'Una cita que no abriste puede no existir o no decir eso.' },
+  { m: 8, q: 'Te llega un audio con la voz del titular que pide una transferencia urgente. ¿Qué haces?', o: ['Transfiero si la voz es idéntica.', 'Respondo el audio pidiendo que confirme.', 'Lo confirmo por otro canal o con la palabra clave.'], c: 2, e: 'Las voces se pueden imitar. Se confirma por un canal que tú eliges.' }
+];
+// Biblioteca: cápsulas de 2 a 3 minutos. El equipo puede agregar una nueva cada mes copiando el formato.
+const CAPSULAS = [
+  { id: 'c01', tema: 'Fraude', titulo: 'Una palabra clave contra las voces falsas', min: 2, fecha: '2026-11',
+    cuerpo: '<p>Hoy se pueden imitar voces con IA. Una defensa sencilla: que el despacho acuerde una <b>palabra o pregunta clave</b> que solo conoce el equipo.</p><ul><li>Si alguien pide por teléfono o audio un pago o un dato urgente, se le pide la clave.</li><li>La clave no se escribe en chats ni correos.</li><li>Se cambia cuando alguien deja el despacho.</li></ul>',
+    check: { q: '¿Dónde se comparte la palabra clave?', o: ['En el grupo de WhatsApp del despacho.', 'En persona, solo con el equipo.', 'En el correo, para no olvidarla.'], c: 1, e: 'Si viaja por chat o correo, quien entre a esas cuentas la conoce.' } },
+  { id: 'c02', tema: 'Fraude', titulo: 'Códigos QR: un enlace que no puedes leer', min: 2, fecha: '2026-11',
+    cuerpo: '<p>Un QR es un enlace escondido. Por eso también sirve para engañar.</p><ul><li>Antes de escanear uno que llegó por correo o en un papel, pregúntate quién lo puso ahí.</li><li>Al escanearlo, el celular muestra la dirección: léela antes de abrirla.</li><li>Si después te pide contraseñas o datos bancarios, detente.</li></ul>',
+    check: { q: 'Escaneas un QR y el celular muestra una dirección rara. ¿Qué haces?', o: ['La abro: el QR venía en una hoja con logotipo.', 'No la abro y busco el sitio por mi cuenta.', 'La abro, pero no escribo nada.'], c: 1, e: 'Un logotipo se copia fácil. Si la dirección no es la oficial, se busca el sitio por otro camino.' } },
+  { id: 'c03', tema: 'Accesos', titulo: 'Frases de contraseña y un gestor', min: 2, fecha: '2026-11',
+    cuerpo: '<p>Una contraseña fuerte no tiene que ser imposible de recordar.</p><ul><li>Usa una <b>frase de varias palabras</b> que no tenga que ver contigo.</li><li>Una distinta para cada servicio: si una se filtra, las demás siguen a salvo.</li><li>Un <b>gestor de contraseñas</b> las recuerda por ti.</li><li>Y donde se pueda, verificación en dos pasos.</li></ul>',
+    check: { q: '¿Por qué una contraseña distinta para cada servicio?', o: ['Porque así se recuerdan mejor.', 'Porque si una se filtra, las demás siguen a salvo.', 'Porque lo exige el SAT.'], c: 1, e: 'Las contraseñas filtradas se prueban en otros servicios.' } },
+  { id: 'c04', tema: 'Equipos', titulo: 'Actualizaciones: no las pospongas', min: 2, fecha: '2026-11',
+    cuerpo: '<p>Las actualizaciones corrigen fallas que los atacantes aprovechan.</p><ul><li>Prográmalas fuera del horario de trabajo para que no estorben.</li><li>Incluye el sistema, el navegador y el software contable.</li><li>Un equipo que el fabricante ya no actualiza se queda con sus fallas: es candidato a reemplazo.</li></ul>',
+    check: { q: '¿Qué pasa con un equipo que ya no recibe actualizaciones?', o: ['Nada, si tiene antivirus.', 'Sus fallas conocidas ya no se corrigen.', 'Funciona más rápido.'], c: 1, e: 'Por eso el inventario marca los equipos sin soporte.' } },
+  { id: 'c05', tema: 'Equipos', titulo: 'Wi-Fi público y trabajo fuera de la oficina', min: 2, fecha: '2026-11',
+    cuerpo: '<p>Trabajar desde un café o un aeropuerto es cómodo, pero la red no es tuya.</p><ul><li>Evita entrar a la banca o a portales fiscales en redes públicas: usa los datos de tu celular.</li><li>Bloquea la pantalla aunque te levantes un minuto.</li><li>No dejes el equipo ni las memorias a la vista.</li></ul>',
+    check: { q: 'En un café, necesitas entrar al portal del banco. ¿Qué haces?', o: ['Uso el Wi-Fi del café si tiene contraseña.', 'Uso los datos de mi celular.', 'Le pido a alguien que me preste su equipo.'], c: 1, e: 'Los datos del celular no se comparten con desconocidos como una red pública.' } },
+  { id: 'c06', tema: 'Equipos', titulo: 'El celular del despacho: bloqueo y borrado remoto', min: 2, fecha: '2026-11',
+    cuerpo: '<p>En el celular viven el correo, WhatsApp con clientes y, a veces, la banca.</p><ul><li>Bloqueo con PIN o huella, siempre.</li><li>Activa la función de localizar y borrar a distancia.</li><li>Si se pierde: avisa en el despacho, bórralo a distancia y cambia las contraseñas que tenía guardadas.</li></ul>',
+    check: { q: 'Pierdes el celular del despacho. ¿Qué haces primero?', o: ['Espero un día por si aparece.', 'Aviso, lo borro a distancia y cambio contraseñas.', 'Compro otro y sigo trabajando.'], c: 1, e: 'Cada hora sin actuar es una hora en que alguien puede entrar a tus cuentas.' } },
+  { id: 'c07', tema: 'IA', titulo: 'La IA puede inventar: verifica en tres pasos', min: 2, fecha: '2026-11',
+    cuerpo: '<p>Una herramienta de IA puede dar una respuesta falsa con total seguridad.</p><ol><li><b>Abre la fuente:</b> el artículo, la regla o la publicación que cita.</li><li><b>Compara:</b> ¿dice lo mismo que la IA?</li><li><b>Anota</b> la fuente y la fecha en tu papel de trabajo.</li></ol><p>Si no encuentras la fuente, no la uses.</p>',
+    check: { q: 'No encuentras el artículo que citó la IA. ¿Qué haces?', o: ['Lo uso, porque la IA suele acertar.', 'No lo uso.', 'Le pido a la IA que lo cite otra vez.'], c: 1, e: 'Si no está en la fuente oficial, no existe para tu trabajo.' } },
+  { id: 'c08', tema: 'Fraude', titulo: 'Cuando hay prisa, se cuelan los fraudes', min: 2, fecha: '2026-11',
+    cuerpo: '<p>Los mensajes fraudulentos se apoyan en la prisa: "hoy", "urgente", "antes de las 3".</p><ul><li>En días de mucha carga, como los de vencimientos, aplica las mismas reglas aunque cueste un minuto más.</li><li>Una llamada a un número conocido resuelve casi cualquier duda.</li><li>Nadie en el despacho se mete en problemas por verificar.</li></ul>',
+    check: { q: 'Es día de vencimientos y llega un pedido urgente de pago. ¿Qué haces?', o: ['Lo pago para no retrasar más el trabajo.', 'Lo verifico por teléfono, aunque tome un minuto.', 'Lo dejo para mañana sin avisar a nadie.'], c: 1, e: 'La prisa es justo lo que busca el fraude.' } }
+];
+
 /* ===== Estado, almacenamiento y cálculos ===== */
 const LS_KEY = 'delta_crs_v1';
 const POR_DEFINIR = '[POR DEFINIR]';
@@ -885,7 +1078,7 @@ const ESTADOS = ['Por validar con distribuidor Dell', 'Validado', 'Descartado'];
 const GVAL = { alta: 0, media: 1, baja: 2 };
 
 function blank() {
-  return { v: 1, despachos: {}, participantes: {}, diagnostico: {}, proceso: {}, equipos: {}, kit: {}, encuesta: {}, hids: {}, estados: {}, plan30: {},
+  return { v: 2, despachos: {}, participantes: {}, diagnostico: {}, proceso: {}, equipos: {}, kit: {}, encuesta: {}, hids: {}, estados: {}, plan30: {},
     config: { rangos: '', distribuidor: '' }, ui: { modo: 'despacho', did: null, pid: null } };
 }
 let memStore = null;
@@ -893,7 +1086,16 @@ function load() {
   try { const t = localStorage.getItem(LS_KEY); if (t) return Object.assign(blank(), JSON.parse(t)); } catch (e) {}
   return memStore ? JSON.parse(memStore) : blank();
 }
-let S = load();
+/* ¿Este navegador guarda datos? (modo privado o sin espacio = no) */
+const ALMACEN_OK = (() => { try { const k = LS_KEY + '_t'; localStorage.setItem(k, '1'); localStorage.removeItem(k); return true; } catch (e) { return false; } })();
+/* Migración de datos guardados con versiones anteriores de la app */
+function migrar(x) {
+  ['despachos', 'participantes', 'diagnostico', 'proceso', 'equipos', 'kit', 'encuesta', 'hids', 'estados', 'plan30'].forEach(k => { if (!x[k] || typeof x[k] !== 'object') x[k] = {}; });
+  x.ui = Object.assign({ modo: 'despacho', did: null, pid: null }, x.ui || {});
+  Object.values(x.participantes).forEach(p => { if (!Array.isArray(p.avance)) p.avance = []; });
+  x.v = 2; return x;
+}
+let S = migrar(load());
 const T = { mod: null, quiz: null, ph: null, rs: null, ia: null, dl: null, confirm: null }; // estado temporal de pantalla
 function save() {
   const t = JSON.stringify(S);
@@ -1165,6 +1367,14 @@ function demoEj(p, j) {
   const ph = p.ej.ph.r; p.phishing = { pct: ph.filter((r, i) => r.e === CORREOS[i].fraude).length / CORREOS.length * 100, fraudes: ph.filter((r, i) => CORREOS[i].fraude && r.e).length, legitimos: ph.filter((r, i) => !CORREOS[i].fraude && !r.e).length, fecha: hoy() };
   p.ia = { pct: p.ej.ia.r.filter((v, i) => v === ITEMS.ia[i].c).length / ITEMS.ia.length * 100, fecha: hoy() };
   p.repaso = true;
+  p.ej.ej8 = { r: ITEMS.ej8.map(it => elige(2, it.c)) };
+  p.ej.lab8 = { v: Object.fromEntries(LAB8.ops.map((o, k) => [k, rnd() < nivel ? o[1] : !o[1]])) };
+  p.ej.err8 = { v: Object.fromEntries(ERR8.ops.map((o, k) => [k, rnd() < nivel ? o[1] : !o[1]])) };
+  p.avance[7] = true;
+  p.conf = { pre: Object.fromEntries(CONFIANZA.map((t, i) => [i, 2 + ((j + i) % 2)])), post: Object.fromEntries(CONFIANZA.map((t, i) => [i, 3 + ((j + i) % 3 === 0 ? 1 : 0) + (j === 2 ? 1 : 0)])) };
+  p.meta = { habitos: [[0, 3], [1], [0, 4]][j % 3], propio: j === 1 ? 'Revisar el respaldo cada viernes' : '', fecha: hoy() };
+  if (j > 0) p.retos = [{ k: 0, fecha: hoy(), items: [0, 4, 9, 15, 21], resp: [1, 1, j === 1 ? 0 : 1, 1, 1], ok: j === 1 ? 4 : 5, n: 5 }];
+  p.caps = Object.fromEntries(CAPSULAS.slice(0, 2 + j * 2).map(c => [c.id, { fecha: hoy(), ok: true }]));
 }
 function borrarDespacho(did) {
   delete S.despachos[did];
@@ -1204,7 +1414,7 @@ async function leerCodigo(txt) {
 
 /* ===== Pantallas ===== */
 const NAV = {
-  despacho: [['inicio', 'Inicio'], ['capacitacion', 'Capacitación'], ['diagnostico', 'Diagnóstico'], ['reporte', 'Mi reporte'], ['encuesta', 'Encuesta']],
+  despacho: [['inicio', 'Inicio'], ['capacitacion', 'Capacitación'], ['aprender', 'Seguir aprendiendo'], ['diagnostico', 'Diagnóstico'], ['reporte', 'Mi reporte'], ['encuesta', 'Encuesta']],
   consultor: [['despachos', 'Despachos'], ['resultados', 'Resultados'], ['proceso', 'Proceso clave'], ['inventario', 'Inventario'], ['oportunidades', 'Oportunidades'], ['tablero', 'Tablero'], ['datos', 'Datos']]
 };
 function ruta() {
@@ -1226,7 +1436,7 @@ function area(p, o = {}) { return `<textarea id="${idOf(p)}" data-bind="${p}" ro
 function sel(p, ops, o = {}) { const v = String(val(p)); return `<select id="${idOf(p)}" data-bind="${p}"${o.r ? ' data-r' : ''}${o.upd ? ` data-upd="${o.upd}"` : ''}><option value="">Elige…</option>${ops.map(x => `<option${v === String(x) ? ' selected' : ''}>${esc(x)}</option>`).join('')}</select>`; }
 function chk(p, label, o = {}) { return `<label class="chk"><input id="${idOf(p)}" type="checkbox" data-bind="${p}"${val(p) ? ' checked' : ''}${o.upd ? ` data-upd="${o.upd}"` : ''}${o.r ? ' data-r' : ''}><span>${label}</span></label>`; }
 const fld = (label, control, hint) => `<div class="f"><label for="${(control.match(/id="([^"]+)"/) || [])[1] || ''}">${label}</label>${control}${hint ? `<small>${hint}</small>` : ''}</div>`;
-const lpill = l => pill(l, l.startsWith('Sesión') ? 'pres' : l.startsWith('Auto') ? 'auto' : 'ent');
+const lpill = l => pill(l, l.startsWith('Sesión') ? 'pres' : l.startsWith('Auto') ? 'auto' : l.startsWith('Después') || l.startsWith('Antes de la sesión') ? 'ind' : 'ent');
 const pill = (t, c) => `<span class="pill ${c || ''}">${esc(t)}</span>`;
 const gpill = g => pill('Gravedad ' + g, 'g-' + g);
 const sem = (s, p) => `<span class="sem sem-${s}"><i></i>${SEM_TXT[s]}${p == null ? '' : ' · ' + Math.round(p) + '%'}</span>`;
@@ -1242,15 +1452,16 @@ const LOGO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-
 const RUTA = [
   ['Antes de la sesión', [['q', 'quizInicial'], ['m', 1]]],
   ['Sesión en vivo', [['m', 4], ['m', 6]]],
+  ['Después de la sesión', [['m', 8]]],
   ['Antes de la reunión de entrega', [['r', 'repaso'], ['q', 'quizFinal']]],
   ['Complementario', [['m', 2], ['m', 3], ['m', 7]], true]
 ];
 const PASOS_RUTA = RUTA.flatMap(([et, xs, comp]) => xs.map(x => ({ et, t: x[0], v: x[1], comp: !!comp })));
 const MINIMA = PASOS_RUTA.filter(x => !x.comp), COMPL = PASOS_RUTA.filter(x => x.comp);
 const pasoHecho = (p, x) => x.t === 'q' ? !!p[x.v] : x.t === 'r' ? !!p.repaso : !!(p.avance || [])[x.v - 1];
-const pasoTxt = x => x.t === 'q' ? (x.v === 'quizInicial' ? 'Quiz inicial' : 'Quiz final') : x.t === 'r' ? 'Repaso: lo esencial de los 7 módulos' : 'Módulo ' + x.v + '. ' + MODULOS[x.v - 1].titulo;
-const pasoMin = x => x.t === 'q' ? 5 : x.t === 'r' ? 5 : MODULOS[x.v - 1].min;
-const pasoDesc = x => x.t === 'q' ? '14 preguntas, unos 5 minutos.' : x.t === 'r' ? 'Los puntos clave de cada módulo, en una sola pantalla. Unos 5 minutos.' : MODULOS[x.v - 1].ejercicio + ' · ' + MODULOS[x.v - 1].min + ' min';
+const pasoTxt = x => x.t === 'q' ? (x.v === 'quizInicial' ? 'Quiz inicial' : 'Quiz final') : x.t === 'r' ? 'Repaso: lo esencial de los 8 módulos' : 'Módulo ' + x.v + '. ' + MODULOS[x.v - 1].titulo;
+const pasoMin = x => x.t === 'q' ? 6 : x.t === 'r' ? 5 : MODULOS[x.v - 1].min;
+const pasoDesc = x => x.t === 'q' ? '16 preguntas, unos 6 minutos.' : x.t === 'r' ? 'Los puntos clave de cada módulo, en una sola pantalla. Unos 5 minutos.' : MODULOS[x.v - 1].ejercicio + ' · ' + MODULOS[x.v - 1].min + ' min';
 const siguiente = p => MINIMA.find(x => !pasoHecho(p, x)) || COMPL.find(x => !pasoHecho(p, x));
 const palabras = m => m.leccion.map(s => s[0] + ' ' + s[1]).join(' ').replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
 const minLectura = m => Math.max(1, Math.round(palabras(m) / 180));
@@ -1278,6 +1489,7 @@ const pie = () => `<footer class="pie"><div class="wrap"><p>Proyecto académico 
 const V = {};
 const vAlias = d => { const ps = participantesDe(d.id); return `<div class="card unir"><p class="eyebrow">${esc(d.nombre)}</p><h2>¿Quién va a participar?</h2><p>Escribe solo un alias, por ejemplo "Auxiliar 1" o "Socia". No uses tu nombre completo.</p>
   <div class="row"><input id="in-alias" placeholder="Alias" maxlength="30" aria-label="Alias" autocomplete="off"><button class="btn p" data-a="alias">Empezar</button></div>
+  <details class="rec"><summary>¿Cambiaste de dispositivo o se borró tu avance?</summary><p class="mini">Pega aquí un mensaje de resultados que hayas enviado al Equipo DELTA (empieza con DELTA1). Tu avance vuelve y continúas con tu alias.</p><textarea id="in-rec" rows="3" placeholder="Pega aquí tu mensaje de resultados"></textarea><div class="row end"><button class="btn sm" data-a="recuperar">Recuperar mi avance</button></div></details>
   ${ps.length ? `<p class="mini">¿Ya empezaste en este dispositivo? Continúa con tu alias:</p><div class="row">${ps.map(x => `<button class="chip" data-a="pid" data-v="${x.id}">${esc(x.alias)}</button>`).join('')}</div>` : ''}</div>`; };
 const sobreServicio = () => `<details class="sobre"><summary>Sobre el servicio: qué recibe el despacho y cuánto tiempo toma</summary>
   <div class="grid2">
@@ -1290,9 +1502,10 @@ const sobreServicio = () => `<details class="sobre"><summary>Sobre el servicio: 
     <div class="card"><h2>Cuánto tiempo toma</h2><table class="t"><tbody>
       <tr><th>Antes de la sesión</th><td>≈ 25 min por persona</td><td>Quiz inicial y Módulo 1 con el simulador de mensajes fraudulentos, cada quien por su cuenta</td></tr>
       <tr><th>Sesión en vivo</th><td>60 min, por videollamada</td><td>Phishing y fraude fiscal, simulacro de ransomware y uso de IA, en equipo</td></tr>
-      <tr><th>Antes de la reunión de entrega</th><td>≈ 10 min por persona</td><td>Repaso de lo esencial y quiz final. El dueño o socio contesta además el diagnóstico y la calculadora (≈ 25 min)</td></tr>
+      <tr><th>Después de la sesión</th><td>≈ 12 min por persona</td><td>Módulo 8: ejemplos de buen y mal uso de la IA</td></tr>
+      <tr><th>Antes de la reunión de entrega</th><td>≈ 11 min por persona</td><td>Repaso de lo esencial y quiz final. El dueño o socio contesta además el diagnóstico y la calculadora (≈ 25 min)</td></tr>
       <tr><th>Reunión de entrega</th><td>45 min, por videollamada</td><td>Con el dueño o socio: reporte, plan de 30 días, prueba de restauración y encuesta</td></tr>
-      <tr><th>Complementario</th><td>≈ 25 min, opcional</td><td>Módulos 2, 3 y 7, a su ritmo durante la semana</td></tr></tbody></table><p class="nota">Todo se hace a distancia. No hace falta instalar nada. Lo obligatorio por persona suma unos 35 minutos, más la sesión en vivo.</p></div>
+      <tr><th>Complementario</th><td>≈ 25 min, opcional</td><td>Módulos 2, 3 y 7, a su ritmo durante la semana</td></tr></tbody></table><p class="nota">Todo se hace a distancia. No hace falta instalar nada. Lo obligatorio por persona suma unos 48 minutos, más la sesión en vivo. Después siguen los retos de repaso y la biblioteca, en Seguir aprendiendo.</p></div>
   </div>
   <div class="card"><h2>Lo que incluye la suscripción</h2><p>Después del piloto, el programa completo se imparte en tres sesiones y sigue las seis funciones del NIST Cybersecurity Framework 2.0: gobernar, identificar, proteger, detectar, responder y recuperar.</p>
     <div class="scroll"><table class="t"><thead><tr><th>Sesión</th><th>Duración</th><th>Temas</th></tr></thead><tbody>${PROGRAMA_SUSCRIPCION.map(x => `<tr><th>${x[0]}</th><td>${x[1]}</td><td>${x[2]}</td></tr>`).join('')}</tbody></table></div>
@@ -1315,8 +1528,8 @@ V.inicio = () => {
 };
 function sigueBloque(p) {
   const sig = siguiente(p), algo = PASOS_RUTA.some(x => pasoHecho(p, x)), minOk = MINIMA.every(x => pasoHecho(p, x));
-  if (!sig) return `<div class="sigue fin"><div><h2>Terminaste toda la capacitación</h2><p>Copia tus resultados y envíalos al Equipo DELTA. En Capacitación puedes ver las respuestas explicadas.</p></div><button class="btn p" data-a="codigo">Copiar mis resultados</button></div>`;
-  return `${minOk ? `<div class="fb bien"><b>Terminaste la ruta mínima.</b> Ya cuentas en la medición del piloto. Lo que sigue es complementario: profundiza en lo que más te sirva.</div>` : ''}<div class="sigue ${sig.comp ? 'compl' : ''}"><div><p class="eyebrow">${sig.comp ? 'Complementario · a tu ritmo' : 'Tu siguiente paso · ' + sig.et.toLowerCase()}</p><h2>${pasoTxt(sig)}</h2><p>${pasoDesc(sig)}</p></div><button class="btn p" data-a="paso" data-v="${sig.t}:${sig.v}">${algo ? 'Continuar' : 'Empezar'}</button></div>`;
+  if (!sig) return `<div class="sigue fin"><div><h2>Terminaste toda la capacitación</h2><p>Sigue en <b>Seguir aprendiendo</b>: retos de repaso a los 7, 30 y 90 días, cápsulas nuevas y tu constancia de participación.</p></div><a class="btn p" href="#aprender">Seguir aprendiendo</a></div>`;
+  return `${minOk ? `<div class="fb bien"><b>Terminaste la ruta mínima.</b> Ya cuentas en la medición del piloto y tu constancia está en <a href="#aprender">Seguir aprendiendo</a>. Lo que sigue es complementario: profundiza en lo que más te sirva.</div>` : ''}<div class="sigue ${sig.comp ? 'compl' : ''}"><div><p class="eyebrow">${sig.comp ? 'Complementario · a tu ritmo' : 'Tu siguiente paso · ' + sig.et.toLowerCase()}</p><h2>${pasoTxt(sig)}</h2><p>${pasoDesc(sig)}</p></div><button class="btn p" data-a="paso" data-v="${sig.t}:${sig.v}">${algo ? 'Continuar' : 'Empezar'}</button></div>`;
 }
 function dueno(d) {
   const n = diag(d.id).resp.filter(x => x != null).length, e = S.encuesta[d.id] || {}, k = kit(d.id), cm = compromisos(d.id).length;
@@ -1334,6 +1547,7 @@ V.capacitacion = () => {
   const p = P();
   if (!p && T.mod === 5) return vModulo(null, 5);
   if (!p) return `<h1>Capacitación</h1>${vAlias(d)}`;
+  if (T.conf) return vConfianza(p, T.conf.cual);
   if (T.quiz) return vQuiz(p);
   if (T.repaso) return vRepaso(p);
   if (T.mod) return vModulo(p, T.mod);
@@ -1347,11 +1561,11 @@ V.capacitacion = () => {
       <div class="tile"><span>Evaluación final</span><b>${qf ? r1(qf.pct) + '%' : '—'}</b></div>
       <div class="tile ${qi && qf && qf.pct - qi.pct >= 20 ? 'ok' : ''}"><span>Mejora</span><b>${qi && qf ? (qf.pct - qi.pct >= 0 ? '+' : '') + r1(qf.pct - qi.pct) + ' pts' : '—'}</b></div>
     </div>
-    <div class="card paso ${qi ? 'hecho' : ''}"><div><h2>Quiz inicial</h2><p>14 preguntas, 5 minutos, antes de la sesión en vivo. Contesta lo que sabes hoy; las respuestas se revisan al final del programa.</p></div>
+    <div class="card paso ${qi ? 'hecho' : ''}"><div><h2>Quiz inicial</h2><p>16 preguntas, unos 6 minutos, antes de la sesión en vivo. Contesta lo que sabes hoy; las respuestas se revisan al final del programa.</p></div>
       ${qi ? pill('Completado', 'ok') : '<button class="btn p" data-a="quiz" data-v="quizInicial">Comenzar</button>'}</div>
-    <h2 class="sep">Los 7 módulos <small>4, 6 y 1 son de la ruta mínima · 2, 3 y 7 complementarios · 5 para el dueño o socio</small></h2>
+    <h2 class="sep">Los 8 módulos <small>1, 4, 6 y 8 son de la ruta mínima · 2, 3 y 7 complementarios · 5 para el dueño o socio</small></h2>
     <div class="mods">${MODULOS.map((m, i) => `<button class="mod ${av[i] ? 'hecho' : ''}" data-a="mod" data-v="${m.n}"><span class="n">${m.n}</span><span class="tx"><b>${m.titulo}</b><em>${m.ejercicio} · ${m.min} min</em></span><span class="tags">${lpill(m.lugar)}${[2, 3, 7].includes(m.n) ? pill('Complementario') : m.n === 5 ? pill('Dueño o socio') : ''}${av[i] ? pill('Completado', 'ok') : ''}</span></button>`).join('')}</div>
-    <div class="card paso ${qf ? 'hecho' : ''}"><div><h2>Quiz final</h2><p>14 preguntas equivalentes a las del inicio, con otros casos. Se contesta en la reunión de entrega; al terminar verás tu mejora y la explicación de cada respuesta.</p></div>
+    <div class="card paso ${qf ? 'hecho' : ''}"><div><h2>Quiz final</h2><p>16 preguntas equivalentes a las del inicio, con otros casos. Se contesta antes de la reunión de entrega; al terminar verás tu mejora y la explicación de cada respuesta.</p></div>
       ${qf ? pill('Completado', 'ok') : (qi ? '<button class="btn p" data-a="quiz" data-v="quizFinal">Comenzar</button>' : pill('Primero el quiz inicial'))}</div>
     <div class="card paso"><div><h2>Envía tus resultados</h2><p>Tus respuestas se guardan solo en este dispositivo. Al terminar cada etapa, copia tus resultados y pégalos en un mensaje al Equipo DELTA. No incluyen datos de clientes.</p></div><button class="btn p" data-a="codigo">Copiar mis resultados</button></div>
     ${qf ? `<div class="card"><h2>Respuestas y explicaciones</h2>${[['Quiz final', qf], ['Quiz inicial', qi]].map(([t, z], n) => `<details${n ? '' : ' open'}><summary>${t} · ${r1(z.pct)}%</summary>${forma(z).map((q, i) => `<div class="qa"><p><b>${i + 1}. ${q.q}</b></p><p class="${z.resp[i] === q.c ? 'bien' : 'mal'}">Tu respuesta: ${esc(q.o[z.resp[i]] || 'sin respuesta')}</p>${z.resp[i] === q.c ? '' : `<p>Respuesta correcta: ${esc(q.o[q.c])}</p>`}<p class="exp">${q.e}</p></div>`).join('')}</details>`).join('')}</div>` : ''}`;
@@ -1395,7 +1609,7 @@ function pasos(key, items, alFinal, o = {}) {
   const it = items[s.i];
   return `<div class="prog"><i style="width:${s.i / items.length * 100}%"></i></div><div class="row between"><p class="eyebrow">${s.i + 1} de ${items.length}</p>${o.extra ? o.extra(s) : ''}</div><p class="caso">${it.q}</p>
     <div class="ops ${FIJO[key] ? 'cat' : ''}">${s.perm[s.i].map(k => `<button class="op ${s.eleg === k ? (k === it.c ? 'bien' : 'mal') : ''} ${s.eleg != null && k === it.c ? 'bien' : ''}" data-a="stop" data-v="${k}" ${s.eleg != null ? 'disabled' : ''}>${esc(it.o[k])}</button>`).join('')}</div>
-    ${s.eleg != null ? `<div class="fb ${s.eleg === it.c ? 'bien' : 'mal'}"><b>${s.eleg === it.c ? (o.bien || 'Buena decisión.') : (o.mal || 'Hay una opción mejor.')}</b> ${it.fb(s.eleg)}</div><div class="row end"><button class="btn p" data-a="stsig">${s.i === items.length - 1 ? 'Continuar' : 'Siguiente'}</button></div>` : ''}`;
+    ${s.eleg != null ? `<div role="status" class="fb ${s.eleg === it.c ? 'bien' : 'mal'}"><b>${s.eleg === it.c ? (o.bien || 'Buena decisión.') : (o.mal || 'Hay una opción mejor.')}</b> ${it.fb(s.eleg)}</div><div class="row end"><button class="btn p" data-a="stsig">${s.i === items.length - 1 ? 'Continuar' : 'Siguiente'}</button></div>` : ''}`;
 }
 const ITEMS = {
   rs: RANSOM.pasos.map(x => ({ q: x.q, o: x.o.map(y => y[0]), c: x.o.findIndex(y => y[1]), fb: k => x.o[k][2], h: x.o.map(y => y[3] || 0) })),
@@ -1742,6 +1956,149 @@ V.datos = () => `<h1>Datos</h1>
   <div class="card"><h2>Acceso del equipo en este dispositivo</h2><p>Este dispositivo recuerda el código del Equipo DELTA. Si es un equipo compartido o de un despacho, cierra el acceso al terminar.</p><div class="row"><button class="btn" data-a="bloquear">Cerrar el acceso del equipo</button></div></div>
   <div class="card"><h2>Dónde se guardan los datos</h2><p>En el navegador de este dispositivo. No se envían a ningún servidor. Si se borra el historial del navegador, se pierden: guarda un respaldo JSON al terminar cada encuentro.</p></div>`;
 
+/* ===== Módulo 8 (ejercicios) y "Seguir aprendiendo": retos espaciados, niveles, metas, biblioteca y constancia ===== */
+FIJO.ej8 = 1; FIJO.reto = 0;
+ITEMS.ej8 = EJ8_CASOS.map(x => ({ q: x.t, o: EJ8_OPC, c: x.c, fb: k => (k === x.c ? '' : 'Es «' + EJ8_OPC[x.c].toLowerCase() + '». ') + x.e + (x.mejor ? '<br><b>Mejor así:</b> ' + x.mejor : '') }));
+ITEMS.reto = [];
+
+/* ---------- Ejercicio del Módulo 8 ---------- */
+function marcarSel(key, data, z) { // lista de casillas con revisión: data = [[texto, correcta, explicación]]
+  return `<fieldset class="sen" ${z.rev ? 'disabled' : ''}>${data.map((x, i) => `<label class="chk ${z.rev ? (!!z.m[i] === x[1] ? 'r-ok' : 'r-mal') : ''}"><input type="checkbox" data-sel="${key}:${i}" ${z.m[i] ? 'checked' : ''}><span>${x[0]}${z.rev ? `<small><b>${x[1] ? 'Sí.' : 'No.'}</b> ${x[2]}</small>` : ''}</span></label>`).join('')}</fieldset>`;
+}
+const selOk = (data, z) => data.filter((x, i) => !!z.m[i] === x[1]).length;
+EJ[8] = (p) => {
+  const lab = T.lab8 || (T.lab8 = { m: {}, rev: false }), er = T.err8 || (T.err8 = { m: {}, rev: false });
+  return `<h3 class="parte">Parte 1 · ¿Así sí o así no? <small>${ITEMS.ej8.length} situaciones del día a día</small></h3>` +
+    pasos('ej8', ITEMS.ej8, s => `<p>${pill(s.ok + ' de ' + ITEMS.ej8.length + ' situaciones bien clasificadas', 'ok')}</p><p>Regla práctica: la IA sirve para redactar, explicar, resumir y armar plantillas; no para decidir criterios, fabricar soportes ni recibir datos de clientes.</p><div class="row"><button class="btn" data-a="strein">Repetir</button></div>`, { bien: 'Correcto.', mal: 'No exactamente.' }) +
+    `<h3 class="parte">Parte 2 · Laboratorio: mejora esta instrucción</h3><p>Un auxiliar escribió esto en una herramienta de IA. Los datos son inventados para el ejercicio.</p><p class="prompt mal-p">${esc(LAB8.mala)}</p>
+    <p><b>Marca los cambios que la mejoran:</b></p>${marcarSel('lab8', LAB8.ops, lab)}
+    ${lab.rev ? `<div class="fb ${selOk(LAB8.ops, lab) === LAB8.ops.length ? 'bien' : 'mal'}"><b>${selOk(LAB8.ops, lab)} de ${LAB8.ops.length} bien resueltos.</b> Así queda con los cuatro cambios:</div><p class="prompt bien-p">${esc(LAB8.buena)}</p><div class="row end"><button class="btn" data-a="selre" data-v="lab8">Repetir</button></div>` : `<div class="row end"><button class="btn p" data-a="selrev" data-v="lab8">Revisar</button></div>`}
+    <h3 class="parte">Parte 3 · Detecta el problema en la respuesta</h3><p>${esc(ERR8.pregunta)} Esta fue la respuesta (ficticia, escrita para el ejercicio):</p><p class="prompt ia-p">${esc(ERR8.respuesta)}</p>
+    <p><b>Marca las señales de alerta:</b></p>${marcarSel('err8', ERR8.ops, er)}
+    ${er.rev ? `<div class="fb ${selOk(ERR8.ops, er) === ERR8.ops.length ? 'bien' : 'mal'}"><b>${selOk(ERR8.ops, er)} de ${ERR8.ops.length} bien resueltas.</b> Antes de contestarle al cliente: abrir la Ley del ISR, leer qué dice sobre ese gasto y decidir con criterio propio.</div><div class="row end"><button class="btn" data-a="selre" data-v="err8">Repetir</button></div>` : `<div class="row end"><button class="btn p" data-a="selrev" data-v="err8">Revisar</button></div>`}
+    <div class="row end"><button class="btn p" data-a="hecho" data-v="8" ${(p.ej && p.ej.ej8 && p.ej.ej8.r && p.ej.ej8.r.filter(v => v != null).length === ITEMS.ej8.length) && lab.rev && er.rev ? '' : 'disabled title="Termina las tres partes"'}>Marcar el módulo como completado</button></div>`;
+};
+
+/* ---------- Autoevaluación de confianza ---------- */
+function vConfianza(p, cual) {
+  const prev = (p.conf && p.conf[cual]) || {};
+  return `<p><button class="lnk" data-a="confsalir">← Volver</button></p><p class="eyebrow">${cual === 'pre' ? 'Antes del quiz inicial' : 'Antes del quiz final'}</p><h1>¿Qué tan seguro te sientes hoy?</h1>
+    <p class="lead">Un minuto. No cuenta para tu calificación: sirve para que tú veas tu avance${cual === 'post' ? ' frente a lo que contestaste al inicio' : ''}.</p>
+    <div class="card">${CONFIANZA.map((t, i) => `<div class="f conf"><label id="cf${i}">${t}</label><div class="r5" role="radiogroup" aria-labelledby="cf${i}">${[1, 2, 3, 4, 5].map(v => `<label><input type="radio" name="cf${i}" value="${v}" data-cf="${i}" ${prev[i] === v ? 'checked' : ''}><span>${v}</span></label>`).join('')}</div></div>`).join('')}
+      <small>1 = nada seguro · 5 = muy seguro</small>
+      <div class="row end"><button class="lnk" data-a="confomitir">Omitir</button><button class="btn p" data-a="confok">Guardar y empezar el quiz</button></div></div>`;
+}
+
+/* ---------- Retos de repaso espaciado ---------- */
+const sumaDias = (f, n) => { const [y, m, d] = f.split('-').map(Number), x = new Date(y, m - 1, d + n); return x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0'); };
+const retoFecha = (p, k) => p.quizFinal ? sumaDias(p.quizFinal.fecha || hoy(), RETOS_DIAS[k]) : null;
+const retoHecho = (p, k) => (p.retos || []).some(r => r.k === k);
+const retoListo = (p, k) => p.quizFinal && !retoHecho(p, k) && retoFecha(p, k) <= hoy();
+function elegirRetos(p) { // 5 preguntas, más peso a los módulos donde la persona falló
+  const w = {}; for (let m = 1; m <= 8; m++) w[m] = 1;
+  if (p.quizFinal) forma(p.quizFinal).forEach((q, i) => { if (p.quizFinal.resp[i] !== q.c) w[q.m] += 2; });
+  const ult = {}; (p.retos || []).forEach(r => r.items.forEach((ix, j) => { ult[ix] = r.resp[j] === RETOS[ix].c; if (!ult[ix]) w[RETOS[ix].m] += 2; }));
+  const pool = RETOS.map((x, i) => i).filter(i => ult[i] !== true), sel = [], porMod = {};
+  const base = pool.length >= 5 ? pool : RETOS.map((x, i) => i);
+  while (sel.length < 5) {
+    const cand = base.filter(i => !sel.includes(i) && (porMod[RETOS[i].m] || 0) < 2); if (!cand.length) break;
+    const tot = cand.reduce((a, i) => a + w[RETOS[i].m], 0); let r = Math.random() * tot, pick = cand[0];
+    for (const i of cand) { r -= w[RETOS[i].m]; if (r <= 0) { pick = i; break; } }
+    sel.push(pick); porMod[RETOS[pick].m] = (porMod[RETOS[pick].m] || 0) + 1;
+  }
+  return sel;
+}
+function iniciarReto(k) {
+  const p = P(), idx = elegirRetos(p);
+  ITEMS.reto = idx.map(i => ({ q: RETOS[i].q, o: RETOS[i].o, c: RETOS[i].c, fb: () => RETOS[i].e, ix: i }));
+  T.st = null; T.reto = { k, idx }; T.vista = 'reto';
+}
+function vReto(p) {
+  const z = T.reto, tit = z.k === 'p' ? 'Práctica libre' : 'Reto de los ' + RETOS_DIAS[z.k] + ' días';
+  return `<p><button class="lnk" data-a="vista" data-v="">← Volver</button></p><p class="eyebrow">Repaso espaciado</p><h1>${tit}</h1><p class="lead">5 preguntas, unos 3 minutos. Se eligen según lo que más te costó.</p>
+    <div class="card">${pasos('reto', ITEMS.reto, s => `<div class="tile ${s.ok >= 4 ? 'ok' : ''}"><span>Resultado</span><b>${s.ok} de ${ITEMS.reto.length}</b></div><p>${s.ok >= 4 ? 'Lo tienes presente. Así se consolida lo aprendido.' : 'Repasar lo que fallaste es justo lo que hace que se quede. Revisa las explicaciones y la lección de ese tema.'}</p><div class="row"><button class="btn p" data-a="vista" data-v="">Volver a Seguir aprendiendo</button></div>`, { bien: 'Correcto.', mal: 'No es correcto.' })}</div>`;
+}
+function guardarReto() {
+  const p = P(), s = T.st, z = T.reto; if (!p || !s || !z || z.guardado) return;
+  z.guardado = true; p.retos = p.retos || [];
+  p.retos.push({ k: z.k, fecha: hoy(), items: z.idx, resp: (p.ej && p.ej.reto && p.ej.reto.r || []).slice(0, z.idx.length), ok: s.ok, n: z.idx.length });
+  p.ts = Date.now(); save();
+}
+function icsRetos(p) {
+  const d = D(), url = location.href.split(/[?#]/)[0] + (d ? '?d=' + d.id : ''), z = x => x.replace(/-/g, ''), uid = (p.id || 'p') + '-';
+  const ev = RETOS_DIAS.map((n, k) => { const f = retoFecha(p, k); return ['BEGIN:VEVENT', 'UID:' + uid + n + '@equipo-delta', 'DTSTAMP:' + z(hoy()) + 'T000000', 'DTSTART;VALUE=DATE:' + z(f), 'DTEND;VALUE=DATE:' + z(sumaDias(f, 1)), 'SUMMARY:Reto de ciberseguridad (3 min)', 'DESCRIPTION:Repaso de los ' + n + ' días. Abre la app\\, entra a Seguir aprendiendo y contesta el reto.', 'URL:' + url, 'END:VEVENT'].join('\r\n'); });
+  return ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Equipo DELTA//Ciber Resiliencia//ES', 'CALSCALE:GREGORIAN', ...ev, 'END:VCALENDAR'].join('\r\n');
+}
+
+/* ---------- Niveles ---------- */
+const capsLeidas = p => Object.keys(p.caps || {}).length;
+function niveles(p) {
+  const minOk = MINIMA.every(x => pasoHecho(p, x)), av = p.avance || [], m = p.meta || {};
+  return [
+    { n: 1, t: 'En formación', d: 'Empezaste tu capacitación.', req: [] },
+    { n: 2, t: 'Alerta', d: 'Reconoces los riesgos principales y sabes cómo actuar.', req: [['Completar la ruta mínima', minOk]] },
+    { n: 3, t: 'Practicante', d: 'Llevas lo aprendido a tu trabajo diario.', req: [['Elegir tus hábitos', !!(m.habitos && m.habitos.length)], ['Reto de los 7 días', retoHecho(p, 0)], ['Leer 2 cápsulas de la biblioteca', capsLeidas(p) >= 2]] },
+    { n: 4, t: 'Guardián', d: 'Dominas los temas complementarios y los sostienes en el tiempo.', req: [['Reto de los 30 días', retoHecho(p, 1)], ['Módulos complementarios 2, 3 y 7', !!(av[1] && av[2] && av[6])], ['Leer 5 cápsulas', capsLeidas(p) >= 5]] },
+    { n: 5, t: 'Referente', d: 'Puedes orientar a tus compañeros.', req: [['Reto de los 90 días', retoHecho(p, 2)], ['Revisar tus hábitos', !!m.revision], ['Leer toda la biblioteca', capsLeidas(p) >= CAPSULAS.length]] }
+  ];
+}
+function nivel(p) { const ns = niveles(p); let k = 0; for (let i = 1; i < ns.length; i++) { if (ns[i].req.every(r => r[1])) k = i; else break; } return { act: ns[k], sig: ns[k + 1] || null }; }
+
+/* ---------- Constancia de participación ---------- */
+function constanciaHTML(p, nombre) {
+  const d = S.despachos[p.despachoId], nv = nivel(p).act, av = p.avance || [];
+  const mods = MODULOS.filter((m, i) => av[i]).map(m => `${m.n}. ${m.titulo}`), horas = PASOS_RUTA.filter(x => pasoHecho(p, x)).reduce((a, x) => a + pasoMin(x), 0) + 60;
+  const folio = 'DELTA-' + (d ? d.id.replace('D-', '') : '') + '-' + String(p.id || '').slice(-4).toUpperCase();
+  return `<div class="docp const"><p class="eyebrow">Ciber Resiliencia como Servicio · Equipo DELTA</p><h1>Constancia de participación</h1>
+    <p class="c-a">Se hace constar que</p><p class="c-n">${esc(nombre || p.alias)}</p>
+    <p class="c-a">de ${esc(d ? d.nombre : '')} completó la capacitación en ciberseguridad para despachos contables, con una dedicación aproximada de ${r1(horas / 60)} horas, y alcanzó el nivel <b>${nv.n}. ${nv.t}</b>.</p>
+    <table class="t"><tbody><tr><th>Módulos completados</th><td>${mods.map(esc).join('<br>') || '—'}</td></tr><tr><th>Evaluación inicial → final</th><td>${p.quizInicial ? r1(p.quizInicial.pct) + '%' : '—'} → ${p.quizFinal ? r1(p.quizFinal.pct) + '%' : '—'}</td></tr><tr><th>Retos de repaso</th><td>${(p.retos || []).filter(r => r.k !== 'p').length} de ${RETOS_DIAS.length}</td></tr><tr><th>Fecha</th><td>${fechaMx(hoy())}</td></tr><tr><th>Folio</th><td>${folio}</td></tr></tbody></table>
+    <div class="firmas"><div><span></span>Equipo DELTA</div></div>
+    <p class="mini">Constancia de participación en un piloto académico del Equipo DELTA (Reto Dell). No es una certificación ni tiene validez oficial: no la emite un organismo certificador ni CONOCER. Dell no respalda ni patrocina este programa.</p></div>`;
+}
+
+/* ---------- Pantalla "Seguir aprendiendo" ---------- */
+V.aprender = () => {
+  const d = D(); if (!d) return sinDespacho();
+  const p = P(); if (!p) return `<h1>Seguir aprendiendo</h1>${vAlias(d)}`;
+  if (T.vista === 'reto' && T.reto) return vReto(p);
+  if (T.vista === 'cap' && T.cap) return vCapsula(p, T.cap);
+  if (T.vista === 'const') return vConstancia(p);
+  const nv = nivel(p), ns = niveles(p), m = p.meta || {}, cf = p.conf || {};
+  const retos = RETOS_DIAS.map((n, k) => { const f = retoFecha(p, k), h = (p.retos || []).find(r => r.k === k); return `<div class="reto ${h ? 'hecho' : retoListo(p, k) ? 'listo' : ''}"><b>${n} días</b><span>${h ? '✓ ' + h.ok + ' de ' + h.n + ' · ' + fechaMx(h.fecha) : f ? (retoListo(p, k) ? 'Disponible desde el ' + fechaMx(f) : 'Se abre el ' + fechaMx(f)) : 'Se programa al terminar el quiz final'}</span>${retoListo(p, k) ? `<button class="btn p sm" data-a="reto" data-v="${k}">Hacer el reto</button>` : ''}</div>`; }).join('');
+  const barra = (a, b) => `<div class="cbar"><i class="pre" style="width:${(a || 0) / 5 * 100}%"></i><i class="post" style="width:${(b || 0) / 5 * 100}%"></i></div>`;
+  return `<h1>Seguir aprendiendo</h1><p class="lead">La capacitación no termina en la sesión. Aquí repasas a los 7, 30 y 90 días, eliges hábitos, lees cápsulas nuevas y subes de nivel.</p>
+    <div class="card nivel"><div class="row between"><div><p class="eyebrow">Tu nivel</p><h2>${nv.act.n}. ${nv.act.t}</h2><p>${nv.act.d}</p></div><div class="niveles">${ns.map(x => `<span class="nv ${x.n <= nv.act.n ? 'on' : ''}" title="${x.t}">${x.n}</span>`).join('')}</div></div>
+      ${nv.sig ? `<p><b>Para llegar a ${nv.sig.n}. ${nv.sig.t}:</b></p><ul class="req">${nv.sig.req.map(r => `<li class="${r[1] ? 'ok' : ''}">${r[1] ? '✓' : '○'} ${r[0]}</li>`).join('')}</ul>` : '<p class="ok-t">Llegaste al nivel más alto.</p>'}
+      ${nv.act.n >= 2 ? '<div class="row"><button class="btn" data-a="vista" data-v="const">Ver mi constancia de participación</button></div>' : '<p class="mini">La constancia de participación se abre al completar la ruta mínima.</p>'}</div>
+    <div class="grid2">
+      <div class="card"><h2>Retos de repaso</h2><p>Recordar lo aprendido a los pocos días, al mes y a los tres meses es lo que hace que se quede. Cada reto son 5 preguntas, elegidas según lo que más te costó.</p><div class="retos">${retos}</div>
+        <div class="row">${p.quizFinal ? '<button class="btn sm" data-a="ics">Agregar los retos a mi calendario</button>' : ''}<button class="btn sm" data-a="reto" data-v="p">Práctica libre ahora</button></div></div>
+      <div class="card"><h2>Mis metas</h2>
+        ${cf.pre ? `<p class="mini">Tu confianza, de 1 a 5: <span class="ley pre">antes</span> <span class="ley post">después</span></p>${CONFIANZA.map((t, i) => `<div class="cfila"><span>${t}</span>${barra(cf.pre[i], cf.post && cf.post[i])}</div>`).join('')}` : '<p class="mini">Tu autoevaluación de confianza aparece aquí cuando la contestes antes del quiz inicial.</p>'}
+        <h3>Mis hábitos <small>elige 1 o 2</small></h3>
+        <div class="habs">${HABITOS.map((h, i) => `<label class="chk"><input type="checkbox" data-hab="${i}" ${(m.habitos || []).includes(i) ? 'checked' : ''}><span>${h}</span></label>`).join('')}</div>
+        ${fld('O escribe el tuyo', `<input id="in-hab" value="${esc(m.propio || '')}" maxlength="140" placeholder="Por ejemplo: revisar mis respaldos cada viernes">`)}
+        <div class="row end"><button class="btn p sm" data-a="habok">Guardar mis hábitos</button></div>
+        ${m.fecha ? `<div class="revhab"><p><b>¿Los estás cumpliendo?</b> ${m.revision ? `Tu respuesta del ${fechaMx(m.revision.fecha)}: <b>${esc(m.revision.r)}</b>.` : 'Revísalo cuando hagas el reto de los 30 días.'}</p><div class="row">${['Sí', 'En parte', 'Todavía no'].map(x => `<button class="chip ${m.revision && m.revision.r === x ? 'on' : ''}" data-a="habrev" data-v="${x}">${x}</button>`).join('')}</div></div>` : ''}</div>
+    </div>
+    <h2 class="sep">Biblioteca <small>${capsLeidas(p)} de ${CAPSULAS.length} leídas · cápsulas de 2 minutos</small></h2>
+    <div class="caps">${CAPSULAS.map(c => `<button class="capb ${(p.caps || {})[c.id] ? 'hecho' : ''}" data-a="cap" data-v="${c.id}"><span class="eyebrow">${c.tema}</span><b>${c.titulo}</b><em>${c.min} min${(p.caps || {})[c.id] ? ' · ✓ leída' : ''}</em></button>`).join('')}</div>
+    <div class="card"><h2>No pierdas tu avance</h2><p>Tu avance vive en este navegador. Para protegerlo:</p><ul class="lista"><li><b>Instala la app en tu celular:</b> en Android (Chrome), menú ⋮ → "Agregar a la pantalla principal"; en iPhone (Safari), Compartir → "Agregar a inicio".</li><li><b>Envía tus resultados</b> al Equipo DELTA de vez en cuando: ese mismo código te sirve para recuperar tu avance si cambias de dispositivo o se borra.</li><li>Si usas iPhone y pasas semanas sin abrir la app, Safari puede borrar lo que guardan los sitios web. Instalada en la pantalla de inicio está más protegida.</li></ul><div class="row"><button class="btn" data-a="codigo">Copiar o enviar mis resultados</button></div></div>`;
+};
+function vCapsula(p, id) {
+  const c = CAPSULAS.find(x => x.id === id), z = T.capr || {};
+  return `<p><button class="lnk" data-a="vista" data-v="">← Volver</button></p><p class="eyebrow">Biblioteca · ${c.tema} · ${c.min} min</p><h1>${c.titulo}</h1><div class="card leccion">${c.cuerpo}</div>
+    <div class="card"><h2>Comprueba</h2><p class="caso">${c.check.q}</p><div class="ops">${c.check.o.map((o, k) => `<button class="op ${z.eleg === k ? (k === c.check.c ? 'bien' : 'mal') : ''} ${z.eleg != null && k === c.check.c ? 'bien' : ''}" data-a="capr" data-v="${k}" ${z.eleg != null ? 'disabled' : ''}>${esc(o)}</button>`).join('')}</div>
+    ${z.eleg != null ? `<div class="fb ${z.eleg === c.check.c ? 'bien' : 'mal'}"><b>${z.eleg === c.check.c ? 'Correcto.' : 'No es correcto.'}</b> ${c.check.e}</div><div class="row end"><button class="btn p" data-a="vista" data-v="">Volver a la biblioteca</button></div>` : ''}</div>`;
+}
+function vConstancia(p) {
+  return `<p><button class="lnk" data-a="vista" data-v="">← Volver</button></p><h1>Constancia de participación</h1>
+    <div class="card"><p>Puedes poner tu nombre en la constancia. <b>No se guarda</b> en la app ni se envía al Equipo DELTA: solo aparece en el PDF que descargas.</p>
+      <div class="row"><input id="in-nom" maxlength="80" placeholder="${esc(p.alias)}" aria-label="Nombre para la constancia" style="max-width:340px"><button class="btn" data-a="constver">Actualizar vista</button><button class="btn p" data-a="constpdf">Guardar en PDF</button></div></div>
+    <div class="paper" id="const-prev">${constanciaHTML(p, T.nomConst || '')}</div>`;
+}
+
 /* ===== Resultados para el Equipo DELTA: reporte colectivo del despacho y reporte individual por alias ===== */
 const pctTxt = (a, n) => n ? Math.round(a / n * 100) + '%' : '—';
 const okx = b => b ? '<span class="ok-t">✓</span>' : '<span class="falta">✗</span>';
@@ -1755,6 +2112,7 @@ const sinDatos = t => `<p class="mini">${t || 'Sin datos todavía.'}</p>`;
 const EJS = {
   rs: { t: 'Simulacro de ransomware (Módulo 4)', q: i => RANSOM.pasos[i].q, it: () => ITEMS.rs },
   ia: { t: 'Casos de IA (Módulo 6)', q: i => IA_CASOS[i].t, it: () => ITEMS.ia },
+  ej8: { t: 'Así sí o así no (Módulo 8)', q: i => EJ8_CASOS[i].t, it: () => ITEMS.ej8 },
   bk: { t: '¿Respaldo o no? (Módulo 3, complementario)', q: i => RESP_CASOS[i].t, it: () => ITEMS.bk },
   url: { t: 'Lectura de enlaces (Módulo 1, práctica opcional)', q: i => URLS[i].u, it: () => ITEMS.url },
   dl: { t: 'Dilemas éticos (Módulo 7, complementario)', q: i => DILEMAS[i].t, it: () => ITEMS.dl }
@@ -1769,7 +2127,8 @@ function stPersona(p) {
   const rsr = r('rs'), horas = rsr.reduce((a, v, i) => a + (v == null ? 0 : ITEMS.rs[i].h[v]), 0);
   const an = (e.an && e.an.v) || null, tk = ANON_TK(), sens = tk.map((t, k) => [t, k]).filter(x => x[0].s);
   return {
-    ph: { n: phn, ok: phok }, rs: Object.assign(cuenta('rs'), { horas, completo: rsr.filter(v => v != null).length === ITEMS.rs.length }), ia: cuenta('ia'), bk: cuenta('bk'), url: cuenta('url'), dl: cuenta('dl'),
+    ph: { n: phn, ok: phok }, rs: Object.assign(cuenta('rs'), { horas, completo: rsr.filter(v => v != null).length === ITEMS.rs.length }), ia: cuenta('ia'), ej8: cuenta('ej8'), bk: cuenta('bk'), url: cuenta('url'), dl: cuenta('dl'),
+    lab8: e.lab8 && e.lab8.v ? { ok: LAB8.ops.filter((x, i) => !!e.lab8.v[i] === x[1]).length, n: LAB8.ops.length } : null, err8: e.err8 && e.err8.v ? { ok: ERR8.ops.filter((x, i) => !!e.err8.v[i] === x[1]).length, n: ERR8.ops.length } : null,
     an: an ? { ok: sens.filter(x => an[x[1]]).length, n: sens.length, sobra: tk.filter((t, k) => !t.s && an[k]).length } : null,
     sal: e.sal && e.sal.v ? { ok: SALIDA.items.filter((x, i) => !!e.sal.v[i] === x[1]).length, n: SALIDA.items.length } : null,
     ruta: MINIMA.filter(x => pasoHecho(p, x)).length
@@ -1785,7 +2144,10 @@ function tilesPersona(p, st) {
     <div class="tile"><span>Ruta mínima</span><b>${st.ruta} de ${MINIMA.length} pasos</b></div>
     <div class="tile"><span>Simulador de mensajes</span><b>${st.ph.n ? st.ph.ok + ' de ' + st.ph.n : '—'}</b></div>
     <div class="tile"><span>Simulacro: acertadas · reloj</span><b>${st.rs.n ? st.rs.ok + ' de ' + st.rs.n + ' · ' + hTxt(st.rs.horas) : '—'}</b></div>
-    <div class="tile"><span>Casos de IA</span><b>${st.ia.n ? st.ia.ok + ' de ' + st.ia.n : '—'}</b></div></div>`;
+    <div class="tile"><span>Casos de IA · Módulo 8</span><b>${st.ia.n ? st.ia.ok + '/' + st.ia.n : '—'} · ${st.ej8.n ? st.ej8.ok + '/' + st.ej8.n : '—'}</b></div>
+    <div class="tile"><span>Nivel</span><b>${nivel(p).act.n}. ${nivel(p).act.t}</b></div>
+    <div class="tile"><span>Retos de repaso · cápsulas</span><b>${(p.retos || []).filter(r => r.k !== 'p').length} de ${RETOS_DIAS.length} · ${capsLeidas(p)} de ${CAPSULAS.length}</b></div>
+    <div class="tile"><span>Confianza promedio (1 a 5)</span><b>${p.conf && p.conf.pre ? r1(avg(Object.values(p.conf.pre))) : '—'} → ${p.conf && p.conf.post ? r1(avg(Object.values(p.conf.post))) : '—'}</b></div></div>`;
 }
 
 /* ================= Reporte individual ================= */
@@ -1812,7 +2174,20 @@ function repIndividual(p) {
     <h2>Dónde reforzar</h2>${ref.length ? `<ul>${ref.slice(0, 10).map(x => `<li>${x}</li>`).join('')}</ul>${ref.length > 10 ? `<p class="mini">Y ${ref.length - 10} punto(s) más en el detalle.</p>` : ''}` : sinDatos(p.quizFinal ? 'Sin errores en el quiz final ni fraudes sin detectar.' : 'Aparece cuando llegue su quiz final y sus ejercicios.')}
     ${quiz(p.quizFinal, 'Quiz final')}${quiz(p.quizInicial, 'Quiz inicial')}
     <h2>Simulador de mensajes · ${st.ph.n ? st.ph.ok + ' de ' + st.ph.n : 'sin datos'}</h2>${phT}
-    ${opc('rs')}${opc('ia')}${anT}${opc('bk')}${salT}${opc('dl')}${opc('url')}</div>`;
+    ${opc('rs')}${opc('ia')}${anT}${opc('ej8')}${selT(e.lab8, LAB8.ops, 'Laboratorio de instrucciones (Módulo 8)')}${selT(e.err8, ERR8.ops, 'Detecta el problema en la respuesta (Módulo 8)')}
+    ${segPersona(p)}
+    ${opc('bk')}${salT}${opc('dl')}${opc('url')}</div>`;
+}
+function selT(o, ops, t) {
+  if (!o || !o.v) return '';
+  const ok = ops.filter((x, i) => !!o.v[i] === x[1]).length;
+  return `<h2>${t} · ${ok} de ${ops.length}</h2><table class="t det"><tbody>${ops.map((x, i) => { const bien = !!o.v[i] === x[1]; return `<tr class="${bien ? '' : 'mal-f'}"><td>${okx(bien)}</td><td>${esc(x[0])}</td><td>${o.v[i] ? 'Lo marcó' : 'No lo marcó'}</td><td><small>${x[1] ? 'Debía marcarse' : 'No debía marcarse'}</small></td></tr>`; }).join('')}</tbody></table>`;
+}
+function segPersona(p) { // aprendizaje continuo de una persona
+  const cf = p.conf || {}, m = p.meta || {}, rt = p.retos || [];
+  return `<h2>Confianza antes y después <small>autoevaluación, 1 a 5</small></h2>${cf.pre || cf.post ? `<table class="t det num"><thead><tr><th>Afirmación</th><th>Antes</th><th>Después</th></tr></thead><tbody>${CONFIANZA.map((t, i) => `<tr><td>${esc(t)}</td><td>${cf.pre && cf.pre[i] || '—'}</td><td>${cf.post && cf.post[i] || '—'}</td></tr>`).join('')}</tbody></table>` : sinDatos(cf.preOmit ? 'Omitió la autoevaluación.' : 'Sin datos todavía.')}
+    <h2>Hábitos que eligió</h2>${m.habitos && (m.habitos.length || m.propio) ? `<ul>${m.habitos.map(i => `<li>${esc(HABITOS[i])}</li>`).join('')}${m.propio ? `<li>${esc(m.propio)} <small>(propio)</small></li>` : ''}</ul><p class="mini">Revisión: ${m.revision ? esc(m.revision.r) + ', el ' + fechaMx(m.revision.fecha) : 'pendiente'}.</p>` : sinDatos('Aún no elige hábitos.')}
+    <h2>Retos de repaso</h2>${rt.length ? `<table class="t det"><thead><tr><th>Reto</th><th>Fecha</th><th>Resultado</th><th>Falló</th></tr></thead><tbody>${rt.map(r => `<tr><td>${r.k === 'p' ? 'Práctica libre' : RETOS_DIAS[r.k] + ' días'}</td><td>${fechaMx(r.fecha)}</td><td>${r.ok} de ${r.n}</td><td><small>${r.items.map((ix, j) => r.resp[j] === RETOS[ix].c ? '' : esc(corto(RETOS[ix].q, 60))).filter(Boolean).join(' · ') || '—'}</small></td></tr>`).join('')}</tbody></table>` : sinDatos(p.quizFinal ? 'El primero se abre el ' + fechaMx(retoFecha(p, 0)) + '.' : 'Se programan al terminar el quiz final.')}`;
 }
 
 /* ================= Reporte colectivo ================= */
@@ -1825,7 +2200,7 @@ function repColectivo(did) {
   const prom = f => { const v = sts.map(([p, s]) => f(p, s)).filter(x => x != null); return v.length ? avg(v) : null; };
   const phAvg = prom((p, s) => s.ph.n ? s.ph.ok / s.ph.n * 100 : null), iaAvg = prom((p, s) => s.ia.n ? s.ia.ok / s.ia.n * 100 : null), hAvg = prom((p, s) => s.rs.completo ? s.rs.horas : null);
   // Quiz por módulo
-  const porMod = tipo => [1, 2, 3, 4, 5, 6, 7].map(m => { let n = 0, ok = 0; ps.forEach(p => { const z = p[tipo]; if (!z) return; forma(z).forEach((q, i) => { if (q.m === m) { n++; if (z.resp[i] === q.c) ok++; } }); }); return { n, ok }; });
+  const porMod = tipo => MODULOS.map(x => x.n).map(m => { let n = 0, ok = 0; ps.forEach(p => { const z = p[tipo]; if (!z) return; forma(z).forEach((q, i) => { if (q.m === m) { n++; if (z.resp[i] === q.c) ok++; } }); }); return { n, ok }; });
   const mi = porMod('quizInicial'), mf = porMod('quizFinal');
   // Preguntas del quiz final con menos aciertos (las dos formas)
   const pf = []; ['A', 'B'].forEach(f => FORMAS[f].forEach((q, i) => { const zs = ps.map(p => p.quizFinal).filter(z => z && (z.forma || 'A') === f); if (!zs.length) return; const mal = zs.filter(z => z.resp[i] !== q.c), moda = {}; mal.forEach(z => { moda[z.resp[i]] = (moda[z.resp[i]] || 0) + 1; }); const top = Object.entries(moda).sort((a, b) => b[1] - a[1])[0]; pf.push({ q, f, i, n: zs.length, ok: zs.length - mal.length, err: top ? q.o[+top[0]] : null }); }));
@@ -1845,7 +2220,18 @@ function repColectivo(did) {
     <h2>Quiz por módulo: aciertos antes y después</h2><table class="t det num"><thead><tr><th>Módulo</th><th>Inicial</th><th>Final</th><th>Cambio</th></tr></thead><tbody>${MODULOS.map((m, k) => { const a = mi[k].n ? mi[k].ok / mi[k].n * 100 : null, b = mf[k].n ? mf[k].ok / mf[k].n * 100 : null; return `<tr><th>${m.n}. ${esc(corto(m.titulo, 60))}</th><td>${a == null ? '—' : Math.round(a) + '%'}</td><td>${b == null ? '—' : Math.round(b) + '%'}</td><td>${a == null || b == null ? '—' : (b - a >= 0 ? '+' : '') + Math.round(b - a)}</td></tr>`; }).join('')}</tbody></table>
     <h2>Preguntas del quiz final con más errores</h2>${dif.length ? `<table class="t det"><thead><tr><th>Pregunta</th><th>Acertaron</th><th>Respuesta equivocada más común</th></tr></thead><tbody>${dif.map(x => `<tr class="mal-f"><td>${esc(corto(x.q.q, 120))} <small>(forma ${x.f}, módulo ${x.q.m})</small></td><td>${x.ok} de ${x.n}</td><td>${esc(corto(x.err || '', 80))}</td></tr>`).join('')}</tbody></table>` : sinDatos(pf.length ? 'Nadie falló preguntas en el quiz final.' : 'Aparece cuando lleguen los quiz finales.')}
     <h2>Simulador de mensajes: cuáles engañaron más</h2>${msj.length ? `<table class="t det"><thead><tr><th>Mensaje</th><th>Era</th><th>Acertaron</th><th>Señales detectadas</th></tr></thead><tbody>${msj.map(x => `<tr class="${x.ok < x.n ? 'mal-f' : ''}"><td>${esc(nombreMsj(x.c))}</td><td>${tipoMsj(x.c)}</td><td>${x.ok} de ${x.n}</td><td>${x.sen == null ? '—' : Math.round(x.sen) + '%'}</td></tr>`).join('')}</tbody></table>` : sinDatos()}
-    ${tablaOpc('rs')}${tablaOpc('ia')}${anT}${tablaOpc('bk')}${salT}${tablaOpc('dl')}${tablaOpc('url')}</div>`;
+    ${tablaOpc('rs')}${tablaOpc('ia')}${anT}${tablaOpc('ej8')}${segGrupo(ps)}${tablaOpc('bk')}${salT}${tablaOpc('dl')}${tablaOpc('url')}</div>`;
+}
+
+function segGrupo(ps) { // aprendizaje continuo del grupo
+  const pre = ps.filter(p => p.conf && p.conf.pre), post = ps.filter(p => p.conf && p.conf.post);
+  const prom = (arr, k, i) => arr.length ? r1(avg(arr.map(p => p.conf[k][i]).filter(v => v != null))) : '—';
+  const nvs = {}; ps.forEach(p => { const n = nivel(p).act; nvs[n.n + '. ' + n.t] = (nvs[n.n + '. ' + n.t] || 0) + 1; });
+  const conHab = ps.filter(p => p.meta && p.meta.habitos && (p.meta.habitos.length || p.meta.propio)), habC = {}; conHab.forEach(p => p.meta.habitos.forEach(i => { habC[i] = (habC[i] || 0) + 1; }));
+  const lab = ps.filter(p => p.ej && p.ej.lab8 && p.ej.lab8.v), err = ps.filter(p => p.ej && p.ej.err8 && p.ej.err8.v);
+  return `<h2>Laboratorio y detección de errores (Módulo 8)</h2>${lab.length || err.length ? `<table class="t det"><thead><tr><th>Reactivo</th><th>Lo resolvieron bien</th></tr></thead><tbody>${LAB8.ops.map((x, i) => `<tr><td>Laboratorio: ${esc(x[0])} <small>(${x[1] ? 'debía marcarse' : 'no debía'})</small></td><td>${lab.filter(p => !!p.ej.lab8.v[i] === x[1]).length} de ${lab.length}</td></tr>`).join('')}${ERR8.ops.map((x, i) => `<tr><td>Detecta: ${esc(x[0])} <small>(${x[1] ? 'debía marcarse' : 'no debía'})</small></td><td>${err.filter(p => !!p.ej.err8.v[i] === x[1]).length} de ${err.length}</td></tr>`).join('')}</tbody></table>` : sinDatos()}
+    <h2>Confianza del grupo antes y después <small>promedio, 1 a 5</small></h2>${pre.length ? `<table class="t det num"><thead><tr><th>Afirmación</th><th>Antes (n = ${pre.length})</th><th>Después (n = ${post.length})</th></tr></thead><tbody>${CONFIANZA.map((t, i) => `<tr><td>${esc(t)}</td><td>${prom(pre, 'pre', i)}</td><td>${prom(post, 'post', i)}</td></tr>`).join('')}</tbody></table><p class="mini">Es una autoevaluación: mide cómo se sienten, no lo que saben. Se lee junto con el quiz.</p>` : sinDatos()}
+    <h2>Aprendizaje continuo</h2><table class="t det"><tbody><tr><th>Niveles</th><td>${Object.entries(nvs).sort().map(([k, v]) => esc(k) + ': ' + v).join(' · ') || '—'}</td></tr>${RETOS_DIAS.map((n, k) => `<tr><th>Reto de los ${n} días</th><td>${ps.filter(p => retoHecho(p, k)).length} de ${ps.filter(p => p.quizFinal).length} con quiz final</td></tr>`).join('')}<tr><th>Cápsulas leídas (promedio)</th><td>${ps.length ? r1(avg(ps.map(capsLeidas))) : '—'} de ${CAPSULAS.length}</td></tr><tr><th>Hábitos más elegidos</th><td>${Object.entries(habC).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([i, c]) => esc(HABITOS[i]) + ' (' + c + ')').join('<br>') || '—'}</td></tr></tbody></table>`;
 }
 
 /* ================= Pantalla ================= */
@@ -1868,10 +2254,24 @@ function toast(msg) {
   clearTimeout(toast.h); toast.h = setTimeout(() => { t.className = ''; }, 4200);
 }
 function render() {
-  if (S.ui.did && !S.despachos[S.ui.did]) { S.ui.did = null; S.ui.pid = null; }
-  const r = ruta();
-  document.getElementById('app').innerHTML = marco(r) + `<main class="wrap">${V[r]()}</main>` + pie();
-  if (typeof medirTop === 'function') medirTop();
+  const app = document.getElementById('app');
+  try {
+    if (S.ui.did && !S.despachos[S.ui.did]) { S.ui.did = null; S.ui.pid = null; }
+    const r = ruta();
+    app.innerHTML = marco(r) + avisos() + `<main class="wrap">${V[r]()}</main>` + pie();
+    if (typeof medirTop === 'function') medirTop();
+  } catch (e) {
+    try { console.error(e); } catch (x) {}
+    app.innerHTML = `<main class="wrap"><div class="card aviso"><h1>Algo no salió bien en esta pantalla</h1><p>Tus respuestas guardadas siguen en este dispositivo. Prueba volver al inicio. Si se repite, envía tus resultados al Equipo DELTA y avísales qué estabas haciendo.</p>
+      <div class="row"><button class="btn p" data-a="rescate">Volver al inicio</button><button class="btn" data-a="codigo">Enviar mis resultados</button></div><p class="mini">Detalle técnico: ${esc(e && e.message || e)}</p></div></main>`;
+  }
+}
+/* Avisos que dependen del dispositivo: almacenamiento y respaldo del equipo */
+function avisos() {
+  const out = [];
+  if (!ALMACEN_OK) out.push('<div class="banda mal"><div class="wrap">Este navegador no está guardando tu avance (modo privado o sin espacio). Al terminar cada paso, envía tus resultados al Equipo DELTA.</div></div>');
+  if (S.ui.modo === 'consultor' && S.ui.ultImport && (!S.ui.ultRespaldo || S.ui.ultRespaldo < S.ui.ultImport)) out.push('<div class="banda"><div class="wrap">Importaste resultados y no has guardado un respaldo desde entonces. <button class="lnk" data-a="exportar">Guardar respaldo (JSON)</button></div></div>');
+  return out.join('');
 }
 function arriba() { try { window.scrollTo(0, 0); } catch (e) {} }
 
@@ -1941,7 +2341,10 @@ const ACC = {
     S.ui.pid = id; save(); render();
   },
   pid: v => { S.ui.pid = v || null; T.mod = T.quiz = T.ph = T.st = null; save(); render(); },
-  quiz: v => { const p = P(), f = (p.orden || 'AB')[v === 'quizInicial' ? 0 : 1]; T.quiz = { tipo: v, forma: f, i: 0, resp: [], perm: FORMAS[f].map(q => barajar(q.o.length)) }; render(); arriba(); },
+  quiz: v => { const p = P(); if (!p) return; const cual = v === 'quizInicial' ? 'pre' : 'post'; if (!(p.conf && (p.conf[cual] || p.conf[cual + 'Omit']))) { T.conf = { cual, tipo: v }; render(); arriba(); return; } const f = (p.orden || 'AB')[v === 'quizInicial' ? 0 : 1]; T.conf = null; T.quiz = { tipo: v, forma: f, i: 0, resp: [], perm: FORMAS[f].map(q => barajar(q.o.length)) }; render(); arriba(); },
+  confsalir: () => { T.conf = null; render(); arriba(); },
+  confomitir: () => { const p = P(), z = T.conf; p.conf = p.conf || {}; p.conf[z.cual + 'Omit'] = true; save(); ACC.quiz(z.tipo); },
+  confok: () => { const p = P(), z = T.conf, r = {}; let n = 0; CONFIANZA.forEach((t, i) => { const el = document.querySelector(`input[data-cf="${i}"]:checked`); if (el) { r[i] = +el.value; n++; } }); if (n < CONFIANZA.length) return toast('Contesta las ' + CONFIANZA.length + ' afirmaciones, o usa Omitir.'); p.conf = p.conf || {}; p.conf[z.cual] = r; p.ts = Date.now(); save(); ACC.quiz(z.tipo); },
   qop: v => { T.quiz.resp[T.quiz.i] = +v; render(); },
   qsalir: () => { T.quiz = null; render(); },
   qsig: () => {
@@ -1953,9 +2356,9 @@ const ACC = {
   },
   paso: v => {
     const [t, x] = v.split(':'), p = P(); if (!p) return;
-    T.mod = T.ph = T.st = null; T.quiz = null; T.repaso = null;
+    T.mod = T.ph = T.st = null; T.quiz = null; T.repaso = null; T.conf = null;
     if (t === 'r') T.repaso = true;
-    else if (t === 'q') { if (x === 'quizFinal' && !p.quizInicial) return toast('Primero contesta el quiz inicial.'); const f = (p.orden || 'AB')[x === 'quizInicial' ? 0 : 1]; T.quiz = { tipo: x, forma: f, i: 0, resp: [], perm: FORMAS[f].map(q => barajar(q.o.length)) }; }
+    else if (t === 'q') { if (x === 'quizFinal' && !p.quizInicial) return toast('Primero contesta el quiz inicial.'); if (location.hash !== '#capacitacion') { location.hash = 'capacitacion'; setTimeout(() => ACC.quiz(x), 0); return; } return ACC.quiz(x); }
     else T.mod = +x;
     if (location.hash === '#capacitacion') { render(); arriba(); } else location.hash = 'capacitacion';
   },
@@ -1973,9 +2376,23 @@ const ACC = {
     const s = T.st, n = ITEMS[s.key].length;
     if (s.i < n - 1) { s.i++; s.eleg = null; render(); return; }
     s.fin = true; if (s.key === 'ia') { const p = P(); p.ia = { pct: s.ok / n * 100, fecha: hoy() }; marcar(p, 6); }
+    if (s.key === 'reto') guardarReto();
     render();
   },
   strein: () => { T.st = null; render(); },
+  rescate: () => { T.mod = T.quiz = T.ph = T.st = T.conf = T.repaso = T.reto = T.vista = null; location.hash = 'inicio'; render(); },
+  selrev: v => { const z = T[v]; z.rev = true; regEj(v, null, Object.assign({}, z.m)); render(); },
+  selre: v => { T[v] = null; render(); },
+  vista: v => { T.vista = v || null; T.capr = null; if (!v) { T.reto = null; T.st = null; } render(); arriba(); },
+  reto: v => { if (!P()) return; iniciarReto(v === 'p' ? 'p' : +v); render(); arriba(); },
+  ics: () => { const p = P(); if (p && p.quizFinal) guardar('retos-ciberseguridad.ics', icsRetos(p), 'text/calendar'); },
+  habok: () => { const p = P(); const hs = [...document.querySelectorAll('input[data-hab]:checked')].map(x => +x.dataset.hab); const pr = (document.getElementById('in-hab') || {}).value || ''; if (!hs.length && !pr.trim()) return toast('Elige al menos un hábito o escribe el tuyo.'); if (hs.length > 2) return toast('Elige como máximo 2: es mejor sostener pocos.'); p.meta = Object.assign(p.meta || {}, { habitos: hs, propio: pr.trim(), fecha: (p.meta && p.meta.fecha) || hoy() }); p.ts = Date.now(); save(); render(); toast('Hábitos guardados. Revísalos en el reto de los 30 días.'); },
+  habrev: v => { const p = P(); p.meta = p.meta || {}; p.meta.revision = { r: v, fecha: hoy() }; p.ts = Date.now(); save(); render(); },
+  cap: v => { T.vista = 'cap'; T.cap = v; T.capr = null; render(); arriba(); },
+  capr: v => { const p = P(), c = CAPSULAS.find(x => x.id === T.cap); T.capr = { eleg: +v }; p.caps = p.caps || {}; if (!p.caps[c.id]) p.caps[c.id] = { fecha: hoy(), ok: +v === c.check.c }; p.ts = Date.now(); save(); render(); },
+  constver: () => { T.nomConst = (document.getElementById('in-nom') || {}).value || ''; render(); },
+  constpdf: () => { const p = P(); T.nomConst = (document.getElementById('in-nom') || {}).value || T.nomConst || ''; pdf(constanciaHTML(p, T.nomConst), 'constancia-' + slug(T.nomConst || p.alias)); },
+  recuperar: async () => { const t = (document.getElementById('in-rec') || {}).value || ''; try { const r = await leerCodigos(t); render(); toast('Avance recuperado (' + r.codigos + ' código). Elige tu alias para continuar.'); } catch (e) { toast(e.message); } },
   rp: v => { T.rp = v || null; if (location.hash === '#resultados') { render(); arriba(); } else location.hash = 'resultados'; },
   pdfres: () => { const did = S.ui.did, p = T.rp && S.participantes[T.rp]; if (!did) return; pdf(p ? repIndividual(p) : repColectivo(did), p ? 'reporte-individual-' + slug(p.alias) + '-' + slug(S.despachos[did].nombre) : 'reporte-colectivo-' + slug(S.despachos[did].nombre)); },
   alinicio: () => { T.mod = null; location.hash = 'inicio'; },
@@ -2019,8 +2436,8 @@ const ACC = {
     if (navigator.share && !EMBEBIDO) { navigator.share({ text: txt }).then(() => toast('Listo. Gracias por enviar tus resultados.'), e => { if (!e || e.name !== 'AbortError') wa(); }); }
     else wa();
   },
-  impcod: async () => { try { const r = await leerCodigos(document.getElementById('in-cod').value); render(); toast(r.codigos + ' código(s) importado(s): ' + r.n + ' registro(s) nuevos o actualizados.'); } catch (e) { toast('No se pudo importar: ' + e.message); } },
-  exportar: () => guardar('datos-piloto-' + hoy() + '.json', exportar(), 'application/json'),
+  impcod: async () => { try { const r = await leerCodigos(document.getElementById('in-cod').value); S.ui.ultImport = Date.now(); save(); render(); toast(r.codigos + ' código(s) importado(s): ' + r.n + ' registro(s) nuevos o actualizados.'); } catch (e) { toast('No se pudo importar: ' + e.message); } },
+  exportar: () => { S.ui.ultRespaldo = Date.now(); save(); guardar('datos-piloto-' + hoy() + '.json', exportar(), 'application/json'); render(); },
   demo: () => { cargarDemo(); render(); toast('Despacho de ejemplo cargado.'); },
   reset: () => { const ui = S.ui; S = blank(); S.ui.modo = ui.modo; T.confirm = null; save(); render(); toast('Datos borrados.'); },
   mcerrar: () => { document.getElementById('modal').className = ''; },
@@ -2048,6 +2465,7 @@ document.addEventListener('change', e => {
   if (t.dataset.bind && DISCRETO(t)) return onBind(t);
   if (t.dataset.sen != null && T.ph) { T.ph.sen[t.dataset.sen] = t.checked; return; }
   if (t.dataset.sal != null && T.sal) { T.sal.m[t.dataset.sal] = t.checked; return; }
+  if (t.dataset.sel != null) { const [k, i] = t.dataset.sel.split(':'); if (T[k]) T[k].m[i] = t.checked; return; }
   if (t.dataset.c === 'did') { S.ui.did = t.value || null; S.ui.pid = null; T.mod = T.quiz = T.ph = T.st = null; save(); render(); return; }
   if (t.id === 'in-json' && t.files && t.files[0]) {
     const fr = new FileReader();
@@ -2056,7 +2474,7 @@ document.addEventListener('change', e => {
   }
 });
 document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.id === 'in-codigo') ACC.unir(); if (e.key === 'Enter' && e.target.id === 'in-alias') ACC.alias(); if (e.key === 'Enter' && e.target.id === 'in-acceso') ACC.acceso(); if (e.key === 'Escape' && document.getElementById('modal').className === 'on') ACC.mcerrar(); });
-window.addEventListener('hashchange', () => { T.confirm = null; render(); arriba(); });
+window.addEventListener('hashchange', () => { T.confirm = null; if (location.hash !== '#aprender') { T.vista = null; } render(); arriba(); });
 window.addEventListener('afterprint', () => { document.getElementById('print-area').innerHTML = ''; });
 (function entrarPorEnlace() {
   const m = (location.search || '').match(/[?&]d=(D-[A-Z0-9]{4})\b/i); if (!m) return;
@@ -2067,6 +2485,11 @@ window.addEventListener('afterprint', () => { document.getElementById('print-are
 })();
 function medirTop() { const h = document.querySelector('.top'); if (h) document.documentElement.style.setProperty('--topH', h.offsetHeight + 'px'); }
 window.addEventListener('resize', medirTop);
+try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (e) {}
+if (location.protocol === 'https:' && /github\.io$/.test(location.hostname) && !EMBEBIDO) { // instalable y sin conexión solo en la dirección publicada
+  [['manifest', 'manifest.webmanifest'], ['apple-touch-icon', 'icono-192.png'], ['icon', 'icono.svg']].forEach(([rel, href]) => { const l = document.createElement('link'); l.rel = rel; l.href = href; document.head.appendChild(l); });
+  if ('serviceWorker' in navigator) { try { navigator.serviceWorker.register('sw.js').catch(() => {}); } catch (e) {} }
+}
 render();
 
 </script>

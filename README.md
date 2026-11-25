@@ -33,4 +33,12 @@ Los datos que ya capturó cada persona no se borran al actualizar.
 
 ## Carpeta `fuente`
 
-El código por partes (`content.js` contenido, `core.js` cálculos, `views.js` pantallas, `resultados.js` reportes del equipo, `main.js` acciones, `style.css` estilos). `python3 build.py` los une en `dist/index.html`. Solo hace falta para editar a fondo; para usar la app basta `index.html`.
+El código por partes (`content.js` contenido, `core.js` cálculos, `views.js` pantallas, `aprendizaje.js` Módulo 8 y Seguir aprendiendo, `resultados.js` reportes del equipo, `main.js` acciones, `style.css` estilos). `python3 build.py` los une en `dist/index.html`. Solo hace falta para editar a fondo; para usar la app basta `index.html`.
+
+## Instalable y sin conexión
+
+En la dirección publicada, la app se puede agregar a la pantalla de inicio del celular y abre aunque no haya internet (`manifest.webmanifest`, `sw.js` e íconos). Los datos siguen guardándose solo en el dispositivo de cada persona.
+
+## Agregar una cápsula a la biblioteca
+
+En `fuente/content.js`, la lista `CAPSULAS` tiene una entrada por cápsula. Copia una, cambia `id` (c09, c10…), tema, título, texto y su pregunta de comprobación, ejecuta `python3 build.py` y sube el `index.html` nuevo. El avance de las personas no se pierde.

@@ -8,10 +8,24 @@ function toast(msg) {
   clearTimeout(toast.h); toast.h = setTimeout(() => { t.className = ''; }, 4200);
 }
 function render() {
-  if (S.ui.did && !S.despachos[S.ui.did]) { S.ui.did = null; S.ui.pid = null; }
-  const r = ruta();
-  document.getElementById('app').innerHTML = marco(r) + `<main class="wrap">${V[r]()}</main>` + pie();
-  if (typeof medirTop === 'function') medirTop();
+  const app = document.getElementById('app');
+  try {
+    if (S.ui.did && !S.despachos[S.ui.did]) { S.ui.did = null; S.ui.pid = null; }
+    const r = ruta();
+    app.innerHTML = marco(r) + avisos() + `<main class="wrap">${V[r]()}</main>` + pie();
+    if (typeof medirTop === 'function') medirTop();
+  } catch (e) {
+    try { console.error(e); } catch (x) {}
+    app.innerHTML = `<main class="wrap"><div class="card aviso"><h1>Algo no salió bien en esta pantalla</h1><p>Tus respuestas guardadas siguen en este dispositivo. Prueba volver al inicio. Si se repite, envía tus resultados al Equipo DELTA y avísales qué estabas haciendo.</p>
+      <div class="row"><button class="btn p" data-a="rescate">Volver al inicio</button><button class="btn" data-a="codigo">Enviar mis resultados</button></div><p class="mini">Detalle técnico: ${esc(e && e.message || e)}</p></div></main>`;
+  }
+}
+/* Avisos que dependen del dispositivo: almacenamiento y respaldo del equipo */
+function avisos() {
+  const out = [];
+  if (!ALMACEN_OK) out.push('<div class="banda mal"><div class="wrap">Este navegador no está guardando tu avance (modo privado o sin espacio). Al terminar cada paso, envía tus resultados al Equipo DELTA.</div></div>');
+  if (S.ui.modo === 'consultor' && S.ui.ultImport && (!S.ui.ultRespaldo || S.ui.ultRespaldo < S.ui.ultImport)) out.push('<div class="banda"><div class="wrap">Importaste resultados y no has guardado un respaldo desde entonces. <button class="lnk" data-a="exportar">Guardar respaldo (JSON)</button></div></div>');
+  return out.join('');
 }
 function arriba() { try { window.scrollTo(0, 0); } catch (e) {} }
 
@@ -81,7 +95,10 @@ const ACC = {
     S.ui.pid = id; save(); render();
   },
   pid: v => { S.ui.pid = v || null; T.mod = T.quiz = T.ph = T.st = null; save(); render(); },
-  quiz: v => { const p = P(), f = (p.orden || 'AB')[v === 'quizInicial' ? 0 : 1]; T.quiz = { tipo: v, forma: f, i: 0, resp: [], perm: FORMAS[f].map(q => barajar(q.o.length)) }; render(); arriba(); },
+  quiz: v => { const p = P(); if (!p) return; const cual = v === 'quizInicial' ? 'pre' : 'post'; if (!(p.conf && (p.conf[cual] || p.conf[cual + 'Omit']))) { T.conf = { cual, tipo: v }; render(); arriba(); return; } const f = (p.orden || 'AB')[v === 'quizInicial' ? 0 : 1]; T.conf = null; T.quiz = { tipo: v, forma: f, i: 0, resp: [], perm: FORMAS[f].map(q => barajar(q.o.length)) }; render(); arriba(); },
+  confsalir: () => { T.conf = null; render(); arriba(); },
+  confomitir: () => { const p = P(), z = T.conf; p.conf = p.conf || {}; p.conf[z.cual + 'Omit'] = true; save(); ACC.quiz(z.tipo); },
+  confok: () => { const p = P(), z = T.conf, r = {}; let n = 0; CONFIANZA.forEach((t, i) => { const el = document.querySelector(`input[data-cf="${i}"]:checked`); if (el) { r[i] = +el.value; n++; } }); if (n < CONFIANZA.length) return toast('Contesta las ' + CONFIANZA.length + ' afirmaciones, o usa Omitir.'); p.conf = p.conf || {}; p.conf[z.cual] = r; p.ts = Date.now(); save(); ACC.quiz(z.tipo); },
   qop: v => { T.quiz.resp[T.quiz.i] = +v; render(); },
   qsalir: () => { T.quiz = null; render(); },
   qsig: () => {
@@ -93,9 +110,9 @@ const ACC = {
   },
   paso: v => {
     const [t, x] = v.split(':'), p = P(); if (!p) return;
-    T.mod = T.ph = T.st = null; T.quiz = null; T.repaso = null;
+    T.mod = T.ph = T.st = null; T.quiz = null; T.repaso = null; T.conf = null;
     if (t === 'r') T.repaso = true;
-    else if (t === 'q') { if (x === 'quizFinal' && !p.quizInicial) return toast('Primero contesta el quiz inicial.'); const f = (p.orden || 'AB')[x === 'quizInicial' ? 0 : 1]; T.quiz = { tipo: x, forma: f, i: 0, resp: [], perm: FORMAS[f].map(q => barajar(q.o.length)) }; }
+    else if (t === 'q') { if (x === 'quizFinal' && !p.quizInicial) return toast('Primero contesta el quiz inicial.'); if (location.hash !== '#capacitacion') { location.hash = 'capacitacion'; setTimeout(() => ACC.quiz(x), 0); return; } return ACC.quiz(x); }
     else T.mod = +x;
     if (location.hash === '#capacitacion') { render(); arriba(); } else location.hash = 'capacitacion';
   },
@@ -113,9 +130,23 @@ const ACC = {
     const s = T.st, n = ITEMS[s.key].length;
     if (s.i < n - 1) { s.i++; s.eleg = null; render(); return; }
     s.fin = true; if (s.key === 'ia') { const p = P(); p.ia = { pct: s.ok / n * 100, fecha: hoy() }; marcar(p, 6); }
+    if (s.key === 'reto') guardarReto();
     render();
   },
   strein: () => { T.st = null; render(); },
+  rescate: () => { T.mod = T.quiz = T.ph = T.st = T.conf = T.repaso = T.reto = T.vista = null; location.hash = 'inicio'; render(); },
+  selrev: v => { const z = T[v]; z.rev = true; regEj(v, null, Object.assign({}, z.m)); render(); },
+  selre: v => { T[v] = null; render(); },
+  vista: v => { T.vista = v || null; T.capr = null; if (!v) { T.reto = null; T.st = null; } render(); arriba(); },
+  reto: v => { if (!P()) return; iniciarReto(v === 'p' ? 'p' : +v); render(); arriba(); },
+  ics: () => { const p = P(); if (p && p.quizFinal) guardar('retos-ciberseguridad.ics', icsRetos(p), 'text/calendar'); },
+  habok: () => { const p = P(); const hs = [...document.querySelectorAll('input[data-hab]:checked')].map(x => +x.dataset.hab); const pr = (document.getElementById('in-hab') || {}).value || ''; if (!hs.length && !pr.trim()) return toast('Elige al menos un hábito o escribe el tuyo.'); if (hs.length > 2) return toast('Elige como máximo 2: es mejor sostener pocos.'); p.meta = Object.assign(p.meta || {}, { habitos: hs, propio: pr.trim(), fecha: (p.meta && p.meta.fecha) || hoy() }); p.ts = Date.now(); save(); render(); toast('Hábitos guardados. Revísalos en el reto de los 30 días.'); },
+  habrev: v => { const p = P(); p.meta = p.meta || {}; p.meta.revision = { r: v, fecha: hoy() }; p.ts = Date.now(); save(); render(); },
+  cap: v => { T.vista = 'cap'; T.cap = v; T.capr = null; render(); arriba(); },
+  capr: v => { const p = P(), c = CAPSULAS.find(x => x.id === T.cap); T.capr = { eleg: +v }; p.caps = p.caps || {}; if (!p.caps[c.id]) p.caps[c.id] = { fecha: hoy(), ok: +v === c.check.c }; p.ts = Date.now(); save(); render(); },
+  constver: () => { T.nomConst = (document.getElementById('in-nom') || {}).value || ''; render(); },
+  constpdf: () => { const p = P(); T.nomConst = (document.getElementById('in-nom') || {}).value || T.nomConst || ''; pdf(constanciaHTML(p, T.nomConst), 'constancia-' + slug(T.nomConst || p.alias)); },
+  recuperar: async () => { const t = (document.getElementById('in-rec') || {}).value || ''; try { const r = await leerCodigos(t); render(); toast('Avance recuperado (' + r.codigos + ' código). Elige tu alias para continuar.'); } catch (e) { toast(e.message); } },
   rp: v => { T.rp = v || null; if (location.hash === '#resultados') { render(); arriba(); } else location.hash = 'resultados'; },
   pdfres: () => { const did = S.ui.did, p = T.rp && S.participantes[T.rp]; if (!did) return; pdf(p ? repIndividual(p) : repColectivo(did), p ? 'reporte-individual-' + slug(p.alias) + '-' + slug(S.despachos[did].nombre) : 'reporte-colectivo-' + slug(S.despachos[did].nombre)); },
   alinicio: () => { T.mod = null; location.hash = 'inicio'; },
@@ -159,8 +190,8 @@ const ACC = {
     if (navigator.share && !EMBEBIDO) { navigator.share({ text: txt }).then(() => toast('Listo. Gracias por enviar tus resultados.'), e => { if (!e || e.name !== 'AbortError') wa(); }); }
     else wa();
   },
-  impcod: async () => { try { const r = await leerCodigos(document.getElementById('in-cod').value); render(); toast(r.codigos + ' código(s) importado(s): ' + r.n + ' registro(s) nuevos o actualizados.'); } catch (e) { toast('No se pudo importar: ' + e.message); } },
-  exportar: () => guardar('datos-piloto-' + hoy() + '.json', exportar(), 'application/json'),
+  impcod: async () => { try { const r = await leerCodigos(document.getElementById('in-cod').value); S.ui.ultImport = Date.now(); save(); render(); toast(r.codigos + ' código(s) importado(s): ' + r.n + ' registro(s) nuevos o actualizados.'); } catch (e) { toast('No se pudo importar: ' + e.message); } },
+  exportar: () => { S.ui.ultRespaldo = Date.now(); save(); guardar('datos-piloto-' + hoy() + '.json', exportar(), 'application/json'); render(); },
   demo: () => { cargarDemo(); render(); toast('Despacho de ejemplo cargado.'); },
   reset: () => { const ui = S.ui; S = blank(); S.ui.modo = ui.modo; T.confirm = null; save(); render(); toast('Datos borrados.'); },
   mcerrar: () => { document.getElementById('modal').className = ''; },
@@ -188,6 +219,7 @@ document.addEventListener('change', e => {
   if (t.dataset.bind && DISCRETO(t)) return onBind(t);
   if (t.dataset.sen != null && T.ph) { T.ph.sen[t.dataset.sen] = t.checked; return; }
   if (t.dataset.sal != null && T.sal) { T.sal.m[t.dataset.sal] = t.checked; return; }
+  if (t.dataset.sel != null) { const [k, i] = t.dataset.sel.split(':'); if (T[k]) T[k].m[i] = t.checked; return; }
   if (t.dataset.c === 'did') { S.ui.did = t.value || null; S.ui.pid = null; T.mod = T.quiz = T.ph = T.st = null; save(); render(); return; }
   if (t.id === 'in-json' && t.files && t.files[0]) {
     const fr = new FileReader();
@@ -196,7 +228,7 @@ document.addEventListener('change', e => {
   }
 });
 document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.id === 'in-codigo') ACC.unir(); if (e.key === 'Enter' && e.target.id === 'in-alias') ACC.alias(); if (e.key === 'Enter' && e.target.id === 'in-acceso') ACC.acceso(); if (e.key === 'Escape' && document.getElementById('modal').className === 'on') ACC.mcerrar(); });
-window.addEventListener('hashchange', () => { T.confirm = null; render(); arriba(); });
+window.addEventListener('hashchange', () => { T.confirm = null; if (location.hash !== '#aprender') { T.vista = null; } render(); arriba(); });
 window.addEventListener('afterprint', () => { document.getElementById('print-area').innerHTML = ''; });
 (function entrarPorEnlace() {
   const m = (location.search || '').match(/[?&]d=(D-[A-Z0-9]{4})\b/i); if (!m) return;
@@ -207,4 +239,9 @@ window.addEventListener('afterprint', () => { document.getElementById('print-are
 })();
 function medirTop() { const h = document.querySelector('.top'); if (h) document.documentElement.style.setProperty('--topH', h.offsetHeight + 'px'); }
 window.addEventListener('resize', medirTop);
+try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (e) {}
+if (location.protocol === 'https:' && /github\.io$/.test(location.hostname) && !EMBEBIDO) { // instalable y sin conexión solo en la dirección publicada
+  [['manifest', 'manifest.webmanifest'], ['apple-touch-icon', 'icono-192.png'], ['icon', 'icono.svg']].forEach(([rel, href]) => { const l = document.createElement('link'); l.rel = rel; l.href = href; document.head.appendChild(l); });
+  if ('serviceWorker' in navigator) { try { navigator.serviceWorker.register('sw.js').catch(() => {}); } catch (e) {} }
+}
 render();

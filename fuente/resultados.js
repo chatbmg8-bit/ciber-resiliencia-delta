@@ -11,6 +11,7 @@ const sinDatos = t => `<p class="mini">${t || 'Sin datos todavía.'}</p>`;
 const EJS = {
   rs: { t: 'Simulacro de ransomware (Módulo 4)', q: i => RANSOM.pasos[i].q, it: () => ITEMS.rs },
   ia: { t: 'Casos de IA (Módulo 6)', q: i => IA_CASOS[i].t, it: () => ITEMS.ia },
+  ej8: { t: 'Así sí o así no (Módulo 8)', q: i => EJ8_CASOS[i].t, it: () => ITEMS.ej8 },
   bk: { t: '¿Respaldo o no? (Módulo 3, complementario)', q: i => RESP_CASOS[i].t, it: () => ITEMS.bk },
   url: { t: 'Lectura de enlaces (Módulo 1, práctica opcional)', q: i => URLS[i].u, it: () => ITEMS.url },
   dl: { t: 'Dilemas éticos (Módulo 7, complementario)', q: i => DILEMAS[i].t, it: () => ITEMS.dl }
@@ -25,7 +26,8 @@ function stPersona(p) {
   const rsr = r('rs'), horas = rsr.reduce((a, v, i) => a + (v == null ? 0 : ITEMS.rs[i].h[v]), 0);
   const an = (e.an && e.an.v) || null, tk = ANON_TK(), sens = tk.map((t, k) => [t, k]).filter(x => x[0].s);
   return {
-    ph: { n: phn, ok: phok }, rs: Object.assign(cuenta('rs'), { horas, completo: rsr.filter(v => v != null).length === ITEMS.rs.length }), ia: cuenta('ia'), bk: cuenta('bk'), url: cuenta('url'), dl: cuenta('dl'),
+    ph: { n: phn, ok: phok }, rs: Object.assign(cuenta('rs'), { horas, completo: rsr.filter(v => v != null).length === ITEMS.rs.length }), ia: cuenta('ia'), ej8: cuenta('ej8'), bk: cuenta('bk'), url: cuenta('url'), dl: cuenta('dl'),
+    lab8: e.lab8 && e.lab8.v ? { ok: LAB8.ops.filter((x, i) => !!e.lab8.v[i] === x[1]).length, n: LAB8.ops.length } : null, err8: e.err8 && e.err8.v ? { ok: ERR8.ops.filter((x, i) => !!e.err8.v[i] === x[1]).length, n: ERR8.ops.length } : null,
     an: an ? { ok: sens.filter(x => an[x[1]]).length, n: sens.length, sobra: tk.filter((t, k) => !t.s && an[k]).length } : null,
     sal: e.sal && e.sal.v ? { ok: SALIDA.items.filter((x, i) => !!e.sal.v[i] === x[1]).length, n: SALIDA.items.length } : null,
     ruta: MINIMA.filter(x => pasoHecho(p, x)).length
@@ -41,7 +43,10 @@ function tilesPersona(p, st) {
     <div class="tile"><span>Ruta mínima</span><b>${st.ruta} de ${MINIMA.length} pasos</b></div>
     <div class="tile"><span>Simulador de mensajes</span><b>${st.ph.n ? st.ph.ok + ' de ' + st.ph.n : '—'}</b></div>
     <div class="tile"><span>Simulacro: acertadas · reloj</span><b>${st.rs.n ? st.rs.ok + ' de ' + st.rs.n + ' · ' + hTxt(st.rs.horas) : '—'}</b></div>
-    <div class="tile"><span>Casos de IA</span><b>${st.ia.n ? st.ia.ok + ' de ' + st.ia.n : '—'}</b></div></div>`;
+    <div class="tile"><span>Casos de IA · Módulo 8</span><b>${st.ia.n ? st.ia.ok + '/' + st.ia.n : '—'} · ${st.ej8.n ? st.ej8.ok + '/' + st.ej8.n : '—'}</b></div>
+    <div class="tile"><span>Nivel</span><b>${nivel(p).act.n}. ${nivel(p).act.t}</b></div>
+    <div class="tile"><span>Retos de repaso · cápsulas</span><b>${(p.retos || []).filter(r => r.k !== 'p').length} de ${RETOS_DIAS.length} · ${capsLeidas(p)} de ${CAPSULAS.length}</b></div>
+    <div class="tile"><span>Confianza promedio (1 a 5)</span><b>${p.conf && p.conf.pre ? r1(avg(Object.values(p.conf.pre))) : '—'} → ${p.conf && p.conf.post ? r1(avg(Object.values(p.conf.post))) : '—'}</b></div></div>`;
 }
 
 /* ================= Reporte individual ================= */
@@ -68,7 +73,20 @@ function repIndividual(p) {
     <h2>Dónde reforzar</h2>${ref.length ? `<ul>${ref.slice(0, 10).map(x => `<li>${x}</li>`).join('')}</ul>${ref.length > 10 ? `<p class="mini">Y ${ref.length - 10} punto(s) más en el detalle.</p>` : ''}` : sinDatos(p.quizFinal ? 'Sin errores en el quiz final ni fraudes sin detectar.' : 'Aparece cuando llegue su quiz final y sus ejercicios.')}
     ${quiz(p.quizFinal, 'Quiz final')}${quiz(p.quizInicial, 'Quiz inicial')}
     <h2>Simulador de mensajes · ${st.ph.n ? st.ph.ok + ' de ' + st.ph.n : 'sin datos'}</h2>${phT}
-    ${opc('rs')}${opc('ia')}${anT}${opc('bk')}${salT}${opc('dl')}${opc('url')}</div>`;
+    ${opc('rs')}${opc('ia')}${anT}${opc('ej8')}${selT(e.lab8, LAB8.ops, 'Laboratorio de instrucciones (Módulo 8)')}${selT(e.err8, ERR8.ops, 'Detecta el problema en la respuesta (Módulo 8)')}
+    ${segPersona(p)}
+    ${opc('bk')}${salT}${opc('dl')}${opc('url')}</div>`;
+}
+function selT(o, ops, t) {
+  if (!o || !o.v) return '';
+  const ok = ops.filter((x, i) => !!o.v[i] === x[1]).length;
+  return `<h2>${t} · ${ok} de ${ops.length}</h2><table class="t det"><tbody>${ops.map((x, i) => { const bien = !!o.v[i] === x[1]; return `<tr class="${bien ? '' : 'mal-f'}"><td>${okx(bien)}</td><td>${esc(x[0])}</td><td>${o.v[i] ? 'Lo marcó' : 'No lo marcó'}</td><td><small>${x[1] ? 'Debía marcarse' : 'No debía marcarse'}</small></td></tr>`; }).join('')}</tbody></table>`;
+}
+function segPersona(p) { // aprendizaje continuo de una persona
+  const cf = p.conf || {}, m = p.meta || {}, rt = p.retos || [];
+  return `<h2>Confianza antes y después <small>autoevaluación, 1 a 5</small></h2>${cf.pre || cf.post ? `<table class="t det num"><thead><tr><th>Afirmación</th><th>Antes</th><th>Después</th></tr></thead><tbody>${CONFIANZA.map((t, i) => `<tr><td>${esc(t)}</td><td>${cf.pre && cf.pre[i] || '—'}</td><td>${cf.post && cf.post[i] || '—'}</td></tr>`).join('')}</tbody></table>` : sinDatos(cf.preOmit ? 'Omitió la autoevaluación.' : 'Sin datos todavía.')}
+    <h2>Hábitos que eligió</h2>${m.habitos && (m.habitos.length || m.propio) ? `<ul>${m.habitos.map(i => `<li>${esc(HABITOS[i])}</li>`).join('')}${m.propio ? `<li>${esc(m.propio)} <small>(propio)</small></li>` : ''}</ul><p class="mini">Revisión: ${m.revision ? esc(m.revision.r) + ', el ' + fechaMx(m.revision.fecha) : 'pendiente'}.</p>` : sinDatos('Aún no elige hábitos.')}
+    <h2>Retos de repaso</h2>${rt.length ? `<table class="t det"><thead><tr><th>Reto</th><th>Fecha</th><th>Resultado</th><th>Falló</th></tr></thead><tbody>${rt.map(r => `<tr><td>${r.k === 'p' ? 'Práctica libre' : RETOS_DIAS[r.k] + ' días'}</td><td>${fechaMx(r.fecha)}</td><td>${r.ok} de ${r.n}</td><td><small>${r.items.map((ix, j) => r.resp[j] === RETOS[ix].c ? '' : esc(corto(RETOS[ix].q, 60))).filter(Boolean).join(' · ') || '—'}</small></td></tr>`).join('')}</tbody></table>` : sinDatos(p.quizFinal ? 'El primero se abre el ' + fechaMx(retoFecha(p, 0)) + '.' : 'Se programan al terminar el quiz final.')}`;
 }
 
 /* ================= Reporte colectivo ================= */
@@ -81,7 +99,7 @@ function repColectivo(did) {
   const prom = f => { const v = sts.map(([p, s]) => f(p, s)).filter(x => x != null); return v.length ? avg(v) : null; };
   const phAvg = prom((p, s) => s.ph.n ? s.ph.ok / s.ph.n * 100 : null), iaAvg = prom((p, s) => s.ia.n ? s.ia.ok / s.ia.n * 100 : null), hAvg = prom((p, s) => s.rs.completo ? s.rs.horas : null);
   // Quiz por módulo
-  const porMod = tipo => [1, 2, 3, 4, 5, 6, 7].map(m => { let n = 0, ok = 0; ps.forEach(p => { const z = p[tipo]; if (!z) return; forma(z).forEach((q, i) => { if (q.m === m) { n++; if (z.resp[i] === q.c) ok++; } }); }); return { n, ok }; });
+  const porMod = tipo => MODULOS.map(x => x.n).map(m => { let n = 0, ok = 0; ps.forEach(p => { const z = p[tipo]; if (!z) return; forma(z).forEach((q, i) => { if (q.m === m) { n++; if (z.resp[i] === q.c) ok++; } }); }); return { n, ok }; });
   const mi = porMod('quizInicial'), mf = porMod('quizFinal');
   // Preguntas del quiz final con menos aciertos (las dos formas)
   const pf = []; ['A', 'B'].forEach(f => FORMAS[f].forEach((q, i) => { const zs = ps.map(p => p.quizFinal).filter(z => z && (z.forma || 'A') === f); if (!zs.length) return; const mal = zs.filter(z => z.resp[i] !== q.c), moda = {}; mal.forEach(z => { moda[z.resp[i]] = (moda[z.resp[i]] || 0) + 1; }); const top = Object.entries(moda).sort((a, b) => b[1] - a[1])[0]; pf.push({ q, f, i, n: zs.length, ok: zs.length - mal.length, err: top ? q.o[+top[0]] : null }); }));
@@ -101,7 +119,18 @@ function repColectivo(did) {
     <h2>Quiz por módulo: aciertos antes y después</h2><table class="t det num"><thead><tr><th>Módulo</th><th>Inicial</th><th>Final</th><th>Cambio</th></tr></thead><tbody>${MODULOS.map((m, k) => { const a = mi[k].n ? mi[k].ok / mi[k].n * 100 : null, b = mf[k].n ? mf[k].ok / mf[k].n * 100 : null; return `<tr><th>${m.n}. ${esc(corto(m.titulo, 60))}</th><td>${a == null ? '—' : Math.round(a) + '%'}</td><td>${b == null ? '—' : Math.round(b) + '%'}</td><td>${a == null || b == null ? '—' : (b - a >= 0 ? '+' : '') + Math.round(b - a)}</td></tr>`; }).join('')}</tbody></table>
     <h2>Preguntas del quiz final con más errores</h2>${dif.length ? `<table class="t det"><thead><tr><th>Pregunta</th><th>Acertaron</th><th>Respuesta equivocada más común</th></tr></thead><tbody>${dif.map(x => `<tr class="mal-f"><td>${esc(corto(x.q.q, 120))} <small>(forma ${x.f}, módulo ${x.q.m})</small></td><td>${x.ok} de ${x.n}</td><td>${esc(corto(x.err || '', 80))}</td></tr>`).join('')}</tbody></table>` : sinDatos(pf.length ? 'Nadie falló preguntas en el quiz final.' : 'Aparece cuando lleguen los quiz finales.')}
     <h2>Simulador de mensajes: cuáles engañaron más</h2>${msj.length ? `<table class="t det"><thead><tr><th>Mensaje</th><th>Era</th><th>Acertaron</th><th>Señales detectadas</th></tr></thead><tbody>${msj.map(x => `<tr class="${x.ok < x.n ? 'mal-f' : ''}"><td>${esc(nombreMsj(x.c))}</td><td>${tipoMsj(x.c)}</td><td>${x.ok} de ${x.n}</td><td>${x.sen == null ? '—' : Math.round(x.sen) + '%'}</td></tr>`).join('')}</tbody></table>` : sinDatos()}
-    ${tablaOpc('rs')}${tablaOpc('ia')}${anT}${tablaOpc('bk')}${salT}${tablaOpc('dl')}${tablaOpc('url')}</div>`;
+    ${tablaOpc('rs')}${tablaOpc('ia')}${anT}${tablaOpc('ej8')}${segGrupo(ps)}${tablaOpc('bk')}${salT}${tablaOpc('dl')}${tablaOpc('url')}</div>`;
+}
+
+function segGrupo(ps) { // aprendizaje continuo del grupo
+  const pre = ps.filter(p => p.conf && p.conf.pre), post = ps.filter(p => p.conf && p.conf.post);
+  const prom = (arr, k, i) => arr.length ? r1(avg(arr.map(p => p.conf[k][i]).filter(v => v != null))) : '—';
+  const nvs = {}; ps.forEach(p => { const n = nivel(p).act; nvs[n.n + '. ' + n.t] = (nvs[n.n + '. ' + n.t] || 0) + 1; });
+  const conHab = ps.filter(p => p.meta && p.meta.habitos && (p.meta.habitos.length || p.meta.propio)), habC = {}; conHab.forEach(p => p.meta.habitos.forEach(i => { habC[i] = (habC[i] || 0) + 1; }));
+  const lab = ps.filter(p => p.ej && p.ej.lab8 && p.ej.lab8.v), err = ps.filter(p => p.ej && p.ej.err8 && p.ej.err8.v);
+  return `<h2>Laboratorio y detección de errores (Módulo 8)</h2>${lab.length || err.length ? `<table class="t det"><thead><tr><th>Reactivo</th><th>Lo resolvieron bien</th></tr></thead><tbody>${LAB8.ops.map((x, i) => `<tr><td>Laboratorio: ${esc(x[0])} <small>(${x[1] ? 'debía marcarse' : 'no debía'})</small></td><td>${lab.filter(p => !!p.ej.lab8.v[i] === x[1]).length} de ${lab.length}</td></tr>`).join('')}${ERR8.ops.map((x, i) => `<tr><td>Detecta: ${esc(x[0])} <small>(${x[1] ? 'debía marcarse' : 'no debía'})</small></td><td>${err.filter(p => !!p.ej.err8.v[i] === x[1]).length} de ${err.length}</td></tr>`).join('')}</tbody></table>` : sinDatos()}
+    <h2>Confianza del grupo antes y después <small>promedio, 1 a 5</small></h2>${pre.length ? `<table class="t det num"><thead><tr><th>Afirmación</th><th>Antes (n = ${pre.length})</th><th>Después (n = ${post.length})</th></tr></thead><tbody>${CONFIANZA.map((t, i) => `<tr><td>${esc(t)}</td><td>${prom(pre, 'pre', i)}</td><td>${prom(post, 'post', i)}</td></tr>`).join('')}</tbody></table><p class="mini">Es una autoevaluación: mide cómo se sienten, no lo que saben. Se lee junto con el quiz.</p>` : sinDatos()}
+    <h2>Aprendizaje continuo</h2><table class="t det"><tbody><tr><th>Niveles</th><td>${Object.entries(nvs).sort().map(([k, v]) => esc(k) + ': ' + v).join(' · ') || '—'}</td></tr>${RETOS_DIAS.map((n, k) => `<tr><th>Reto de los ${n} días</th><td>${ps.filter(p => retoHecho(p, k)).length} de ${ps.filter(p => p.quizFinal).length} con quiz final</td></tr>`).join('')}<tr><th>Cápsulas leídas (promedio)</th><td>${ps.length ? r1(avg(ps.map(capsLeidas))) : '—'} de ${CAPSULAS.length}</td></tr><tr><th>Hábitos más elegidos</th><td>${Object.entries(habC).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([i, c]) => esc(HABITOS[i]) + ' (' + c + ')').join('<br>') || '—'}</td></tr></tbody></table>`;
 }
 
 /* ================= Pantalla ================= */

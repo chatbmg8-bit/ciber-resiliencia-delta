@@ -107,10 +107,24 @@ const MODULOS = [
     ],
     clave: ['La IA propone; tú decides y tú respondes por lo que firmas.', 'Con los clientes, transparencia: para qué se usa y con qué cuidados.', 'La IA no se usa para evadir obligaciones ni para fabricar soportes.'],
     fuentes: ['lfpdppp']
+  },
+  {
+    n: 8, titulo: 'La IA en el día a día del despacho: así sí y así no', tema: 'Ejemplos de buen y mal uso de la IA', lugar: 'Después de la sesión (individual)', min: 12,
+    solo: 'Se hace por tu cuenta después de la sesión en vivo. Continúa lo que viste en el Módulo 6 con ejemplos del trabajo diario.',
+    ejercicio: 'Así sí o así no, laboratorio de instrucciones y detecta el error',
+    leccion: [
+      ['Por qué le importa a tu despacho', 'En el Módulo 6 viste qué información no se pega en una IA. Aquí verás ejemplos del trabajo diario: dónde la IA ahorra tiempo sin riesgo, dónde no conviene usarla y cómo pedirle las cosas para que la respuesta sirva.'],
+      ['Así sí: usos que suelen funcionar', '<ul><li><b>Redactar y corregir</b> correos, avisos y recordatorios genéricos a clientes ("envía tus estados de cuenta antes del día 5"), sin nombres ni montos reales.</li><li><b>Explicar en lenguaje sencillo</b> un concepto para un cliente, por ejemplo qué es un CFDI de egreso, y revisar la explicación antes de mandarla.</li><li><b>Resumir un texto público</b>, como una publicación oficial, y cotejar el resumen con el original.</li><li><b>Armar plantillas y listas:</b> la checklist del cierre mensual, el orden del día de una junta, el formato para pedir documentos.</li><li><b>Ayuda con hojas de cálculo:</b> pedir una fórmula describiendo las columnas, sin pegar los datos.</li></ul>'],
+      ['Así no: usos que traen problemas', '<ul><li><b>Decidir un criterio fiscal</b> o cómo tratar una operación: la IA puede sonar segura y estar equivocada. El criterio es tuyo.</li><li><b>Pegar documentos con datos:</b> XML, estados de cuenta, nóminas o contratos sin anonimizar.</li><li><b>Usar una cita sin abrirla:</b> los artículos, reglas o tesis que menciona la IA pueden no existir o no decir eso.</li><li><b>Fabricar soportes:</b> justificaciones, contratos o recibos de operaciones que no ocurrieron.</li><li><b>Confiar en una voz o un video</b> porque suena como el titular o un cliente: también se usa IA para imitar personas.</li><li><b>Usar cuentas personales</b> o herramientas que el despacho no aprobó para trabajo de clientes.</li></ul>'],
+      ['Cómo pedirle las cosas', 'Una buena instrucción tiene cuatro partes: <b>el papel</b> ("actúa como asistente de un despacho contable"), <b>la tarea</b> ("redacta un recordatorio breve"), <b>el contexto sin datos</b> ("para clientes personas físicas") y <b>el formato</b> ("máximo 80 palabras, tono cordial"). Al final pide que señale lo que no sabe: "si algo depende del caso, dilo en vez de suponer".'],
+      ['Cómo revisar lo que responde', '<ol><li>¿Cita algo? Ábrelo en la fuente oficial antes de usarlo.</li><li>¿Trae cifras, fechas o tasas? Compruébalas.</li><li>¿Afirma con total certeza algo que depende del caso? Desconfía.</li><li>¿Lo va a leer un cliente? Lo revisa y lo firma una persona del despacho.</li></ol>']
+    ],
+    clave: ['Úsala para redactar, explicar, resumir y armar plantillas; no para decidir criterios ni fabricar soportes.', 'Pídele con papel, tarea, contexto sin datos y formato, y que diga lo que no sabe.', 'Toda cita, cifra o fecha que dé se verifica en la fuente oficial antes de usarse.'],
+    fuentes: []
   }
 ];
 
-/* ---- Quiz: dos formas equivalentes (A y B), 2 preguntas por módulo. Cada participante contesta una al inicio y la otra al final ---- */
+/* ---- Quiz: dos formas equivalentes (A y B) de 16 preguntas, 2 por módulo. Cada participante contesta una al inicio y la otra al final ---- */
 const QUIZ_A = [
   { m: 1, q: 'Recibes un correo que dice ser del SAT, avisa de una "irregularidad" y pide descargar un documento desde un enlace. ¿Qué haces primero?',
     o: ['Descargo el documento en una computadora sin información de clientes, para revisarlo sin riesgo.', 'No uso el enlace y reviso por mi cuenta el portal oficial o el Buzón Tributario.', 'Respondo al remitente pidiendo el número de folio, y solo si lo envía abro el documento.', 'Lo reenvío al contador titular para que lo abra él, que tiene más experiencia con el SAT.'], c: 1,
@@ -153,7 +167,13 @@ const QUIZ_A = [
     e: 'La responsabilidad profesional no se delega. La IA propone; quien firma responde.' },
   { m: 7, q: 'Sobre el uso de IA en el servicio a tus clientes, ¿qué práctica es la más adecuada?',
     o: ['Informarles para qué se usa y con qué cuidados se protege su información.', 'Mencionarlo solo si el cliente pregunta, para no generar dudas innecesarias.', 'No mencionarlo, porque es una herramienta interna como cualquier otro programa.', 'Informarlo únicamente cuando la herramienta haya procesado datos personales suyos.'], c: 0,
-    e: 'La transparencia cuida la confianza: el cliente sabe para qué se usa la IA y que su información se protege.' }
+    e: 'La transparencia cuida la confianza: el cliente sabe para qué se usa la IA y que su información se protege.' },
+  { m: 8, q: 'Quieres que una IA redacte un recordatorio a clientes para que envíen sus documentos. ¿Qué instrucción es la más adecuada?',
+    o: ['"Escribe un recordatorio para Juan Pérez, RFC PEJ800101XX0, que debe los estados de cuenta de enero y febrero."', '"Redacta un recordatorio cordial, de 80 palabras, para que los clientes envíen sus documentos antes del día 5."', '"Escribe un recordatorio para todos los clientes; decide tú el tono, la extensión y la fecha límite."', '"Copia el último recordatorio que enviamos el mes pasado y actualízale la fecha para este mes."'], c: 1,
+    e: 'Una buena instrucción dice la tarea, el tono, la extensión y el contexto, sin datos de clientes.' },
+  { m: 8, q: 'Recibes un audio con la voz del titular que pide una transferencia urgente a una cuenta nueva. ¿Qué haces?',
+    o: ['Haces la transferencia: la voz es inconfundible y el titular suele tener prisa al final del día.', 'Cuelgas y lo confirmas llamándolo a su número conocido o con la palabra clave del despacho.', 'Le pides que te mande también un mensaje de texto desde ese mismo número, para confirmar.', 'Le preguntas a una herramienta de IA si el audio es auténtico y actúas según lo que responda.'], c: 1,
+    e: 'Hoy se pueden imitar voces. La confirmación va por un canal que tú eliges, nunca por el mismo que pide el dinero.' }
 ];
 const QUIZ_B = [
   { m: 1, q: 'Llega un correo con el asunto "Factura pendiente" de un proveedor que no reconoces, con un adjunto llamado Factura.pdf.exe. ¿Qué haces?',
@@ -197,7 +217,13 @@ const QUIZ_B = [
     e: 'Es un límite ético y legal. Que lo pida el cliente o que el monto sea pequeño no lo cambia.' },
   { m: 7, q: 'Una IA propone un criterio fiscal muy favorable para un cliente. ¿Quién decide si se aplica?',
     o: ['La herramienta, si fue entrenada con legislación fiscal mexicana.', 'El cliente, porque es quien se beneficia y quien asume el riesgo.', 'El contador, después de verificarlo; la herramienta solo propone.', 'Se aplica si otra herramienta de IA llega a la misma conclusión.'], c: 2,
-    e: 'El juicio profesional no se delega: la IA propone, el contador verifica y decide.' }
+    e: 'El juicio profesional no se delega: la IA propone, el contador verifica y decide.' },
+  { m: 8, q: '¿Cuál de estas tareas es un buen uso de una herramienta de IA en el despacho?',
+    o: ['Decidir si un gasto de un cliente es deducible, para ahorrar tiempo de revisión.', 'Armar una checklist del cierre mensual que después el equipo adapta y revisa.', 'Redactar un contrato con fecha anterior para respaldar pagos ya realizados.', 'Revisar la nómina de un cliente con una cuenta personal gratuita y rápida.'], c: 1,
+    e: 'Las plantillas y listas ahorran tiempo sin exponer datos ni delegar el criterio. Las otras opciones delegan el juicio, fabrican soportes o exponen datos.' },
+  { m: 8, q: 'Una IA te dio una cifra con total seguridad. ¿Qué le pides para poder revisarla?',
+    o: ['Que repita el cálculo dos veces y te confirme que el resultado coincide.', 'Que muestre los pasos y los supuestos, y diga qué información le falta.', 'Que te dé la cifra redondeada, para que sea más fácil de comunicar.', 'Nada: si la herramienta está segura, la cifra se puede usar tal cual.'], c: 1,
+    e: 'Con los pasos y los supuestos a la vista puedes encontrar el error. Repetir la pregunta puede repetir el mismo error.' }
 ];
 const FORMAS = { A: QUIZ_A, B: QUIZ_B };
 const QUIZ = QUIZ_A;
@@ -479,4 +505,119 @@ const INDICADORES = [
   ['Respuesta a incidentes', '100% identifica a quién reportar y el plan está completo', 'Quiz final + plan de respuesta'],
   ['Riesgo financiero', 'Cada dueño estima el costo de 1 a 3 días', 'Calculadora del Módulo 5'],
   ['Uso de IA', 'Política de uso de IA generada', 'Módulo 7']
+];
+
+/* ===================== Módulo 8: ejercicios ===================== */
+const EJ8_OPC = ['Así sí', 'Así no'];
+const EJ8_CASOS = [
+  { t: 'Pedirle: "Redacta un recordatorio cordial de 80 palabras para que los clientes envíen sus estados de cuenta antes del día 5".', c: 0, e: 'Es un texto genérico, sin datos de nadie. Solo revisa el tono y la fecha antes de enviarlo.' },
+  { t: 'Pegar el XML de una factura de un cliente y preguntarle: "¿Esta factura es deducible?".', c: 1, e: 'El XML trae RFC, nombres y montos del cliente, y la deducibilidad depende del caso: decidirla es criterio del contador.', mejor: 'Pídele: "¿Qué requisitos suele revisar un contador para saber si un gasto es deducible? Dame una lista para verificar". Luego revisas tú la factura.' },
+  { t: 'Pedirle: "Explica en lenguaje sencillo, para un cliente sin conocimientos contables, qué es un CFDI de egreso".', c: 0, e: 'Explicar conceptos es un buen uso. Revisa que la explicación sea correcta antes de mandarla.' },
+  { t: 'La IA responde citando un artículo y una regla, y los copias tal cual en la respuesta a tu cliente.', c: 1, e: 'Una cita que no abriste puede no existir o no decir eso.', mejor: 'Abre cada artículo o regla en el texto oficial y cita solo lo que confirmaste.' },
+  { t: 'Describir las columnas de tu hoja (fecha, concepto, importe, IVA) y pedir una fórmula que sume el IVA por mes.', c: 0, e: 'Describir la estructura sin pegar los datos basta para obtener la fórmula. Pruébala primero con pocos renglones.' },
+  { t: 'Pedirle que redacte un contrato de servicios con fecha anterior para "respaldar" pagos que ya se hicieron sin contrato.', c: 1, e: 'Es fabricar un soporte. Ninguna herramienta lo vuelve aceptable.', mejor: 'Documentar la situación real con el cliente y pedir asesoría legal sobre cómo regularizarla.' },
+  { t: 'Pedirle un resumen de una reforma publicada en el Diario Oficial y comentarlo con el equipo después de cotejarlo con la publicación.', c: 0, e: 'Es un texto público y lo verificas contra el original. Buen uso.' },
+  { t: 'Usar tu cuenta personal gratuita de una herramienta de IA para revisar la nómina de un cliente, "porque es más rápida".', c: 1, e: 'Es una cuenta que el despacho no aprobó y la nómina trae datos personales de empleados.', mejor: 'Usar la cuenta que administra el despacho y anonimizar la nómina antes, o no usar IA para esa tarea.' },
+  { t: 'Pedirle una checklist del cierre mensual y adaptarla después a cómo trabajan ustedes.', c: 0, e: 'Plantillas y listas son de los mejores usos. Tú decides qué se queda.' },
+  { t: 'Recibes un audio del "titular" pidiendo una transferencia urgente y le pides a una IA que confirme si la voz es real.', c: 1, e: 'Ninguna herramienta te da certeza sobre una voz o un video. Se confirma por otro canal.', mejor: 'Colgar y llamar al titular a su número conocido, o usar la palabra clave del despacho.' }
+];
+// Laboratorio: mejorar una instrucción. Datos inventados para el ejercicio.
+const LAB8 = {
+  mala: 'Revisa esto y dime cuánto ISR debe pagar: Distribuidora La Esperanza, RFC DLE990101XX0, ingresos de octubre $412,300, gastos $198,450. Rápido.',
+  ops: [
+    ['Quitar la razón social y el RFC, y usar "Cliente A"', true, 'La herramienta no necesita saber quién es el cliente para explicar el cálculo.'],
+    ['Decirle qué papel juega: asistente de un despacho contable en México', true, 'El papel orienta el tipo de respuesta y el vocabulario.'],
+    ['Pedirle los pasos y los supuestos del cálculo, no solo el número', true, 'Sin pasos no puedes revisar dónde se equivocó.'],
+    ['Pedirle que diga qué datos le faltan, en lugar de suponerlos', true, 'Así evitas que invente lo que no le diste.'],
+    ['Agregar el número de cuenta del cliente para que el cálculo sea más preciso', false, 'Un dato bancario no mejora el cálculo y expone al cliente.'],
+    ['Pedirle que la respuesta sea definitiva para no tener que revisarla', false, 'Nada de lo que conteste sustituye tu revisión.']
+  ],
+  buena: 'Actúa como asistente de un despacho contable en México. Para el "Cliente A", persona moral, con ingresos de octubre por $412,300 y gastos por $198,450, explícame paso a paso cómo se estima su pago provisional de ISR y qué supuestos usas. Si falta información (por ejemplo, el coeficiente de utilidad o los pagos anteriores), dímelo en lugar de suponerla. Voy a verificar tu respuesta antes de usarla.'
+};
+// Detecta el error: respuesta ficticia de una IA, escrita para el ejercicio.
+const ERR8 = {
+  pregunta: 'Un auxiliar le preguntó a una IA: "¿Puedo deducir al 100% la comida con un cliente con el que me reuní?"',
+  respuesta: 'Sí, es 100% deducible. Lo establece el artículo 28-B de la Ley del ISR y no requiere ningún requisito adicional. Puedes indicárselo a tu cliente con total seguridad.',
+  ops: [
+    ['Cita un artículo que nadie ha abierto todavía', true, 'Antes de usarlo hay que abrir la Ley del ISR y ver si ese artículo existe y qué dice.'],
+    ['Afirma "100%" y "sin requisitos" en un tema que depende del caso', true, 'La deducibilidad de un consumo depende de límites y requisitos de la ley. Tanta certeza es una señal de alerta.'],
+    ['Te invita a pasárselo al cliente sin revisar', true, 'Lo que llega al cliente lo revisa y lo firma el despacho.'],
+    ['Está escrita en un lenguaje claro y directo', false, 'La claridad no es el problema; el problema es lo que afirma sin sustento.'],
+    ['Es una respuesta breve', false, 'Una respuesta breve puede ser correcta. Aquí falla el sustento, no la extensión.']
+  ]
+};
+
+/* ===================== Seguir aprendiendo ===================== */
+// Autoevaluación de confianza (1 a 5), antes del quiz inicial y antes del quiz final
+const CONFIANZA = [
+  'Reconocer un mensaje fraudulento por correo o WhatsApp',
+  'Saber qué hacer en los primeros minutos de un incidente',
+  'Proteger contraseñas, la e.firma y los accesos',
+  'Saber si nuestros respaldos de verdad funcionan',
+  'Usar la IA sin exponer datos de clientes y revisando lo que responde'
+];
+const HABITOS = [
+  'Confirmar por teléfono, a un número conocido, todo cambio de cuenta o pago urgente',
+  'No reenviar ni dictar a nadie un código de verificación',
+  'Revisar remitente y lo que me piden antes de abrir un enlace o un adjunto',
+  'Anonimizar antes de pegar información en una herramienta de IA',
+  'Verificar en la fuente oficial todo lo que cite una IA',
+  'Bloquear mi pantalla cada vez que me levanto',
+  'Avisar de inmediato si abrí algo sospechoso',
+  'Activar la verificación en dos pasos en mi correo'
+];
+// Retos de repaso espaciado: a los 7, 30 y 90 días del quiz final. 5 preguntas cada uno, elegidas según lo que más falló la persona.
+const RETOS_DIAS = [7, 30, 90];
+const RETOS = [
+  { m: 1, q: 'Un proveedor de siempre escribe desde su correo habitual: "cambiamos de banco, aquí la cuenta nueva". ¿Qué haces?', o: ['Registras la cuenta, porque el correo es el de siempre.', 'Llamas al proveedor a un número que ya tenías antes de registrar nada.', 'Respondes el correo pidiendo una carta con membrete.'], c: 1, e: 'Una cuenta de correo puede estar vulnerada. Los cambios de cuenta se confirman por otro canal.' },
+  { m: 1, q: 'Te escriben por WhatsApp: "te mandé un código de 6 dígitos por error, ¿me lo reenvías?". ¿Qué haces?', o: ['Lo reenvío si el contacto parece conocido.', 'No lo reenvío: es el código de mi propia cuenta.', 'Reenvío solo los primeros tres dígitos.'], c: 1, e: 'Con ese código pueden registrar tu cuenta en otro teléfono. No se comparte nunca.' },
+  { m: 1, q: 'Un correo del "SAT" pide entrar a un enlace hoy mismo para evitar una multa. ¿Qué haces?', o: ['Entro al enlace desde el celular, que es más seguro.', 'Lo reenvío al titular para que él decida.', 'Reviso mi situación entrando yo mismo a sat.gob.mx.'], c: 2, e: 'El SAT indica que no envía enlaces por correo. Se entra directamente al portal oficial.' },
+  { m: 2, q: '¿Dónde se activa la verificación en dos pasos?', o: ['En la configuración de seguridad de cada cuenta.', 'La activa por sí solo el antivirus del equipo.', 'Solo en la computadora del titular del despacho.'], c: 0, e: 'Cada servicio la ofrece en su configuración de seguridad. Empieza por el correo y la banca.' },
+  { m: 2, q: 'Un auxiliar deja el despacho hoy. ¿Cuándo se desactivan sus accesos?', o: ['Al cierre de mes, para no interrumpir el trabajo.', 'Hoy mismo, junto con el cambio de contraseñas compartidas.', 'Cuando el propio auxiliar lo solicite.'], c: 1, e: 'Un usuario activo sin dueño es una puerta abierta. Se desactiva el mismo día.' },
+  { m: 2, q: '¿Cómo se guarda el archivo .key de la e.firma de un cliente?', o: ['Junto con su contraseña, para tenerlos a la mano.', 'En el correo, para consultarlo desde cualquier lugar.', 'En una carpeta restringida, con la contraseña aparte en un gestor.'], c: 2, e: 'El archivo y su contraseña nunca se guardan ni se envían juntos.' },
+  { m: 3, q: 'Tu carpeta de clientes se sincroniza con la nube. ¿Eso es un respaldo?', o: ['Sí, siempre que la sincronización esté activa.', 'No por sí solo: también copia borrados y archivos dañados.', 'Sí, si la carpeta está compartida con el equipo.'], c: 1, e: 'Un respaldo guarda versiones anteriores a las que se puede regresar.' },
+  { m: 3, q: '¿Cómo sabes que tu respaldo funciona?', o: ['Porque el programa dice "copia completada".', 'Porque el disco todavía tiene espacio libre.', 'Porque se restauró un archivo de prueba y abrió.'], c: 2, e: 'Solo una restauración probada demuestra que el respaldo sirve.' },
+  { m: 3, q: 'Según la regla 3-2-1, ¿cuántas copias deben estar fuera de la oficina o desconectadas?', o: ['Al menos una.', 'Ninguna, si el equipo tiene antivirus.', 'Todas, sin excepción.'], c: 0, e: 'Tres copias, en dos medios, y al menos una fuera de la oficina o desconectada.' },
+  { m: 4, q: 'Aparece un mensaje de rescate en un equipo. ¿Cuál es la primera acción?', o: ['Reiniciar el equipo para ver si se arregla.', 'Desconectarlo de la red y avisar al responsable.', 'Pagar para no perder el día de trabajo.'], c: 1, e: 'Aislar evita que el problema llegue a más equipos; avisar activa el plan.' },
+  { m: 4, q: '¿Dónde se restaura un respaldo después de un ransomware?', o: ['En un equipo limpio, verificado por soporte técnico.', 'En el mismo equipo afectado, conectando el disco.', 'En cualquier equipo que esté libre en ese momento.'], c: 0, e: 'Conectar el respaldo a un equipo infectado puede cifrarlo también.' },
+  { m: 4, q: '¿Dónde conviene tener el plan de respuesta?', o: ['Solo en la computadora del titular.', 'En el correo del despacho, para buscarlo rápido.', 'Impreso y a la mano, con los teléfonos.'], c: 2, e: 'Si los equipos no funcionan, un plan digital no se puede abrir.' },
+  { m: 5, q: '¿Qué incluye el costo de un día sin operar?', o: ['Solo la reparación técnica de los equipos.', 'Horas improductivas, ingresos no generados, recuperación y posibles recargos.', 'Solo los recargos de las declaraciones atrasadas.'], c: 1, e: 'Se suman todos los costos, con los números del propio despacho.' },
+  { m: 5, q: '¿Para qué sirve estimar ese costo?', o: ['Para decidir cuánto conviene invertir en prevención.', 'Para cobrárselo después a los clientes afectados.', 'Para reportarlo como pérdida ante la autoridad.'], c: 0, e: 'Es una referencia para decidir, no un pronóstico.' },
+  { m: 5, q: '¿De dónde salen los números de la calculadora?', o: ['De estudios internacionales sobre ciberataques.', 'De lo que cobran otros despachos de la zona.', 'De los datos del propio despacho.'], c: 2, e: 'La app no usa cifras externas: todo sale de lo que captura el despacho.' },
+  { m: 6, q: 'Al pedir ayuda a una IA con una conciliación, ¿qué dato puede quedarse?', o: ['El RFC del cliente.', 'Los montos y los meses.', 'El número de cuenta.'], c: 1, e: 'Montos, conceptos y meses no identifican a nadie y la herramienta los necesita.' },
+  { m: 6, q: '¿Qué nunca se escribe en una herramienta de IA?', o: ['La Contraseña del SAT (CIEC) de un cliente.', 'El concepto de un gasto.', 'El mes de una declaración.'], c: 0, e: 'Las credenciales no se comparten con ninguna herramienta.' },
+  { m: 6, q: '¿Quién guarda la tabla de equivalencias ("Cliente A" es tal empresa)?', o: ['La herramienta de IA, para recordarlo.', 'El despacho, nunca la herramienta.', 'El cliente, por si alguien pregunta.'], c: 1, e: 'Si la tabla se queda en la herramienta, la anonimización no sirve.' },
+  { m: 7, q: 'Una IA propone un criterio fiscal favorable para un cliente. ¿Quién decide si se aplica?', o: ['La herramienta, si fue entrenada con leyes mexicanas.', 'El contador, después de verificarlo.', 'El cliente, porque asume el riesgo.'], c: 1, e: 'La IA propone; quien firma decide y responde.' },
+  { m: 7, q: '¿Se informa a los clientes que se usa IA en su servicio?', o: ['Sí: para qué se usa y con qué cuidados.', 'Solo si lo preguntan directamente.', 'No, porque es una herramienta interna.'], c: 0, e: 'La transparencia cuida la confianza.' },
+  { m: 7, q: 'Un cliente pide usar IA para justificar gastos que no ocurrieron. ¿Qué hace el despacho?', o: ['Acepta si el cliente lo pide por escrito.', 'Acepta si el monto es pequeño.', 'Se niega: es simular operaciones.'], c: 2, e: 'Es un límite ético y legal, lo haga una persona o una herramienta.' },
+  { m: 8, q: '¿Cuál es un buen uso de la IA en el despacho?', o: ['Decidir si un gasto de un cliente es deducible.', 'Redactar un recordatorio genérico a clientes.', 'Revisar el XML de un cliente tal como llegó.'], c: 1, e: 'Redactar textos genéricos sin datos es de los usos más seguros.' },
+  { m: 8, q: 'Una IA cita un artículo de ley. ¿Qué haces antes de usarlo?', o: ['Lo abro en el texto oficial.', 'Le pregunto a otra IA si es correcto.', 'Lo uso si la explicación suena convincente.'], c: 0, e: 'Una cita que no abriste puede no existir o no decir eso.' },
+  { m: 8, q: 'Te llega un audio con la voz del titular que pide una transferencia urgente. ¿Qué haces?', o: ['Transfiero si la voz es idéntica.', 'Respondo el audio pidiendo que confirme.', 'Lo confirmo por otro canal o con la palabra clave.'], c: 2, e: 'Las voces se pueden imitar. Se confirma por un canal que tú eliges.' }
+];
+// Biblioteca: cápsulas de 2 a 3 minutos. El equipo puede agregar una nueva cada mes copiando el formato.
+const CAPSULAS = [
+  { id: 'c01', tema: 'Fraude', titulo: 'Una palabra clave contra las voces falsas', min: 2, fecha: '2026-11',
+    cuerpo: '<p>Hoy se pueden imitar voces con IA. Una defensa sencilla: que el despacho acuerde una <b>palabra o pregunta clave</b> que solo conoce el equipo.</p><ul><li>Si alguien pide por teléfono o audio un pago o un dato urgente, se le pide la clave.</li><li>La clave no se escribe en chats ni correos.</li><li>Se cambia cuando alguien deja el despacho.</li></ul>',
+    check: { q: '¿Dónde se comparte la palabra clave?', o: ['En el grupo de WhatsApp del despacho.', 'En persona, solo con el equipo.', 'En el correo, para no olvidarla.'], c: 1, e: 'Si viaja por chat o correo, quien entre a esas cuentas la conoce.' } },
+  { id: 'c02', tema: 'Fraude', titulo: 'Códigos QR: un enlace que no puedes leer', min: 2, fecha: '2026-11',
+    cuerpo: '<p>Un QR es un enlace escondido. Por eso también sirve para engañar.</p><ul><li>Antes de escanear uno que llegó por correo o en un papel, pregúntate quién lo puso ahí.</li><li>Al escanearlo, el celular muestra la dirección: léela antes de abrirla.</li><li>Si después te pide contraseñas o datos bancarios, detente.</li></ul>',
+    check: { q: 'Escaneas un QR y el celular muestra una dirección rara. ¿Qué haces?', o: ['La abro: el QR venía en una hoja con logotipo.', 'No la abro y busco el sitio por mi cuenta.', 'La abro, pero no escribo nada.'], c: 1, e: 'Un logotipo se copia fácil. Si la dirección no es la oficial, se busca el sitio por otro camino.' } },
+  { id: 'c03', tema: 'Accesos', titulo: 'Frases de contraseña y un gestor', min: 2, fecha: '2026-11',
+    cuerpo: '<p>Una contraseña fuerte no tiene que ser imposible de recordar.</p><ul><li>Usa una <b>frase de varias palabras</b> que no tenga que ver contigo.</li><li>Una distinta para cada servicio: si una se filtra, las demás siguen a salvo.</li><li>Un <b>gestor de contraseñas</b> las recuerda por ti.</li><li>Y donde se pueda, verificación en dos pasos.</li></ul>',
+    check: { q: '¿Por qué una contraseña distinta para cada servicio?', o: ['Porque así se recuerdan mejor.', 'Porque si una se filtra, las demás siguen a salvo.', 'Porque lo exige el SAT.'], c: 1, e: 'Las contraseñas filtradas se prueban en otros servicios.' } },
+  { id: 'c04', tema: 'Equipos', titulo: 'Actualizaciones: no las pospongas', min: 2, fecha: '2026-11',
+    cuerpo: '<p>Las actualizaciones corrigen fallas que los atacantes aprovechan.</p><ul><li>Prográmalas fuera del horario de trabajo para que no estorben.</li><li>Incluye el sistema, el navegador y el software contable.</li><li>Un equipo que el fabricante ya no actualiza se queda con sus fallas: es candidato a reemplazo.</li></ul>',
+    check: { q: '¿Qué pasa con un equipo que ya no recibe actualizaciones?', o: ['Nada, si tiene antivirus.', 'Sus fallas conocidas ya no se corrigen.', 'Funciona más rápido.'], c: 1, e: 'Por eso el inventario marca los equipos sin soporte.' } },
+  { id: 'c05', tema: 'Equipos', titulo: 'Wi-Fi público y trabajo fuera de la oficina', min: 2, fecha: '2026-11',
+    cuerpo: '<p>Trabajar desde un café o un aeropuerto es cómodo, pero la red no es tuya.</p><ul><li>Evita entrar a la banca o a portales fiscales en redes públicas: usa los datos de tu celular.</li><li>Bloquea la pantalla aunque te levantes un minuto.</li><li>No dejes el equipo ni las memorias a la vista.</li></ul>',
+    check: { q: 'En un café, necesitas entrar al portal del banco. ¿Qué haces?', o: ['Uso el Wi-Fi del café si tiene contraseña.', 'Uso los datos de mi celular.', 'Le pido a alguien que me preste su equipo.'], c: 1, e: 'Los datos del celular no se comparten con desconocidos como una red pública.' } },
+  { id: 'c06', tema: 'Equipos', titulo: 'El celular del despacho: bloqueo y borrado remoto', min: 2, fecha: '2026-11',
+    cuerpo: '<p>En el celular viven el correo, WhatsApp con clientes y, a veces, la banca.</p><ul><li>Bloqueo con PIN o huella, siempre.</li><li>Activa la función de localizar y borrar a distancia.</li><li>Si se pierde: avisa en el despacho, bórralo a distancia y cambia las contraseñas que tenía guardadas.</li></ul>',
+    check: { q: 'Pierdes el celular del despacho. ¿Qué haces primero?', o: ['Espero un día por si aparece.', 'Aviso, lo borro a distancia y cambio contraseñas.', 'Compro otro y sigo trabajando.'], c: 1, e: 'Cada hora sin actuar es una hora en que alguien puede entrar a tus cuentas.' } },
+  { id: 'c07', tema: 'IA', titulo: 'La IA puede inventar: verifica en tres pasos', min: 2, fecha: '2026-11',
+    cuerpo: '<p>Una herramienta de IA puede dar una respuesta falsa con total seguridad.</p><ol><li><b>Abre la fuente:</b> el artículo, la regla o la publicación que cita.</li><li><b>Compara:</b> ¿dice lo mismo que la IA?</li><li><b>Anota</b> la fuente y la fecha en tu papel de trabajo.</li></ol><p>Si no encuentras la fuente, no la uses.</p>',
+    check: { q: 'No encuentras el artículo que citó la IA. ¿Qué haces?', o: ['Lo uso, porque la IA suele acertar.', 'No lo uso.', 'Le pido a la IA que lo cite otra vez.'], c: 1, e: 'Si no está en la fuente oficial, no existe para tu trabajo.' } },
+  { id: 'c08', tema: 'Fraude', titulo: 'Cuando hay prisa, se cuelan los fraudes', min: 2, fecha: '2026-11',
+    cuerpo: '<p>Los mensajes fraudulentos se apoyan en la prisa: "hoy", "urgente", "antes de las 3".</p><ul><li>En días de mucha carga, como los de vencimientos, aplica las mismas reglas aunque cueste un minuto más.</li><li>Una llamada a un número conocido resuelve casi cualquier duda.</li><li>Nadie en el despacho se mete en problemas por verificar.</li></ul>',
+    check: { q: 'Es día de vencimientos y llega un pedido urgente de pago. ¿Qué haces?', o: ['Lo pago para no retrasar más el trabajo.', 'Lo verifico por teléfono, aunque tome un minuto.', 'Lo dejo para mañana sin avisar a nadie.'], c: 1, e: 'La prisa es justo lo que busca el fraude.' } }
 ];

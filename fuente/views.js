@@ -1,6 +1,6 @@
 /* ===== Pantallas ===== */
 const NAV = {
-  despacho: [['inicio', 'Inicio'], ['capacitacion', 'Capacitación'], ['diagnostico', 'Diagnóstico'], ['reporte', 'Mi reporte'], ['encuesta', 'Encuesta']],
+  despacho: [['inicio', 'Inicio'], ['capacitacion', 'Capacitación'], ['aprender', 'Seguir aprendiendo'], ['diagnostico', 'Diagnóstico'], ['reporte', 'Mi reporte'], ['encuesta', 'Encuesta']],
   consultor: [['despachos', 'Despachos'], ['resultados', 'Resultados'], ['proceso', 'Proceso clave'], ['inventario', 'Inventario'], ['oportunidades', 'Oportunidades'], ['tablero', 'Tablero'], ['datos', 'Datos']]
 };
 function ruta() {
@@ -22,7 +22,7 @@ function area(p, o = {}) { return `<textarea id="${idOf(p)}" data-bind="${p}" ro
 function sel(p, ops, o = {}) { const v = String(val(p)); return `<select id="${idOf(p)}" data-bind="${p}"${o.r ? ' data-r' : ''}${o.upd ? ` data-upd="${o.upd}"` : ''}><option value="">Elige…</option>${ops.map(x => `<option${v === String(x) ? ' selected' : ''}>${esc(x)}</option>`).join('')}</select>`; }
 function chk(p, label, o = {}) { return `<label class="chk"><input id="${idOf(p)}" type="checkbox" data-bind="${p}"${val(p) ? ' checked' : ''}${o.upd ? ` data-upd="${o.upd}"` : ''}${o.r ? ' data-r' : ''}><span>${label}</span></label>`; }
 const fld = (label, control, hint) => `<div class="f"><label for="${(control.match(/id="([^"]+)"/) || [])[1] || ''}">${label}</label>${control}${hint ? `<small>${hint}</small>` : ''}</div>`;
-const lpill = l => pill(l, l.startsWith('Sesión') ? 'pres' : l.startsWith('Auto') ? 'auto' : 'ent');
+const lpill = l => pill(l, l.startsWith('Sesión') ? 'pres' : l.startsWith('Auto') ? 'auto' : l.startsWith('Después') || l.startsWith('Antes de la sesión') ? 'ind' : 'ent');
 const pill = (t, c) => `<span class="pill ${c || ''}">${esc(t)}</span>`;
 const gpill = g => pill('Gravedad ' + g, 'g-' + g);
 const sem = (s, p) => `<span class="sem sem-${s}"><i></i>${SEM_TXT[s]}${p == null ? '' : ' · ' + Math.round(p) + '%'}</span>`;
@@ -38,15 +38,16 @@ const LOGO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-
 const RUTA = [
   ['Antes de la sesión', [['q', 'quizInicial'], ['m', 1]]],
   ['Sesión en vivo', [['m', 4], ['m', 6]]],
+  ['Después de la sesión', [['m', 8]]],
   ['Antes de la reunión de entrega', [['r', 'repaso'], ['q', 'quizFinal']]],
   ['Complementario', [['m', 2], ['m', 3], ['m', 7]], true]
 ];
 const PASOS_RUTA = RUTA.flatMap(([et, xs, comp]) => xs.map(x => ({ et, t: x[0], v: x[1], comp: !!comp })));
 const MINIMA = PASOS_RUTA.filter(x => !x.comp), COMPL = PASOS_RUTA.filter(x => x.comp);
 const pasoHecho = (p, x) => x.t === 'q' ? !!p[x.v] : x.t === 'r' ? !!p.repaso : !!(p.avance || [])[x.v - 1];
-const pasoTxt = x => x.t === 'q' ? (x.v === 'quizInicial' ? 'Quiz inicial' : 'Quiz final') : x.t === 'r' ? 'Repaso: lo esencial de los 7 módulos' : 'Módulo ' + x.v + '. ' + MODULOS[x.v - 1].titulo;
-const pasoMin = x => x.t === 'q' ? 5 : x.t === 'r' ? 5 : MODULOS[x.v - 1].min;
-const pasoDesc = x => x.t === 'q' ? '14 preguntas, unos 5 minutos.' : x.t === 'r' ? 'Los puntos clave de cada módulo, en una sola pantalla. Unos 5 minutos.' : MODULOS[x.v - 1].ejercicio + ' · ' + MODULOS[x.v - 1].min + ' min';
+const pasoTxt = x => x.t === 'q' ? (x.v === 'quizInicial' ? 'Quiz inicial' : 'Quiz final') : x.t === 'r' ? 'Repaso: lo esencial de los 8 módulos' : 'Módulo ' + x.v + '. ' + MODULOS[x.v - 1].titulo;
+const pasoMin = x => x.t === 'q' ? 6 : x.t === 'r' ? 5 : MODULOS[x.v - 1].min;
+const pasoDesc = x => x.t === 'q' ? '16 preguntas, unos 6 minutos.' : x.t === 'r' ? 'Los puntos clave de cada módulo, en una sola pantalla. Unos 5 minutos.' : MODULOS[x.v - 1].ejercicio + ' · ' + MODULOS[x.v - 1].min + ' min';
 const siguiente = p => MINIMA.find(x => !pasoHecho(p, x)) || COMPL.find(x => !pasoHecho(p, x));
 const palabras = m => m.leccion.map(s => s[0] + ' ' + s[1]).join(' ').replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
 const minLectura = m => Math.max(1, Math.round(palabras(m) / 180));
@@ -74,6 +75,7 @@ const pie = () => `<footer class="pie"><div class="wrap"><p>Proyecto académico 
 const V = {};
 const vAlias = d => { const ps = participantesDe(d.id); return `<div class="card unir"><p class="eyebrow">${esc(d.nombre)}</p><h2>¿Quién va a participar?</h2><p>Escribe solo un alias, por ejemplo "Auxiliar 1" o "Socia". No uses tu nombre completo.</p>
   <div class="row"><input id="in-alias" placeholder="Alias" maxlength="30" aria-label="Alias" autocomplete="off"><button class="btn p" data-a="alias">Empezar</button></div>
+  <details class="rec"><summary>¿Cambiaste de dispositivo o se borró tu avance?</summary><p class="mini">Pega aquí un mensaje de resultados que hayas enviado al Equipo DELTA (empieza con DELTA1). Tu avance vuelve y continúas con tu alias.</p><textarea id="in-rec" rows="3" placeholder="Pega aquí tu mensaje de resultados"></textarea><div class="row end"><button class="btn sm" data-a="recuperar">Recuperar mi avance</button></div></details>
   ${ps.length ? `<p class="mini">¿Ya empezaste en este dispositivo? Continúa con tu alias:</p><div class="row">${ps.map(x => `<button class="chip" data-a="pid" data-v="${x.id}">${esc(x.alias)}</button>`).join('')}</div>` : ''}</div>`; };
 const sobreServicio = () => `<details class="sobre"><summary>Sobre el servicio: qué recibe el despacho y cuánto tiempo toma</summary>
   <div class="grid2">
@@ -86,9 +88,10 @@ const sobreServicio = () => `<details class="sobre"><summary>Sobre el servicio: 
     <div class="card"><h2>Cuánto tiempo toma</h2><table class="t"><tbody>
       <tr><th>Antes de la sesión</th><td>≈ 25 min por persona</td><td>Quiz inicial y Módulo 1 con el simulador de mensajes fraudulentos, cada quien por su cuenta</td></tr>
       <tr><th>Sesión en vivo</th><td>60 min, por videollamada</td><td>Phishing y fraude fiscal, simulacro de ransomware y uso de IA, en equipo</td></tr>
-      <tr><th>Antes de la reunión de entrega</th><td>≈ 10 min por persona</td><td>Repaso de lo esencial y quiz final. El dueño o socio contesta además el diagnóstico y la calculadora (≈ 25 min)</td></tr>
+      <tr><th>Después de la sesión</th><td>≈ 12 min por persona</td><td>Módulo 8: ejemplos de buen y mal uso de la IA</td></tr>
+      <tr><th>Antes de la reunión de entrega</th><td>≈ 11 min por persona</td><td>Repaso de lo esencial y quiz final. El dueño o socio contesta además el diagnóstico y la calculadora (≈ 25 min)</td></tr>
       <tr><th>Reunión de entrega</th><td>45 min, por videollamada</td><td>Con el dueño o socio: reporte, plan de 30 días, prueba de restauración y encuesta</td></tr>
-      <tr><th>Complementario</th><td>≈ 25 min, opcional</td><td>Módulos 2, 3 y 7, a su ritmo durante la semana</td></tr></tbody></table><p class="nota">Todo se hace a distancia. No hace falta instalar nada. Lo obligatorio por persona suma unos 35 minutos, más la sesión en vivo.</p></div>
+      <tr><th>Complementario</th><td>≈ 25 min, opcional</td><td>Módulos 2, 3 y 7, a su ritmo durante la semana</td></tr></tbody></table><p class="nota">Todo se hace a distancia. No hace falta instalar nada. Lo obligatorio por persona suma unos 48 minutos, más la sesión en vivo. Después siguen los retos de repaso y la biblioteca, en Seguir aprendiendo.</p></div>
   </div>
   <div class="card"><h2>Lo que incluye la suscripción</h2><p>Después del piloto, el programa completo se imparte en tres sesiones y sigue las seis funciones del NIST Cybersecurity Framework 2.0: gobernar, identificar, proteger, detectar, responder y recuperar.</p>
     <div class="scroll"><table class="t"><thead><tr><th>Sesión</th><th>Duración</th><th>Temas</th></tr></thead><tbody>${PROGRAMA_SUSCRIPCION.map(x => `<tr><th>${x[0]}</th><td>${x[1]}</td><td>${x[2]}</td></tr>`).join('')}</tbody></table></div>
@@ -111,8 +114,8 @@ V.inicio = () => {
 };
 function sigueBloque(p) {
   const sig = siguiente(p), algo = PASOS_RUTA.some(x => pasoHecho(p, x)), minOk = MINIMA.every(x => pasoHecho(p, x));
-  if (!sig) return `<div class="sigue fin"><div><h2>Terminaste toda la capacitación</h2><p>Copia tus resultados y envíalos al Equipo DELTA. En Capacitación puedes ver las respuestas explicadas.</p></div><button class="btn p" data-a="codigo">Copiar mis resultados</button></div>`;
-  return `${minOk ? `<div class="fb bien"><b>Terminaste la ruta mínima.</b> Ya cuentas en la medición del piloto. Lo que sigue es complementario: profundiza en lo que más te sirva.</div>` : ''}<div class="sigue ${sig.comp ? 'compl' : ''}"><div><p class="eyebrow">${sig.comp ? 'Complementario · a tu ritmo' : 'Tu siguiente paso · ' + sig.et.toLowerCase()}</p><h2>${pasoTxt(sig)}</h2><p>${pasoDesc(sig)}</p></div><button class="btn p" data-a="paso" data-v="${sig.t}:${sig.v}">${algo ? 'Continuar' : 'Empezar'}</button></div>`;
+  if (!sig) return `<div class="sigue fin"><div><h2>Terminaste toda la capacitación</h2><p>Sigue en <b>Seguir aprendiendo</b>: retos de repaso a los 7, 30 y 90 días, cápsulas nuevas y tu constancia de participación.</p></div><a class="btn p" href="#aprender">Seguir aprendiendo</a></div>`;
+  return `${minOk ? `<div class="fb bien"><b>Terminaste la ruta mínima.</b> Ya cuentas en la medición del piloto y tu constancia está en <a href="#aprender">Seguir aprendiendo</a>. Lo que sigue es complementario: profundiza en lo que más te sirva.</div>` : ''}<div class="sigue ${sig.comp ? 'compl' : ''}"><div><p class="eyebrow">${sig.comp ? 'Complementario · a tu ritmo' : 'Tu siguiente paso · ' + sig.et.toLowerCase()}</p><h2>${pasoTxt(sig)}</h2><p>${pasoDesc(sig)}</p></div><button class="btn p" data-a="paso" data-v="${sig.t}:${sig.v}">${algo ? 'Continuar' : 'Empezar'}</button></div>`;
 }
 function dueno(d) {
   const n = diag(d.id).resp.filter(x => x != null).length, e = S.encuesta[d.id] || {}, k = kit(d.id), cm = compromisos(d.id).length;
@@ -130,6 +133,7 @@ V.capacitacion = () => {
   const p = P();
   if (!p && T.mod === 5) return vModulo(null, 5);
   if (!p) return `<h1>Capacitación</h1>${vAlias(d)}`;
+  if (T.conf) return vConfianza(p, T.conf.cual);
   if (T.quiz) return vQuiz(p);
   if (T.repaso) return vRepaso(p);
   if (T.mod) return vModulo(p, T.mod);
@@ -143,11 +147,11 @@ V.capacitacion = () => {
       <div class="tile"><span>Evaluación final</span><b>${qf ? r1(qf.pct) + '%' : '—'}</b></div>
       <div class="tile ${qi && qf && qf.pct - qi.pct >= 20 ? 'ok' : ''}"><span>Mejora</span><b>${qi && qf ? (qf.pct - qi.pct >= 0 ? '+' : '') + r1(qf.pct - qi.pct) + ' pts' : '—'}</b></div>
     </div>
-    <div class="card paso ${qi ? 'hecho' : ''}"><div><h2>Quiz inicial</h2><p>14 preguntas, 5 minutos, antes de la sesión en vivo. Contesta lo que sabes hoy; las respuestas se revisan al final del programa.</p></div>
+    <div class="card paso ${qi ? 'hecho' : ''}"><div><h2>Quiz inicial</h2><p>16 preguntas, unos 6 minutos, antes de la sesión en vivo. Contesta lo que sabes hoy; las respuestas se revisan al final del programa.</p></div>
       ${qi ? pill('Completado', 'ok') : '<button class="btn p" data-a="quiz" data-v="quizInicial">Comenzar</button>'}</div>
-    <h2 class="sep">Los 7 módulos <small>4, 6 y 1 son de la ruta mínima · 2, 3 y 7 complementarios · 5 para el dueño o socio</small></h2>
+    <h2 class="sep">Los 8 módulos <small>1, 4, 6 y 8 son de la ruta mínima · 2, 3 y 7 complementarios · 5 para el dueño o socio</small></h2>
     <div class="mods">${MODULOS.map((m, i) => `<button class="mod ${av[i] ? 'hecho' : ''}" data-a="mod" data-v="${m.n}"><span class="n">${m.n}</span><span class="tx"><b>${m.titulo}</b><em>${m.ejercicio} · ${m.min} min</em></span><span class="tags">${lpill(m.lugar)}${[2, 3, 7].includes(m.n) ? pill('Complementario') : m.n === 5 ? pill('Dueño o socio') : ''}${av[i] ? pill('Completado', 'ok') : ''}</span></button>`).join('')}</div>
-    <div class="card paso ${qf ? 'hecho' : ''}"><div><h2>Quiz final</h2><p>14 preguntas equivalentes a las del inicio, con otros casos. Se contesta en la reunión de entrega; al terminar verás tu mejora y la explicación de cada respuesta.</p></div>
+    <div class="card paso ${qf ? 'hecho' : ''}"><div><h2>Quiz final</h2><p>16 preguntas equivalentes a las del inicio, con otros casos. Se contesta antes de la reunión de entrega; al terminar verás tu mejora y la explicación de cada respuesta.</p></div>
       ${qf ? pill('Completado', 'ok') : (qi ? '<button class="btn p" data-a="quiz" data-v="quizFinal">Comenzar</button>' : pill('Primero el quiz inicial'))}</div>
     <div class="card paso"><div><h2>Envía tus resultados</h2><p>Tus respuestas se guardan solo en este dispositivo. Al terminar cada etapa, copia tus resultados y pégalos en un mensaje al Equipo DELTA. No incluyen datos de clientes.</p></div><button class="btn p" data-a="codigo">Copiar mis resultados</button></div>
     ${qf ? `<div class="card"><h2>Respuestas y explicaciones</h2>${[['Quiz final', qf], ['Quiz inicial', qi]].map(([t, z], n) => `<details${n ? '' : ' open'}><summary>${t} · ${r1(z.pct)}%</summary>${forma(z).map((q, i) => `<div class="qa"><p><b>${i + 1}. ${q.q}</b></p><p class="${z.resp[i] === q.c ? 'bien' : 'mal'}">Tu respuesta: ${esc(q.o[z.resp[i]] || 'sin respuesta')}</p>${z.resp[i] === q.c ? '' : `<p>Respuesta correcta: ${esc(q.o[q.c])}</p>`}<p class="exp">${q.e}</p></div>`).join('')}</details>`).join('')}</div>` : ''}`;
@@ -191,7 +195,7 @@ function pasos(key, items, alFinal, o = {}) {
   const it = items[s.i];
   return `<div class="prog"><i style="width:${s.i / items.length * 100}%"></i></div><div class="row between"><p class="eyebrow">${s.i + 1} de ${items.length}</p>${o.extra ? o.extra(s) : ''}</div><p class="caso">${it.q}</p>
     <div class="ops ${FIJO[key] ? 'cat' : ''}">${s.perm[s.i].map(k => `<button class="op ${s.eleg === k ? (k === it.c ? 'bien' : 'mal') : ''} ${s.eleg != null && k === it.c ? 'bien' : ''}" data-a="stop" data-v="${k}" ${s.eleg != null ? 'disabled' : ''}>${esc(it.o[k])}</button>`).join('')}</div>
-    ${s.eleg != null ? `<div class="fb ${s.eleg === it.c ? 'bien' : 'mal'}"><b>${s.eleg === it.c ? (o.bien || 'Buena decisión.') : (o.mal || 'Hay una opción mejor.')}</b> ${it.fb(s.eleg)}</div><div class="row end"><button class="btn p" data-a="stsig">${s.i === items.length - 1 ? 'Continuar' : 'Siguiente'}</button></div>` : ''}`;
+    ${s.eleg != null ? `<div role="status" class="fb ${s.eleg === it.c ? 'bien' : 'mal'}"><b>${s.eleg === it.c ? (o.bien || 'Buena decisión.') : (o.mal || 'Hay una opción mejor.')}</b> ${it.fb(s.eleg)}</div><div class="row end"><button class="btn p" data-a="stsig">${s.i === items.length - 1 ? 'Continuar' : 'Siguiente'}</button></div>` : ''}`;
 }
 const ITEMS = {
   rs: RANSOM.pasos.map(x => ({ q: x.q, o: x.o.map(y => y[0]), c: x.o.findIndex(y => y[1]), fb: k => x.o[k][2], h: x.o.map(y => y[3] || 0) })),
