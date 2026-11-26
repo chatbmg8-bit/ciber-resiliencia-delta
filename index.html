@@ -1412,6 +1412,16 @@ async function leerCodigo(txt) {
   return combinar(JSON.parse(new TextDecoder().decode(u8)));
 }
 
+// Dirección pública de la app: los enlaces para el personal y los recordatorios siempre apuntan aquí,
+// aunque la app se esté usando dentro de Claude o desde el archivo HTML de respaldo.
+const URL_PUBLICA = 'https://chatbmg8-bit.github.io/ciber-resiliencia-delta/';
+function baseURL() {
+  try {
+    if (/^https?:$/.test(location.protocol) && !EMBEBIDO && !/^(localhost|127\.)/.test(location.hostname)) return location.href.split(/[?#]/)[0];
+  } catch (e) {}
+  return URL_PUBLICA;
+}
+
 /* ===== Pantallas ===== */
 const NAV = {
   despacho: [['inicio', 'Inicio'], ['capacitacion', 'Capacitación'], ['aprender', 'Seguir aprendiendo'], ['diagnostico', 'Diagnóstico'], ['reporte', 'Mi reporte'], ['encuesta', 'Encuesta']],
@@ -1911,7 +1921,7 @@ function seguimiento(d) {
     ${ps.length ? `<div class="scroll"><table class="t segt"><thead><tr><th>Alias</th><th>Quiz inicial</th><th>Módulo 1</th><th>Sesión en vivo (4 y 6)</th><th>Quiz final</th><th>Última actividad</th></tr></thead><tbody>${ps.map(p => { const av = p.avance || []; return `<tr><th><button class="lnk" data-a="rp" data-v="${p.id}">${esc(p.alias)}</button></th><td>${si(p.quizInicial, p.quizInicial ? r1(p.quizInicial.pct) + '%' : '')}</td><td>${si(av[0])}</td><td>${av[3] && av[5] ? si(1) : av[3] || av[5] ? '<span class="ok-t">1 de 2</span>' : '<span class="falta">Falta</span>'}</td><td>${si(p.quizFinal, p.quizFinal ? r1(p.quizFinal.pct) + '%' : '')}</td><td>${ult(p)}</td></tr>`; }).join('')}</tbody></table></div>` : '<p class="nota">Aún no llega ningún código de este despacho. Se importan en Datos.</p>'}
     <p class="mini">Diagnóstico ${nd === 30 ? 'completo' : nd + ' de 30'} · calculadora ${calcListo(k.calculadora) ? 'capturada' : 'pendiente'} · encuesta ${en.ts ? 'enviada' : 'pendiente'}. "Última actividad" es la hora en que la persona contestó algo en su dispositivo, según el último código recibido.</p></div>`;
 }
-const enlaceDespacho = id => location.href.split(/[?#]/)[0] + '?d=' + id;
+const enlaceDespacho = id => baseURL() + '?d=' + id;
 const sinDespachoC = () => `<div class="card aviso"><h2>Elige un despacho</h2><p>Registra o selecciona un despacho en la pantalla <a href="#despachos">Despachos</a>.</p></div>`;
 V.proceso = () => {
   const d = D(); if (!d) return sinDespachoC();
@@ -2025,7 +2035,7 @@ function guardarReto() {
   p.ts = Date.now(); save();
 }
 function icsRetos(p) {
-  const d = D(), url = location.href.split(/[?#]/)[0] + (d ? '?d=' + d.id : ''), z = x => x.replace(/-/g, ''), uid = (p.id || 'p') + '-';
+  const d = D(), url = baseURL() + (d ? '?d=' + d.id : ''), z = x => x.replace(/-/g, ''), uid = (p.id || 'p') + '-';
   const ev = RETOS_DIAS.map((n, k) => { const f = retoFecha(p, k); return ['BEGIN:VEVENT', 'UID:' + uid + n + '@equipo-delta', 'DTSTAMP:' + z(hoy()) + 'T000000', 'DTSTART;VALUE=DATE:' + z(f), 'DTEND;VALUE=DATE:' + z(sumaDias(f, 1)), 'SUMMARY:Reto de ciberseguridad (3 min)', 'DESCRIPTION:Repaso de los ' + n + ' días. Abre la app\\, entra a Seguir aprendiendo y contesta el reto.', 'URL:' + url, 'END:VEVENT'].join('\r\n'); });
   return ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Equipo DELTA//Ciber Resiliencia//ES', 'CALSCALE:GREGORIAN', ...ev, 'END:VCALENDAR'].join('\r\n');
 }

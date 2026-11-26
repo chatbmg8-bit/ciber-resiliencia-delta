@@ -497,7 +497,7 @@ function seguimiento(d) {
     ${ps.length ? `<div class="scroll"><table class="t segt"><thead><tr><th>Alias</th><th>Quiz inicial</th><th>Módulo 1</th><th>Sesión en vivo (4 y 6)</th><th>Quiz final</th><th>Última actividad</th></tr></thead><tbody>${ps.map(p => { const av = p.avance || []; return `<tr><th><button class="lnk" data-a="rp" data-v="${p.id}">${esc(p.alias)}</button></th><td>${si(p.quizInicial, p.quizInicial ? r1(p.quizInicial.pct) + '%' : '')}</td><td>${si(av[0])}</td><td>${av[3] && av[5] ? si(1) : av[3] || av[5] ? '<span class="ok-t">1 de 2</span>' : '<span class="falta">Falta</span>'}</td><td>${si(p.quizFinal, p.quizFinal ? r1(p.quizFinal.pct) + '%' : '')}</td><td>${ult(p)}</td></tr>`; }).join('')}</tbody></table></div>` : '<p class="nota">Aún no llega ningún código de este despacho. Se importan en Datos.</p>'}
     <p class="mini">Diagnóstico ${nd === 30 ? 'completo' : nd + ' de 30'} · calculadora ${calcListo(k.calculadora) ? 'capturada' : 'pendiente'} · encuesta ${en.ts ? 'enviada' : 'pendiente'}. "Última actividad" es la hora en que la persona contestó algo en su dispositivo, según el último código recibido.</p></div>`;
 }
-const enlaceDespacho = id => location.href.split(/[?#]/)[0] + '?d=' + id;
+const enlaceDespacho = id => baseURL() + '?d=' + id;
 const sinDespachoC = () => `<div class="card aviso"><h2>Elige un despacho</h2><p>Registra o selecciona un despacho en la pantalla <a href="#despachos">Despachos</a>.</p></div>`;
 V.proceso = () => {
   const d = D(); if (!d) return sinDespachoC();

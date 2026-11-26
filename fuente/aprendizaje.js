@@ -67,7 +67,7 @@ function guardarReto() {
   p.ts = Date.now(); save();
 }
 function icsRetos(p) {
-  const d = D(), url = location.href.split(/[?#]/)[0] + (d ? '?d=' + d.id : ''), z = x => x.replace(/-/g, ''), uid = (p.id || 'p') + '-';
+  const d = D(), url = baseURL() + (d ? '?d=' + d.id : ''), z = x => x.replace(/-/g, ''), uid = (p.id || 'p') + '-';
   const ev = RETOS_DIAS.map((n, k) => { const f = retoFecha(p, k); return ['BEGIN:VEVENT', 'UID:' + uid + n + '@equipo-delta', 'DTSTAMP:' + z(hoy()) + 'T000000', 'DTSTART;VALUE=DATE:' + z(f), 'DTEND;VALUE=DATE:' + z(sumaDias(f, 1)), 'SUMMARY:Reto de ciberseguridad (3 min)', 'DESCRIPTION:Repaso de los ' + n + ' días. Abre la app\\, entra a Seguir aprendiendo y contesta el reto.', 'URL:' + url, 'END:VEVENT'].join('\r\n'); });
   return ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Equipo DELTA//Ciber Resiliencia//ES', 'CALSCALE:GREGORIAN', ...ev, 'END:VCALENDAR'].join('\r\n');
 }

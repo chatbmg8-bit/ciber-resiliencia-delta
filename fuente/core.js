@@ -338,3 +338,13 @@ async function leerCodigo(txt) {
   if (m[1] === 'Z') u8 = await pasar(u8, DecompressionStream, 'deflate-raw');
   return combinar(JSON.parse(new TextDecoder().decode(u8)));
 }
+
+// Dirección pública de la app: los enlaces para el personal y los recordatorios siempre apuntan aquí,
+// aunque la app se esté usando dentro de Claude o desde el archivo HTML de respaldo.
+const URL_PUBLICA = 'https://chatbmg8-bit.github.io/ciber-resiliencia-delta/';
+function baseURL() {
+  try {
+    if (/^https?:$/.test(location.protocol) && !EMBEBIDO && !/^(localhost|127\.)/.test(location.hostname)) return location.href.split(/[?#]/)[0];
+  } catch (e) {}
+  return URL_PUBLICA;
+}
