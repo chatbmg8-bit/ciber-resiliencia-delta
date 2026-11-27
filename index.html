@@ -2494,7 +2494,7 @@ V.propuesta = () => {
   const d = D(); if (!d) return sinDespachoC();
   const pp = propuesta(d.id), b = 'propuesta.' + d.id, st = diagStats(d.id), en = S.encuesta[d.id] || {}, c = kit(d.id).calculadora, hs = hallazgos(d.id);
   return `<div class="row between"><h1>Propuesta de servicio</h1><button class="btn p" data-a="pdf" data-v="propuesta">Guardar en PDF</button></div>
-    <p class="lead">Se arma en la reunión de entrega con <b>${esc(d.nombre)}</b>. Elige qué paquetes ofrecer, pon el precio y registra la decisión del dueño.</p>
+    <p class="lead">Se arma en la reunión de entrega con <b>${esc(d.nombre)}</b>. Elige qué paquetes ofrecer, pon el precio y registra la decisión del dueño.</p><p class="fb mal"><b>Muéstrala después de la encuesta.</b> Si el dueño ve precios antes, sus respuestas sobre cuánto pagaría dejan de servir para validar el precio.</p>
     <div class="grid4 res"><div class="tile"><span>Madurez</span><b>${st.total == null ? '—' : Math.round(st.total) + '%'}</b></div><div class="tile"><span>Hallazgos (altos)</span><b>${hs.length} (${hs.filter(h => h.g === 'alta').length})</b></div><div class="tile"><span>Costo de 1 día sin operar</span><b>${calcListo(c) ? mxn(calcCosto(c, 1).total) : '—'}</b></div><div class="tile"><span>Precio mensual que el dueño ve razonable</span><b>${en.pagoRazonable ? mxn(num(en.pagoRazonable)) : '—'}</b></div></div>
     ${PAQUETES.map(p => { const at = paqAtiende(p.k, d.id); return `<div class="card paq"><div class="row between"><h2>${chk(`${b}.incluir.${p.k}`, p.t)}</h2><small>${p.tipo}</small></div>
       <ul class="lista">${p.inc.map(x => `<li>${x}</li>`).join('')}</ul><p class="mini">Atiende: ${at.length ? at.join(', ') : 'sin hallazgos asociados'}</p>
