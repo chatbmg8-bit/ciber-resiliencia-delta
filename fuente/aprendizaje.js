@@ -37,7 +37,7 @@ const retoFecha = (p, k) => p.quizFinal ? sumaDias(p.quizFinal.fecha || hoy(), R
 const retoHecho = (p, k) => (p.retos || []).some(r => r.k === k);
 const retoListo = (p, k) => p.quizFinal && !retoHecho(p, k) && retoFecha(p, k) <= hoy();
 function elegirRetos(p) { // 5 preguntas, más peso a los módulos donde la persona falló
-  const w = {}; for (let m = 1; m <= 8; m++) w[m] = 1;
+  const w = {}; for (let m = 1; m <= MODULOS.length; m++) w[m] = 1;
   if (p.quizFinal) forma(p.quizFinal).forEach((q, i) => { if (p.quizFinal.resp[i] !== q.c) w[q.m] += 2; });
   const ult = {}; (p.retos || []).forEach(r => r.items.forEach((ix, j) => { ult[ix] = r.resp[j] === RETOS[ix].c; if (!ult[ix]) w[RETOS[ix].m] += 2; }));
   const pool = RETOS.map((x, i) => i).filter(i => ult[i] !== true), sel = [], porMod = {};
@@ -80,7 +80,7 @@ function niveles(p) {
     { n: 1, t: 'En formación', d: 'Empezaste tu capacitación.', req: [] },
     { n: 2, t: 'Alerta', d: 'Reconoces los riesgos principales y sabes cómo actuar.', req: [['Completar la ruta mínima', minOk]] },
     { n: 3, t: 'Practicante', d: 'Llevas lo aprendido a tu trabajo diario.', req: [['Elegir tus hábitos', !!(m.habitos && m.habitos.length)], ['Reto de los 7 días', retoHecho(p, 0)], ['Leer 2 cápsulas de la biblioteca', capsLeidas(p) >= 2]] },
-    { n: 4, t: 'Guardián', d: 'Dominas los temas complementarios y los sostienes en el tiempo.', req: [['Reto de los 30 días', retoHecho(p, 1)], ['Módulos complementarios 2, 3 y 7', !!(av[1] && av[2] && av[6])], ['Leer 5 cápsulas', capsLeidas(p) >= 5]] },
+    { n: 4, t: 'Guardián', d: 'Dominas los temas complementarios y los sostienes en el tiempo.', req: [['Reto de los 30 días', retoHecho(p, 1)], ['Módulos complementarios 2, 3, 7 y 9', !!(av[1] && av[2] && av[6] && av[8])], ['Leer 5 cápsulas', capsLeidas(p) >= 5]] },
     { n: 5, t: 'Referente', d: 'Puedes orientar a tus compañeros.', req: [['Reto de los 90 días', retoHecho(p, 2)], ['Revisar tus hábitos', !!m.revision], ['Leer toda la biblioteca', capsLeidas(p) >= CAPSULAS.length]] }
   ];
 }

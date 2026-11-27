@@ -33,7 +33,7 @@ Los datos que ya capturó cada persona no se borran al actualizar.
 
 ## Carpeta `fuente`
 
-El código por partes (`content.js` contenido, `core.js` cálculos, `views.js` pantallas, `aprendizaje.js` Módulo 8 y Seguir aprendiendo, `resultados.js` reportes del equipo, `main.js` acciones, `style.css` estilos). `python3 build.py` los une en `dist/index.html`. Solo hace falta para editar a fondo; para usar la app basta `index.html`.
+El código por partes (`content.js` contenido, `core.js` cálculos, `views.js` pantallas, `aprendizaje.js` Módulo 8 y Seguir aprendiendo, `fiscal_contenido.js` contenido fiscal (normas, e.firmas, TI, Módulo 9, propuesta), `fiscal.js` sus pantallas, `resultados.js` reportes del equipo, `main.js` acciones, `style.css` estilos). `python3 build.py` los une en `dist/index.html`. Solo hace falta para editar a fondo; para usar la app basta `index.html`.
 
 ## Instalable y sin conexión
 
@@ -42,3 +42,7 @@ En la dirección publicada, la app se puede agregar a la pantalla de inicio del 
 ## Agregar una cápsula a la biblioteca
 
 En `fuente/content.js`, la lista `CAPSULAS` tiene una entrada por cápsula. Copia una, cambia `id` (c09, c10…), tema, título, texto y su pregunta de comprobación, ejecuta `python3 build.py` y sube el `index.html` nuevo. El avance de las personas no se pierde.
+
+## Contenido fiscal
+
+El texto fiscal (Módulo 9, sección e.firmas y sellos, anexos 5 a 7 del kit y fundamentos) está en `fuente/fiscal_contenido.js` y `fuente/fiscal.js`. Si el contador pide cambios, se editan ahí y se vuelve a ejecutar `python3 build.py`.

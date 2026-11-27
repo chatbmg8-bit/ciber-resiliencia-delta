@@ -1,10 +1,11 @@
 /* ===== Pantallas ===== */
 const NAV = {
   despacho: [['inicio', 'Inicio'], ['capacitacion', 'Capacitación'], ['aprender', 'Seguir aprendiendo'], ['diagnostico', 'Diagnóstico'], ['reporte', 'Mi reporte'], ['encuesta', 'Encuesta']],
-  consultor: [['despachos', 'Despachos'], ['resultados', 'Resultados'], ['proceso', 'Proceso clave'], ['inventario', 'Inventario'], ['oportunidades', 'Oportunidades'], ['tablero', 'Tablero'], ['datos', 'Datos']]
+  consultor: [['despachos', 'Despachos'], ['resultados', 'Resultados'], ['proceso', 'Proceso clave'], ['inventario', 'Inventario'], ['oportunidades', 'Oportunidades'], ['propuesta', 'Propuesta'], ['tablero', 'Tablero'], ['datos', 'Datos']]
 };
 function ruta() {
   const h = (location.hash || '').replace('#', '');
+  if (h === 'efirmas' || h === 'ti') { if (S.ui.modo !== 'despacho') { S.ui.modo = 'despacho'; save(); } return 'diagnostico'; }
   for (const m of ['despacho', 'consultor']) if (NAV[m].some(x => x[0] === h)) {
     if (m === 'consultor' && !accesoOk()) { S.ui.modo = 'despacho'; save(); setTimeout(pedirAcceso, 0); return 'inicio'; }
     if (S.ui.modo !== m) { S.ui.modo = m; save(); } return h;
@@ -40,12 +41,12 @@ const RUTA = [
   ['Sesión en vivo', [['m', 4], ['m', 6]]],
   ['Después de la sesión', [['m', 8]]],
   ['Antes de la reunión de entrega', [['r', 'repaso'], ['q', 'quizFinal']]],
-  ['Complementario', [['m', 2], ['m', 3], ['m', 7]], true]
+  ['Complementario', [['m', 2], ['m', 3], ['m', 7], ['m', 9]], true]
 ];
 const PASOS_RUTA = RUTA.flatMap(([et, xs, comp]) => xs.map(x => ({ et, t: x[0], v: x[1], comp: !!comp })));
 const MINIMA = PASOS_RUTA.filter(x => !x.comp), COMPL = PASOS_RUTA.filter(x => x.comp);
 const pasoHecho = (p, x) => x.t === 'q' ? !!p[x.v] : x.t === 'r' ? !!p.repaso : !!(p.avance || [])[x.v - 1];
-const pasoTxt = x => x.t === 'q' ? (x.v === 'quizInicial' ? 'Quiz inicial' : 'Quiz final') : x.t === 'r' ? 'Repaso: lo esencial de los 8 módulos' : 'Módulo ' + x.v + '. ' + MODULOS[x.v - 1].titulo;
+const pasoTxt = x => x.t === 'q' ? (x.v === 'quizInicial' ? 'Quiz inicial' : 'Quiz final') : x.t === 'r' ? 'Repaso: lo esencial de los ' + MODULOS.length + ' módulos' : 'Módulo ' + x.v + '. ' + MODULOS[x.v - 1].titulo;
 const pasoMin = x => x.t === 'q' ? 6 : x.t === 'r' ? 5 : MODULOS[x.v - 1].min;
 const pasoDesc = x => x.t === 'q' ? '16 preguntas, unos 6 minutos.' : x.t === 'r' ? 'Los puntos clave de cada módulo, en una sola pantalla. Unos 5 minutos.' : MODULOS[x.v - 1].ejercicio + ' · ' + MODULOS[x.v - 1].min + ' min';
 const siguiente = p => MINIMA.find(x => !pasoHecho(p, x)) || COMPL.find(x => !pasoHecho(p, x));
@@ -54,7 +55,7 @@ const minLectura = m => Math.max(1, Math.round(palabras(m) / 180));
 function navEstado(id) {
   const d = D(); if (!d) return '';
   if (id === 'capacitacion') { const p = P(); if (!p) return ''; const n = MINIMA.filter(x => pasoHecho(p, x)).length; return `<span class="st ${n === MINIMA.length ? 'ok' : ''}" title="Pasos de la ruta mínima">${n}/${MINIMA.length}</span>`; }
-  if (id === 'diagnostico') { const n = diag(d.id).resp.filter(x => x != null).length; return n ? `<span class="st ${n === 30 ? 'ok' : ''}">${n}/30</span>` : ''; }
+  if (id === 'diagnostico') { const n = contestadas(diag(d.id).resp), ok = diagListo(d.id) && efListo(d.id); return n ? `<span class="st ${ok ? 'ok' : ''}" title="Diagnóstico: madurez${ok ? ', e.firmas y sellos' : ''}">${ok ? '✓' : n + '/' + DIAG.length}</span>` : ''; }
   if (id === 'encuesta') return (S.encuesta[d.id] || {}).ts ? '<span class="st ok">✓</span>' : '';
   return '';
 }
@@ -86,12 +87,12 @@ const sobreServicio = () => `<details class="sobre"><summary>Sobre el servicio: 
       <li><b>Kit del despacho:</b> plan de respuesta, controles prioritarios, procedimiento de recuperación y política de uso de IA.</li></ul>
       <p class="nota">Sin costo durante el piloto académico.</p></div>
     <div class="card"><h2>Cuánto tiempo toma</h2><table class="t"><tbody>
-      <tr><th>Antes de la sesión</th><td>≈ 25 min por persona</td><td>Quiz inicial y Módulo 1 con el simulador de mensajes fraudulentos, cada quien por su cuenta</td></tr>
+      <tr><th>Antes de la sesión</th><td>≈ 27 min por persona</td><td>Autoevaluación, quiz inicial y Módulo 1 con el simulador de mensajes fraudulentos, cada quien por su cuenta</td></tr>
       <tr><th>Sesión en vivo</th><td>60 min, por videollamada</td><td>Phishing y fraude fiscal, simulacro de ransomware y uso de IA, en equipo</td></tr>
       <tr><th>Después de la sesión</th><td>≈ 12 min por persona</td><td>Módulo 8: ejemplos de buen y mal uso de la IA</td></tr>
-      <tr><th>Antes de la reunión de entrega</th><td>≈ 11 min por persona</td><td>Repaso de lo esencial y quiz final. El dueño o socio contesta además el diagnóstico y la calculadora (≈ 25 min)</td></tr>
+      <tr><th>Antes de la reunión de entrega</th><td>≈ 11 min por persona</td><td>Repaso de lo esencial y quiz final. El dueño o socio contesta además el diagnóstico en tres partes y la calculadora (≈ 35 min; la parte de TI la puede contestar su soporte técnico)</td></tr>
       <tr><th>Reunión de entrega</th><td>45 min, por videollamada</td><td>Con el dueño o socio: reporte, plan de 30 días, prueba de restauración y encuesta</td></tr>
-      <tr><th>Complementario</th><td>≈ 25 min, opcional</td><td>Módulos 2, 3 y 7, a su ritmo durante la semana</td></tr></tbody></table><p class="nota">Todo se hace a distancia. No hace falta instalar nada. Lo obligatorio por persona suma unos 48 minutos, más la sesión en vivo. Después siguen los retos de repaso y la biblioteca, en Seguir aprendiendo.</p></div>
+      <tr><th>Complementario</th><td>≈ 40 min, opcional</td><td>Módulos 2, 3, 7 y 9 (sellos, e.firma y facturas apócrifas), a su ritmo durante la semana</td></tr></tbody></table><p class="nota">Todo se hace a distancia. No hace falta instalar nada. Lo obligatorio por persona suma unos 48 minutos, más la sesión en vivo. Después siguen los retos de repaso y la biblioteca, en Seguir aprendiendo.</p></div>
   </div>
   <div class="card"><h2>Lo que incluye la suscripción</h2><p>Después del piloto, el programa completo se imparte en tres sesiones y sigue las seis funciones del NIST Cybersecurity Framework 2.0: gobernar, identificar, proteger, detectar, responder y recuperar.</p>
     <div class="scroll"><table class="t"><thead><tr><th>Sesión</th><th>Duración</th><th>Temas</th></tr></thead><tbody>${PROGRAMA_SUSCRIPCION.map(x => `<tr><th>${x[0]}</th><td>${x[1]}</td><td>${x[2]}</td></tr>`).join('')}</tbody></table></div>
@@ -118,13 +119,15 @@ function sigueBloque(p) {
   return `${minOk ? `<div class="fb bien"><b>Terminaste la ruta mínima.</b> Ya cuentas en la medición del piloto y tu constancia está en <a href="#aprender">Seguir aprendiendo</a>. Lo que sigue es complementario: profundiza en lo que más te sirva.</div>` : ''}<div class="sigue ${sig.comp ? 'compl' : ''}"><div><p class="eyebrow">${sig.comp ? 'Complementario · a tu ritmo' : 'Tu siguiente paso · ' + sig.et.toLowerCase()}</p><h2>${pasoTxt(sig)}</h2><p>${pasoDesc(sig)}</p></div><button class="btn p" data-a="paso" data-v="${sig.t}:${sig.v}">${algo ? 'Continuar' : 'Empezar'}</button></div>`;
 }
 function dueno(d) {
-  const n = diag(d.id).resp.filter(x => x != null).length, e = S.encuesta[d.id] || {}, k = kit(d.id), cm = compromisos(d.id).length;
-  const b = (h, t, s, m, ok, extra) => `<a class="big" href="#${h}"${extra || ''}><b>${t}</b><span>${s}</span><span class="meta-b ${ok ? 'ok' : ''}">${m}</span></a>`;
-  return `<div><h2>Para el dueño o socio</h2><p class="nota" style="margin:4px 0 12px">Lo contesta una sola persona por despacho. Los dos primeros, <b>antes</b> de la reunión de entrega; los otros dos, <b>en</b> la reunión. Al terminar cada uno, la app te muestra un código para enviarlo al Equipo DELTA.</p><div class="dueno">
-    ${b('diagnostico', 'Diagnóstico', '30 preguntas sobre cómo opera hoy el despacho. 15 min o menos.', n === 30 ? '✓ Completo' : n ? n + ' de 30 contestadas →' : 'Empezar →', n === 30)}
-    ${b('capacitacion', 'Calculadora de costo', 'Cuánto le costaría al despacho un día sin operar. 8 min, con sus propios números.', calcListo(k.calculadora) ? '✓ Capturada' : 'Capturar →', calcListo(k.calculadora), ' data-a="calc"')}
-    ${b('reporte', 'Mi reporte y plan de 30 días', 'Hallazgos, plan con responsables y fechas, prueba de restauración y kit.', cm ? '✓ ' + cm + ' acciones en el plan' : n ? 'Ver reporte →' : 'Se arma con el diagnóstico', !!cm)}
-    ${b('encuesta', 'Encuesta', 'Tres minutos, al cerrar la reunión de entrega.', e.ts ? '✓ Enviada' : 'Contestar →', !!e.ts)}</div></div>`;
+  const n = contestadas(diag(d.id).resp), e = S.encuesta[d.id] || {}, k = kit(d.id), cm = compromisos(d.id).length, ne = contestadas(efirma(d.id).resp), nt = contestadas(tiDe(d.id).resp);
+  const b = (h, num, t, s, m, ok, extra) => `<a class="big" href="#${h}"${extra || ''}><b><span class="nn">${num}</span> ${t}</b><span>${s}</span><span class="meta-b ${ok ? 'ok' : ''}">${m}</span></a>`;
+  return `<div><h2>Para el dueño o socio</h2><p class="nota" style="margin:4px 0 12px">Lo contesta una sola persona por despacho, en este orden. Los cuatro primeros, <b>antes</b> de la reunión de entrega (unos 35 minutos); los dos últimos, <b>en</b> la reunión. Al terminar cada uno, la app te muestra un código para enviarlo al Equipo DELTA.</p><div class="dueno">
+    ${b('diagnostico', 1, 'Diagnóstico de madurez', DIAG.length + ' preguntas sobre cómo opera hoy el despacho. Unos 17 min.', diagListo(d.id) ? '✓ Completo' : n ? n + ' de ' + DIAG.length + ' contestadas →' : 'Empezar →', diagListo(d.id))}
+    ${b('efirmas', 2, 'e.firmas y sellos de clientes', 'Cómo se guardan y quién puede abrirlas. Sin RFC ni nombres. Unos 5 min.', efListo(d.id) ? '✓ Completo' : ne ? ne + ' de ' + EF_PREG.length + ' →' : 'Empezar →', efListo(d.id))}
+    ${b('ti', 3, 'Tecnología (TI)', 'Lo contesta quien da soporte técnico; si es externo, ahí está el enlace para enviárselo. Unos 6 min.', tiListo(d.id) ? '✓ Completo' : nt ? nt + ' de ' + TI_PREG.length + ' →' : 'Empezar o enviar →', tiListo(d.id))}
+    ${b('capacitacion', 4, 'Calculadora de costo', 'Cuánto le costaría al despacho un día sin operar. 8 min, con sus propios números.', calcListo(k.calculadora) ? '✓ Capturada' : 'Capturar →', calcListo(k.calculadora), ' data-a="calc"')}
+    ${b('reporte', 5, 'Mi reporte y plan de 30 días', 'En la reunión: hallazgos, qué te ayudamos a cumplir, plan con responsables y fechas, y kit.', cm ? '✓ ' + cm + ' acciones en el plan' : n ? 'Ver reporte →' : 'Se arma con el diagnóstico', !!cm)}
+    ${b('encuesta', 6, 'Encuesta', 'Tres minutos, al cerrar la reunión de entrega.', e.ts ? '✓ Enviada' : 'Contestar →', !!e.ts)}</div></div>`;
 }
 
 /* --- Capacitación --- */
@@ -149,8 +152,8 @@ V.capacitacion = () => {
     </div>
     <div class="card paso ${qi ? 'hecho' : ''}"><div><h2>Quiz inicial</h2><p>16 preguntas, unos 6 minutos, antes de la sesión en vivo. Contesta lo que sabes hoy; las respuestas se revisan al final del programa.</p></div>
       ${qi ? pill('Completado', 'ok') : '<button class="btn p" data-a="quiz" data-v="quizInicial">Comenzar</button>'}</div>
-    <h2 class="sep">Los 8 módulos <small>1, 4, 6 y 8 son de la ruta mínima · 2, 3 y 7 complementarios · 5 para el dueño o socio</small></h2>
-    <div class="mods">${MODULOS.map((m, i) => `<button class="mod ${av[i] ? 'hecho' : ''}" data-a="mod" data-v="${m.n}"><span class="n">${m.n}</span><span class="tx"><b>${m.titulo}</b><em>${m.ejercicio} · ${m.min} min</em></span><span class="tags">${lpill(m.lugar)}${[2, 3, 7].includes(m.n) ? pill('Complementario') : m.n === 5 ? pill('Dueño o socio') : ''}${av[i] ? pill('Completado', 'ok') : ''}</span></button>`).join('')}</div>
+    <h2 class="sep">Los ${MODULOS.length} módulos <small>1, 4, 6 y 8 son de la ruta mínima · 2, 3, 7 y 9 complementarios · 5 para el dueño o socio</small></h2>
+    <div class="mods">${MODULOS.map((m, i) => `<button class="mod ${av[i] ? 'hecho' : ''}" data-a="mod" data-v="${m.n}"><span class="n">${m.n}</span><span class="tx"><b>${m.titulo}</b><em>${m.ejercicio} · ${m.min} min</em></span><span class="tags">${lpill(m.lugar)}${[2, 3, 7, 9].includes(m.n) ? pill('Complementario') : m.n === 5 ? pill('Dueño o socio') : ''}${av[i] ? pill('Completado', 'ok') : ''}</span></button>`).join('')}</div>
     <div class="card paso ${qf ? 'hecho' : ''}"><div><h2>Quiz final</h2><p>16 preguntas equivalentes a las del inicio, con otros casos. Se contesta antes de la reunión de entrega; al terminar verás tu mejora y la explicación de cada respuesta.</p></div>
       ${qf ? pill('Completado', 'ok') : (qi ? '<button class="btn p" data-a="quiz" data-v="quizFinal">Comenzar</button>' : pill('Primero el quiz inicial'))}</div>
     <div class="card paso"><div><h2>Envía tus resultados</h2><p>Tus respuestas se guardan solo en este dispositivo. Al terminar cada etapa, copia tus resultados y pégalos en un mensaje al Equipo DELTA. No incluyen datos de clientes.</p></div><button class="btn p" data-a="codigo">Copiar mis resultados</button></div>
@@ -294,7 +297,7 @@ const EJ = {
     return `<p>Captura los datos de tu despacho. La app no usa cifras externas: todo el cálculo sale de lo que escribas aquí.</p>
       <div class="grid3">${fld('Número de empleados', inp(b + '.empleados', o))}${fld('Costo por hora por empleado (MXN)', inp(b + '.costoHora', o))}${fld('Horas de trabajo por día', inp(b + '.horasDia', o))}
       ${fld('Ingresos diarios aproximados (MXN)', inp(b + '.ingresosDia', o), 'Si esos ingresos se recuperan trabajando después, escribe 0.')}${fld('Costo estimado de recuperación técnica (MXN)', inp(b + '.recuperacion', o), 'Soporte, reinstalación, restauración.')}${fld('Clientes con entregas en riesgo', inp(b + '.clientesRiesgo', o))}
-      ${fld('Posibles recargos por cliente (MXN)', inp(b + '.recargoCliente', o), 'Estimación propia; déjalo en blanco si no aplica.')}</div>
+      ${fld('Posibles recargos por cliente (MXN)', inp(b + '.recargoCliente', o), 'Estimación propia; déjalo en blanco si no aplica.')}${fld('Utilidad o EBITDA mensual aproximado (MXN, opcional)', inp(b + '.utilidadMes', o), 'Para expresar el costo como porcentaje de tu utilidad. Solo lo ve el Equipo DELTA.')}</div>
       <h3 class="parte">Compara dos escenarios</h3>
       <div class="grid2">${fld('Días que hoy tardarían en volver a operar', inp(b + '.diasHoy', o), 'Tu mejor estimación. La prueba de restauración del Módulo 3 ayuda a afinarla.')}${fld('Días que tardarían con las medidas del plan', inp(b + '.diasMeta', o), 'Por ejemplo, con respaldo probado y un equipo de reemplazo.')}</div>
       <div id="upd-calc">${UPD.calc()}</div>
@@ -314,7 +317,7 @@ const EJ = {
 
 /* Bloques que se actualizan sin redibujar toda la pantalla */
 const UPD = {
-  diagprog: () => { const n = diag(S.ui.did).resp.filter(x => x != null).length, a = document.querySelector('nav a[href="#diagnostico"]'); if (a) a.innerHTML = 'Diagnóstico' + navEstado('diagnostico'); return `<div class="prog"><i style="width:${n / 30 * 100}%"></i></div><small><b>${n} de 30</b> contestadas${n === 30 ? ' · resultado abajo' : ''}</small>`; },
+  diagprog: () => { const n = contestadas(diag(S.ui.did).resp), N = DIAG.length, a = document.querySelector('nav.tabs a[href="#diagnostico"]'); if (a) a.innerHTML = 'Diagnóstico' + navEstado('diagnostico'); return `<div class="prog"><i style="width:${n / N * 100}%"></i></div><small><b>${n} de ${N}</b> contestadas${n === N ? ' · resultado abajo' : ''}</small>`; },
   rep: () => reporteHTML(S.ui.did),
   mapa: () => {
     const a = kit(S.ui.did).accesos, fs = a.filas.filter(f => (f.puesto || '').trim() || Object.values(f.s || {}).some(Boolean)), n = fs.length;
@@ -334,30 +337,21 @@ const UPD = {
       <tr><th>Horas improductivas</th>${r.map(x => `<td>${mxn(x.horas)}</td>`).join('')}</tr><tr><th>Ingresos no generados</th>${r.map(x => `<td>${mxn(x.ingresos)}</td>`).join('')}</tr>
       <tr><th>Recuperación técnica</th>${r.map(x => `<td>${mxn(x.recup)}</td>`).join('')}</tr><tr><th>Posibles recargos</th>${r.map(x => `<td>${mxn(x.recargos)}</td>`).join('')}</tr>
       <tr class="tot"><th>Costo estimado</th>${r.map(x => `<td>${mxn(x.total)}</td>`).join('')}</tr></tbody></table></div>
-      <p class="nota">${pill('Supuestos capturados por el despacho', 'sup')} Fórmula: empleados × costo por hora × horas por día × días + ingresos diarios × días + recuperación técnica + clientes en riesgo × recargo por cliente. No incluye la posible pérdida de clientes.</p>${calcComp(c)}`;
+      <p class="nota">${pill('Supuestos capturados por el despacho', 'sup')} Fórmula: empleados × costo por hora × horas por día × días + ingresos diarios × días + recuperación técnica + clientes en riesgo × recargo por cliente. No incluye la posible pérdida de clientes. ${utilidadTxt(c)}</p>${calcComp(c)}`;
   },
   diagres: () => {
     const did = S.ui.did, st = diagStats(did), hs = ordenGravedad(hallazgos(did).filter(h => h.origen === 'Diagnóstico'));
-    return `<div class="card resumen"><div class="rh"><div><h2>Resultado</h2><p>${st.contestadas} de 30 preguntas contestadas${st.total == null ? '' : ' · madurez general ' + Math.round(st.total) + '%'}</p></div>${sem(st.sem, st.total)}</div>
+    return `<div class="card resumen"><div class="rh"><div><h2>Resultado</h2><p>${st.contestadas} de ${DIAG.length} preguntas contestadas${st.total == null ? '' : ' · madurez general ' + Math.round(st.total) + '%'}</p></div>${sem(st.sem, st.total)}</div>
       <div class="doms">${st.dom.map(d => `<div class="dom"><span>${d.n}</span><div class="bar"><i class="b-${d.sem}" style="width:${d.pct == null ? 0 : Math.max(4, d.pct)}%"></i></div>${sem(d.sem, d.pct)}</div>`).join('')}</div>
       <p class="nota">Semáforo: rojo menos de 40%, amarillo de 40% a 70%, verde más de 70%.</p>
-      <h3>${hs.length} hallazgo(s) generados por el diagnóstico</h3>${hs.length ? `<ul class="hall">${hs.map(h => `<li><b>${h.id}</b> ${esc(h.titulo)} ${gpill(h.g)}</li>`).join('')}</ul><div class="row"><a class="btn" href="#reporte">Ver mi reporte</a>${st.contestadas === 30 ? '<button class="btn p" data-a="codigo" data-v="diag">Enviar mis resultados al Equipo DELTA</button>' : ''}</div>` : '<p class="nota">Cada respuesta "No" o "Parcialmente" genera un hallazgo con acciones sugeridas.</p>'}</div>`;
+      <h3>${hs.length} hallazgo(s) generados por el diagnóstico</h3>${hs.length ? `<ul class="hall">${hs.map(h => `<li><b>${h.id}</b> ${esc(h.titulo)} ${gpill(h.g)}</li>`).join('')}</ul>` : '<p class="nota">Cada respuesta "No" o "Parcialmente" genera un hallazgo con acciones sugeridas.</p>'}<div class="row">${st.contestadas === DIAG.length ? '<button class="btn" data-a="codigo" data-v="diag">Enviar mis resultados al Equipo DELTA</button>' : ''}${siguienteParte(did, 'diagnostico')}</div></div>`;
   },
   prochall: () => listaHall(hallazgos(S.ui.did).filter(h => h.origen === 'Proceso'), 'Marca un riesgo en cualquier paso para generar un hallazgo.'),
   invhall: () => listaHall(hallazgos(S.ui.did).filter(h => h.origen === 'Inventario'), 'Las reglas se aplican solas al capturar cada equipo.')
 };
-const listaHall = (hs, vacio) => `<div class="card"><h2>${hs.length} hallazgo(s)</h2>${hs.length ? `<div class="scroll"><table class="t"><thead><tr><th>ID</th><th>Hallazgo</th><th>Gravedad</th><th>Acción sin costo</th><th>Acción de bajo costo</th><th>Categoría Dell candidata</th></tr></thead><tbody>${ordenGravedad(hs).map(h => `<tr><th>${h.id}</th><td>${esc(h.titulo)}<br><small>${esc(h.riesgo)}</small></td><td>${gpill(h.g)}</td><td>${esc(h.a0)}</td><td>${esc(h.a1)}</td><td>${h.d ? esc(DELL[h.d]) : '—'}</td></tr>`).join('')}</tbody></table></div>` : `<p class="nota">${vacio}</p>`}</div>`;
+const listaHall = (hs, vacio) => `<div class="card"><h2>${hs.length} hallazgo(s)</h2>${hs.length ? `<div class="scroll"><table class="t"><thead><tr><th>ID</th><th>Hallazgo</th><th>Gravedad</th><th>Acción sin costo</th><th>Acción de bajo costo</th><th>Categoría Dell candidata</th></tr></thead><tbody>${ordenGravedad(hs).map(h => `<tr><th>${h.id}</th><td>${esc(h.titulo)}<br><small>${esc(h.riesgo)}</small><br>${fundHTML(h.f)}</td><td>${gpill(h.g)}</td><td>${esc(h.a0)}</td><td>${esc(h.a1)}</td><td>${h.d ? esc(DELL[h.d]) : '—'}</td></tr>`).join('')}</tbody></table></div>` : `<p class="nota">${vacio}</p>`}</div>`;
 
-/* --- Diagnóstico --- */
-V.diagnostico = () => {
-  const d = D(); if (!d) return sinDespacho();
-  const dg = diag(d.id), b = 'diagnostico.' + d.id + '.resp';
-  return `<h1>Diagnóstico de madurez</h1><p class="lead">30 preguntas en 6 áreas. Contesta con lo que pasa hoy en el despacho, no con lo que debería pasar. Toma 15 minutos o menos y no pide datos de clientes. Se guarda solo; puedes dejarlo y volver.</p>
-    <div class="diagbar" id="upd-diagprog">${UPD.diagprog()}</div>
-    ${DOMINIOS.map((dom, di) => `<div class="card dominio"><h2>${di + 1}. ${dom.n}</h2><p class="nist">Función del NIST CSF 2.0: ${dom.nist} <small>(correspondencia orientativa del Equipo DELTA)</small></p>
-      ${DIAG.slice(di * 5, di * 5 + 5).map((q, k) => { const i = di * 5 + k; return `<div class="dq"><p id="dq${i}">${i + 1}. ${q.q}</p><div class="r3" role="radiogroup" aria-labelledby="dq${i}">${['No', 'Parcialmente', 'Sí'].map((t, v) => `<label><input type="radio" name="dq${i}" value="${v}" data-num data-bind="${b}.${i}" data-upd="diagres diagprog" ${dg.resp[i] === v ? 'checked' : ''}><span>${t}</span></label>`).join('')}</div></div>`; }).join('')}</div>`).join('')}
-    <div id="upd-diagres">${UPD.diagres()}</div>${fuentesHTML(['nist', 'lfpdppp'])}`;
-};
+/* --- Diagnóstico: ver fiscal.js (tres partes) --- */
 
 /* --- Encuesta --- */
 V.encuesta = () => {
@@ -444,7 +438,7 @@ function reporteHTML(did) {
   const d = S.despachos[did], st = diagStats(did), cs = capStats(did), hs = ordenGravedad(hallazgos(did)), top = hs.slice(0, 5), k = kit(did), c = k.calculadora;
   const altas = hs.filter(h => h.g === 'alta'), ops = oportunidadesVivas(did), cats = [...new Set(ops.map(h => h.d))];
   const cm = compromisos(did), seg = (S.plan30[did] || {}).seguimiento;
-  const l1 = st.total == null ? 'El diagnóstico de madurez aún no se ha contestado.' : `La madurez general del despacho es de ${Math.round(st.total)}% (semáforo ${SEM_TXT[st.sem].toLowerCase()})${st.contestadas < 30 ? ', con ' + st.contestadas + ' de 30 preguntas contestadas' : ''}. Las áreas con más oportunidad son: ${st.dom.filter(x => x.pct != null).sort((a, b) => a.pct - b.pct).slice(0, 2).map(x => x.n.toLowerCase()).join(' y ')}.`;
+  const l1 = st.total == null ? 'El diagnóstico de madurez aún no se ha contestado.' : `La madurez general del despacho es de ${Math.round(st.total)}% (semáforo ${SEM_TXT[st.sem].toLowerCase()})${st.contestadas < DIAG.length ? ', con ' + st.contestadas + ' de ' + DIAG.length + ' preguntas contestadas' : ''}. Las áreas con más oportunidad son: ${st.dom.filter(x => x.pct != null).sort((a, b) => a.pct - b.pct).slice(0, 2).map(x => x.n.toLowerCase()).join(' y ')}.`;
   const l2 = hs.length ? `Se identificaron ${hs.length} hallazgos, ${altas.length} de gravedad alta. El principal: ${top[0].titulo.toLowerCase()} (${top[0].id}).` : 'Todavía no hay hallazgos registrados.';
   const l3 = cs.mejora == null ? 'La capacitación aún no tiene evaluación inicial y final de los mismos participantes.' : `En la capacitación, el equipo pasó de ${r1(cs.ini)}% a ${r1(cs.fin)}% (${cs.mejora >= 0 ? '+' : ''}${r1(cs.mejora)} puntos porcentuales, ${cs.pares} participante(s)).`;
   const sinCosto = altas.slice(0, 3).map(h => h.id).join(', ');
@@ -456,18 +450,25 @@ function reporteHTML(did) {
     <div class="cols2r"><div><h2>Semáforo por área</h2><table class="t semt"><tbody>${st.dom.map(x => `<tr><th>${x.n}</th><td><div class="bar"><i class="b-${x.sem}" style="width:${x.pct == null ? 0 : Math.max(4, x.pct)}%"></i></div></td><td>${sem(x.sem, x.pct)}</td></tr>`).join('')}</tbody></table></div>
     <div><h2>Resultado de la capacitación</h2><div class="grid3 res"><div class="tile"><span>Promedio inicial</span><b>${cs.ini == null ? '—' : r1(cs.ini) + '%'}</b></div><div class="tile"><span>Promedio final</span><b>${cs.fin == null ? '—' : r1(cs.fin) + '%'}</b></div><div class="tile"><span>Mejora</span><b>${cs.mejora == null ? '—' : (cs.mejora >= 0 ? '+' : '') + r1(cs.mejora) + ' pts'}</b></div></div>
       <p class="mini">${cs.n} participante(s); ${cs.pares} con evaluación inicial y final. Simulador de phishing: ${cs.phishing == null ? 'sin datos' : r1(cs.phishing) + '% de aciertos'}.</p>
-      <h2>Costo estimado de una interrupción</h2>${calcListo(c) ? `<div class="grid3 res">${[1, 2, 3].map(n => `<div class="tile"><span>${n} día${n > 1 ? 's' : ''}</span><b>${mxn(calcCosto(c, n).total)}</b></div>`).join('')}</div><p class="mini">${pill('Supuestos capturados por el despacho', 'sup')} Fuente: calculadora del Módulo 5, datos del propio despacho${c.fecha ? ', ' + fechaMx(c.fecha) : ''}. No es una cifra externa ni un pronóstico.${num(c.diasHoy) > 0 && c.diasMeta !== '' && c.diasMeta != null ? ` Según el despacho, pasar de ${r1(num(c.diasHoy))} a ${r1(num(c.diasMeta))} día(s) de interrupción evitaría unos ${mxn(calcCosto(c, num(c.diasHoy)).total - calcCosto(c, num(c.diasMeta)).total)} por incidente.` : ''}</p>` : '<p class="mini">Pendiente: el dueño captura sus datos en la calculadora del Módulo 5.</p>'}</div></div>
-    <h2>Los ${top.length || 5} hallazgos principales</h2>${top.length ? `<table class="t"><thead><tr><th>ID</th><th>Hallazgo</th><th>Impacto en el negocio</th><th>Gravedad</th></tr></thead><tbody>${top.map(h => `<tr><th>${h.id}</th><td>${esc(h.titulo)}<br><small>Origen: ${h.origen.toLowerCase()} · ${esc(h.det)}</small></td><td>${esc(h.riesgo)}</td><td>${gpill(h.g)}</td></tr>`).join('')}</tbody></table>` : '<p class="mini">Sin hallazgos todavía.</p>'}
+      <h2>Costo estimado de una interrupción</h2>${calcListo(c) ? `<div class="grid3 res">${[1, 2, 3].map(n => `<div class="tile"><span>${n} día${n > 1 ? 's' : ''}</span><b>${mxn(calcCosto(c, n).total)}</b></div>`).join('')}</div><p class="mini">${pill('Supuestos capturados por el despacho', 'sup')} Fuente: calculadora del Módulo 5, datos del propio despacho${c.fecha ? ', ' + fechaMx(c.fecha) : ''}. No es una cifra externa ni un pronóstico. ${utilidadTxt(c)}${num(c.diasHoy) > 0 && c.diasMeta !== '' && c.diasMeta != null ? ` Según el despacho, pasar de ${r1(num(c.diasHoy))} a ${r1(num(c.diasMeta))} día(s) de interrupción evitaría unos ${mxn(calcCosto(c, num(c.diasHoy)).total - calcCosto(c, num(c.diasMeta)).total)} por incidente.` : ''}</p>` : '<p class="mini">Pendiente: el dueño captura sus datos en la calculadora del Módulo 5.</p>'}</div></div>
+    ${efResumenHTML(did)}
+    <h2>Los ${top.length || 5} hallazgos principales</h2>${top.length ? `<table class="t"><thead><tr><th>ID</th><th>Hallazgo</th><th>Impacto en el negocio</th><th>Fundamento</th><th>Gravedad</th></tr></thead><tbody>${top.map(h => `<tr><th>${h.id}</th><td>${esc(h.titulo)}<br><small>Origen: ${h.origen.toLowerCase()} · ${esc(h.det)}</small></td><td>${esc(h.riesgo)}</td><td>${fundHTML(h.f)}</td><td>${gpill(h.g)}</td></tr>`).join('')}</tbody></table>` : '<p class="mini">Sin hallazgos todavía.</p>'}
+    ${cumpleHTML(did)}
     <h2>Plan priorizado</h2><div class="cols3 plan"><div><h3>Sin costo</h3>${col(hs.slice(0, 5).map(h => `<b>${h.id}</b> ${esc(h.a0)}`))}</div><div><h3>Bajo costo</h3>${col(hs.slice(0, 5).map(h => `<b>${h.id}</b> ${esc(h.a1)}`))}</div>
-      <div><h3>Con inversión</h3>${col(cats.map(cat => `${esc(DELL[cat])} <small>(${ops.filter(h => h.d === cat).map(h => h.id).join(', ')})</small>`))}<p class="mini"><i>Opciones a cotizar con un distribuidor Dell.</i> Distribuidor: ${pd(S.config.distribuidor)}. Son categorías genéricas; el Equipo DELTA no ofrece productos ni precios a nombre de Dell.</p></div></div>
+      <div><h3>Con inversión</h3>${col(cats.map(cat => `${esc(DELL[cat])} <small>(${ops.filter(h => h.d === cat).map(h => h.id).join(', ')})</small>`))}<p class="mini"><i>Opciones a cotizar con un distribuidor Dell.</i> Ver la ruta tecnológica abajo.</p></div></div>
+    ${rutaTecHTML(did)}
     <h2>Plan de 30 días</h2>${cm.length ? `<table class="t"><thead><tr><th>ID</th><th>Acción</th><th>Responsable</th><th>Fecha compromiso</th><th>Estado</th></tr></thead><tbody>${cm.map(h => `<tr><th>${h.id}</th><td>${esc(h.a0)}</td><td>${blanco(h.c.resp)}</td><td>${h.c.fecha ? fechaMx(h.c.fecha) : '<span class="linea">por definir</span>'}</td><td>${h.c.hecho ? pill('Hecho', 'ok') : '<span class="nw"><span class="box"></span> Pendiente</span>'}</td></tr>`).join('')}</tbody></table>` : '<p class="mini">Pendiente: el dueño o socio elige de 3 a 5 acciones, con responsable y fecha, en la pantalla Mi reporte.</p>'}
     <p class="mini">Llamada de seguimiento con el Equipo DELTA: ${seg ? fechaMx(seg) : '<span class="linea">fecha por definir</span>'}. En ella se revisa qué se cumplió y qué estorbó.</p>
     <h2>Siguiente paso recomendado</h2><p>${paso}</p>
+    <h2>Fundamento de los hallazgos</h2>${leyendaNormas(normasUsadas(hs.concat(CUMPLE.map(c => ({ f: c.n })))))}
     <p class="mini"><b>Alcance.</b> Este reporte es una orientación basada en lo que el despacho contestó y en lo observado durante el piloto académico. No es una auditoría, una prueba técnica de los equipos ni asesoría legal o fiscal.</p></div>
     <div class="pb"></div><div class="docp"><p class="eyebrow">Kit del despacho · Anexo 1</p></div>${planHTML(did)}
     <div class="pb"></div><div class="docp"><p class="eyebrow">Kit del despacho · Anexo 2</p></div>${controlesHTML(did)}
     <div class="pb"></div><div class="docp"><p class="eyebrow">Kit del despacho · Anexo 3</p></div>${procedimientoHTML(did)}
-    <div class="pb"></div><div class="docp"><p class="eyebrow">Kit del despacho · Anexo 4</p></div>${politicaHTML(did)}`;
+    <div class="pb"></div><div class="docp"><p class="eyebrow">Kit del despacho · Anexo 4</p></div>${politicaHTML(did)}
+    <div class="pb"></div><div class="docp"><p class="eyebrow">Kit del despacho · Anexo 5</p></div>${efirmaProcHTML(did)}
+    <div class="pb"></div><div class="docp"><p class="eyebrow">Kit del despacho · Anexo 6</p></div>${avisoHTML(did)}
+    <div class="pb"></div><div class="docp"><p class="eyebrow">Kit del despacho · Anexo 7</p></div>${lista69bHTML(did)}`;
 }
 
 /* ================= MODO CONSULTOR ================= */
@@ -487,15 +488,15 @@ V.despachos = () => {
 };
 /* Quién ha enviado qué: para saber a quién recordar */
 function seguimiento(d) {
-  const ps = participantesDe(d.id).sort((a, b) => a.alias.localeCompare(b.alias, 'es')), esp = num(d.esperados), dg = diag(d.id), nd = dg.resp.filter(x => x != null).length, k = kit(d.id), en = S.encuesta[d.id] || {};
+  const ps = participantesDe(d.id).sort((a, b) => a.alias.localeCompare(b.alias, 'es')), esp = num(d.esperados), dg = diag(d.id), nd = contestadas(dg.resp), k = kit(d.id), en = S.encuesta[d.id] || {};
   const ini = ps.filter(p => p.quizInicial).length, fin = ps.filter(p => p.quizFinal).length, par = ps.filter(p => p.quizInicial && p.quizFinal).length;
   const de = n => esp ? `<b>${n} de ${esp}</b>` : `<b>${n}</b>`, si = (x, t) => x ? `<span class="ok-t">✓ ${t || ''}</span>` : '<span class="falta">Falta</span>';
   const ult = p => { const t = p.ts; if (!t) return '—'; const f = new Date(t); return String(f.getDate()).padStart(2, '0') + '/' + String(f.getMonth() + 1).padStart(2, '0') + ' ' + String(f.getHours()).padStart(2, '0') + ':' + String(f.getMinutes()).padStart(2, '0'); };
   return `<div class="segui"><div class="row between"><h3>Quién ha enviado resultados</h3><div class="f" style="max-width:220px">${fld('Participantes esperados', inp('despachos.' + d.id + '.esperados', { type: 'number', min: 0, ph: 'Ej. 6' }))}</div></div>
-    <div class="grid4 res"><div class="tile ${esp && ini >= esp ? 'ok' : ''}"><span>Quiz inicial</span><b>${de(ini)}</b></div><div class="tile ${esp && fin >= esp ? 'ok' : ''}"><span>Quiz final</span><b>${de(fin)}</b></div><div class="tile"><span>Con los dos (cuentan para la mejora)</span><b>${de(par)}</b></div><div class="tile ${nd === 30 && en.ts ? 'ok' : ''}"><span>Dueño o socio</span><b style="font-size:1rem">Diagnóstico ${nd}/30 · ${en.ts ? 'encuesta ✓' : 'sin encuesta'}</b></div></div>
+    <div class="grid4 res"><div class="tile ${esp && ini >= esp ? 'ok' : ''}"><span>Quiz inicial</span><b>${de(ini)}</b></div><div class="tile ${esp && fin >= esp ? 'ok' : ''}"><span>Quiz final</span><b>${de(fin)}</b></div><div class="tile"><span>Con los dos (cuentan para la mejora)</span><b>${de(par)}</b></div><div class="tile ${diagListo(d.id) && efListo(d.id) && tiListo(d.id) && en.ts ? 'ok' : ''}"><span>Dueño o socio</span><b style="font-size:1rem">Diagnóstico ${nd}/${DIAG.length} · e.firmas ${efListo(d.id) ? '✓' : 'falta'} · TI ${tiListo(d.id) ? '✓' : 'falta'} · ${en.ts ? 'encuesta ✓' : 'sin encuesta'}</b></div></div>
     ${esp && ini < esp ? `<p class="fb mal">Faltan ${esp - ini} persona(s) por enviar el quiz inicial. Si alguien no aparece en la lista, todavía no ha mandado ningún código.</p>` : ''}
     ${ps.length ? `<div class="scroll"><table class="t segt"><thead><tr><th>Alias</th><th>Quiz inicial</th><th>Módulo 1</th><th>Sesión en vivo (4 y 6)</th><th>Quiz final</th><th>Última actividad</th></tr></thead><tbody>${ps.map(p => { const av = p.avance || []; return `<tr><th><button class="lnk" data-a="rp" data-v="${p.id}">${esc(p.alias)}</button></th><td>${si(p.quizInicial, p.quizInicial ? r1(p.quizInicial.pct) + '%' : '')}</td><td>${si(av[0])}</td><td>${av[3] && av[5] ? si(1) : av[3] || av[5] ? '<span class="ok-t">1 de 2</span>' : '<span class="falta">Falta</span>'}</td><td>${si(p.quizFinal, p.quizFinal ? r1(p.quizFinal.pct) + '%' : '')}</td><td>${ult(p)}</td></tr>`; }).join('')}</tbody></table></div>` : '<p class="nota">Aún no llega ningún código de este despacho. Se importan en Datos.</p>'}
-    <p class="mini">Diagnóstico ${nd === 30 ? 'completo' : nd + ' de 30'} · calculadora ${calcListo(k.calculadora) ? 'capturada' : 'pendiente'} · encuesta ${en.ts ? 'enviada' : 'pendiente'}. "Última actividad" es la hora en que la persona contestó algo en su dispositivo, según el último código recibido.</p></div>`;
+    <p class="mini">Diagnóstico ${nd === DIAG.length ? 'completo' : nd + ' de ' + DIAG.length} · e.firmas y sellos ${efListo(d.id) ? 'completo' : 'pendiente'} · TI ${tiListo(d.id) ? 'completo' : 'pendiente'} · calculadora ${calcListo(k.calculadora) ? 'capturada' : 'pendiente'} · encuesta ${en.ts ? 'enviada' : 'pendiente'}. "Última actividad" es la hora en que la persona contestó algo en su dispositivo, según el último código recibido.</p></div>`;
 }
 const enlaceDespacho = id => baseURL() + '?d=' + id;
 const sinDespachoC = () => `<div class="card aviso"><h2>Elige un despacho</h2><p>Registra o selecciona un despacho en la pantalla <a href="#despachos">Despachos</a>.</p></div>`;
@@ -523,6 +524,7 @@ V.oportunidades = () => {
   const ds = Object.values(S.despachos), tot = ds.reduce((a, d) => a + oportunidadesVivas(d.id).length, 0);
   return `<div class="row between"><h1>Oportunidades</h1><div class="tile ${tot ? 'ok' : ''} cont"><span>Oportunidades sin descartar</span><b>${tot}</b></div></div>
     <p class="lead">Hallazgos con una categoría de solución Dell candidata. Son categorías genéricas: los productos, precios y disponibilidad los define el distribuidor (${pd(S.config.distribuidor)}).</p>
+    <details class="card"><summary><b>Precios de referencia por categoría</b> · aparecen en la ruta tecnológica del reporte</summary><p class="mini">Captúralos después de hablar con el partner, como rango y con la fecha (por ejemplo: "$1,500 a $2,500 al mes, nov 2026"). Si se dejan en blanco, el reporte dice "A cotizar con el partner".</p><div class="grid2">${Object.keys(RUTA_TEC).map(c => fld(RUTA_TEC[c].nec, inp('config.precios.' + c, { ph: 'Rango indicativo y fecha' }))).join('')}</div></details>
     ${ds.length ? ds.map(d => { const ops = oportunidades(d.id), cats = [...new Set(ops.map(h => h.d))]; return `<div class="card"><h2>${esc(d.nombre)} <small>${ops.length} oportunidad(es)</small></h2>${ops.length ? cats.map(c => `<h3>${DELL[c]}</h3><div class="scroll"><table class="t"><thead><tr><th>ID</th><th>Hallazgo</th><th>Origen</th><th>Gravedad</th><th>Estado</th></tr></thead><tbody>${ops.filter(h => h.d === c).map(h => `<tr><th>${h.id}</th><td>${esc(h.titulo)}</td><td>${h.origen}</td><td>${gpill(h.g)}</td><td><select aria-label="Estado de ${h.id}" data-bind="estados.${d.id}.${h.key}" data-r>${ESTADOS.map(e => `<option${h.estado === e ? ' selected' : ''}>${e}</option>`).join('')}</select></td></tr>`).join('')}</tbody></table></div>`).join('') : '<p class="nota">Sin oportunidades todavía. Aparecen al contestar el diagnóstico, el proceso o el inventario.</p>'}</div>`; }).join('') : sinDespachoC()}`;
 };
 const EPILL = { si: ['Cumplido', 'ok'], no: ['No cumplido', 'g-alta'], pendiente: ['Pendiente', ''], parcial: ['Cumplido con datos parciales', 'g-media'] };
@@ -530,8 +532,8 @@ V.tablero = () => {
   const t = tablero(), p = v => v == null ? '—' : r1(v) + '%';
   return `<div class="row between"><h1>Tablero del piloto</h1><button class="btn p" data-a="csv">Exportar a CSV</button></div>
     <div class="card"><h2>Cumplimiento del objetivo</h2><p class="mini">Objetivo SMART al 4 de diciembre de 2026, con 2 despachos. La mejora compara dos formas equivalentes del quiz (A y B), asignadas al azar en orden cruzado. Con pocos participantes, léela junto con su n: uno o dos casos mueven el promedio.</p>${t.metas.map((m, i) => `<div class="meta"><div><b>${i + 1}. ${m.t}</b><br><small>${esc(m.d) || 'Sin despachos registrados'}</small></div>${pill(...EPILL[m.e])}</div>`).join('')}</div>
-    <div class="card"><h2>Despachos</h2><div class="scroll"><table class="t tab"><thead><tr><th>Despacho</th><th>Sesión</th><th>Participantes</th><th>Con ambos quiz (n)</th><th>Inicial</th><th>Final</th><th>Mejora</th><th>Madurez</th><th>Hallazgos</th><th>Oport. Dell</th><th>Utilidad</th><th>Precio mensual (MXN)</th><th>Paquete inicial</th><th>Plan 30 días</th><th>Días a la entrega</th><th>Horas del equipo</th></tr></thead><tbody>
-      ${t.filas.map(f => `<tr><th>${esc(f.nombre)}</th><td>${fechaMx(f.fechaSesion)}</td><td>${f.participantes}</td><td>${f.pares}</td><td>${p(f.ini)}</td><td>${p(f.fin)}</td><td>${f.mejora == null ? '—' : r1(f.mejora) + ' pts'}</td><td>${p(f.madurez)}</td><td>${f.hallazgos}</td><td>${f.oportunidades}</td><td>${f.utilidad || '—'}</td><td>${esc([f.contrataria, f.pago].filter(Boolean).join(' · ')) || '—'}</td><td>${f.pagoInicial === '' ? '—' : mxn(f.pagoInicial)}</td><td>${f.comp ? f.compHechos + ' de ' + f.comp + ' hechas' : '—'}</td><td>${f.dias == null ? '—' : f.dias}</td><td>${inp('despachos.' + f.did + '.horas', { type: 'number', min: 0 })}</td></tr>`).join('') || '<tr><td colspan="16" class="nota">Registra un despacho para empezar.</td></tr>'}</tbody></table></div></div>
+    <div class="card"><h2>Despachos</h2><div class="scroll"><table class="t tab"><thead><tr><th>Despacho</th><th>Sesión</th><th>Participantes</th><th>Con ambos quiz (n)</th><th>Inicial</th><th>Final</th><th>Mejora</th><th>Madurez</th><th>Hallazgos</th><th>Oport. Dell</th><th>Utilidad</th><th>Precio mensual (MXN)</th><th>Paquete inicial</th><th>Plan 30 días</th><th>Propuesta</th><th>Días a la entrega</th><th>Horas del equipo</th></tr></thead><tbody>
+      ${t.filas.map(f => `<tr><th>${esc(f.nombre)}</th><td>${fechaMx(f.fechaSesion)}</td><td>${f.participantes}</td><td>${f.pares}</td><td>${p(f.ini)}</td><td>${p(f.fin)}</td><td>${f.mejora == null ? '—' : r1(f.mejora) + ' pts'}</td><td>${p(f.madurez)}</td><td>${f.hallazgos}</td><td>${f.oportunidades}</td><td>${f.utilidad || '—'}</td><td>${esc([f.contrataria, f.pago].filter(Boolean).join(' · ')) || '—'}</td><td>${f.pagoInicial === '' ? '—' : mxn(f.pagoInicial)}</td><td>${f.comp ? f.compHechos + ' de ' + f.comp + ' hechas' : '—'}</td><td>${esc(f.propuesta) || '—'}</td><td>${f.dias == null ? '—' : f.dias}</td><td>${inp('despachos.' + f.did + '.horas', { type: 'number', min: 0 })}</td></tr>`).join('') || '<tr><td colspan="17" class="nota">Registra un despacho para empezar.</td></tr>'}</tbody></table></div></div>
     <div class="card"><h2>Aprendizaje aplicado</h2><p class="mini">${pill('Metas sugeridas', 'sup')} Son metas propuestas para el piloto, no estándares ni resultados observados.</p>${INDICADORES.map((x, i) => `<div class="meta"><div><b>${x[0]}</b> · meta sugerida: ${x[1]}<br><small>${esc(t.ind[i].d) || 'Sin datos'} · Se mide con: ${x[2]}</small></div>${pill(...EPILL[t.ind[i].e])}</div>`).join('')}</div>`;
 };
 V.datos = () => `<h1>Datos</h1>

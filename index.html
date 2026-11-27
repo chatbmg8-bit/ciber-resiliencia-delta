@@ -439,6 +439,26 @@ ul.req li{color:var(--suave)} ul.req li.ok{color:var(--verde);font-weight:600}
 @media (max-width:640px){.reto{grid-template-columns:60px 1fr}.reto .btn{grid-column:1/-1}.cfila{grid-template-columns:1fr}}
 .firmas span{display:block;height:0}
 
+/* Diagnóstico en tres partes, fundamentos y propuesta */
+.subtabs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:6px 0 18px}
+.subtabs a{display:flex;gap:10px;align-items:center;background:var(--papel);border:1px solid var(--borde);border-radius:10px;padding:10px 12px;text-decoration:none;color:var(--tinta)}
+.subtabs a:hover{border-color:var(--pri)}
+.subtabs a.on{border-color:var(--pri);background:var(--pri-f);box-shadow:inset 0 -3px 0 var(--pri)}
+.subtabs b{display:block;font-size:.95rem;color:var(--osc)} .subtabs small{color:var(--suave);font-size:.8rem}
+.nn{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;border-radius:50%;background:var(--pri-f);color:var(--pri-d);font-weight:700;font-size:.8rem;flex:none}
+.subtabs a.on .nn{background:var(--pri);color:#fff}
+.big b .nn{margin-right:4px;vertical-align:1px}
+.norma{display:inline-block;font-size:.7rem;font-weight:650;line-height:1.5;padding:0 6px;border-radius:4px;border:1px solid var(--borde);white-space:nowrap;cursor:help;vertical-align:1px}
+.norma.n-ley{background:#eef2f7;border-color:#c9d3e0;color:#2f4058}
+.norma.n-etica{background:#f4effa;border-color:#d8cbe8;color:#4d3a66}
+.norma.n-practica{background:var(--fondo);color:var(--suave)}
+.dq p .norma{margin-left:2px}
+.t.cumple td,.t.cumple th{vertical-align:top}
+.t.fund th{white-space:nowrap}
+.paq h2 .chk{font-size:1.1rem;font-weight:700}
+@media (max-width:640px){.subtabs{grid-template-columns:1fr}.subtabs a{padding:8px 10px}}
+@media print{.norma{border-color:#999;background:none;color:#000}}
+
 </style>
 </head>
 <body>
@@ -1071,6 +1091,183 @@ const CAPSULAS = [
     check: { q: 'Es día de vencimientos y llega un pedido urgente de pago. ¿Qué haces?', o: ['Lo pago para no retrasar más el trabajo.', 'Lo verifico por teléfono, aunque tome un minuto.', 'Lo dejo para mañana sin avisar a nadie.'], c: 1, e: 'La prisa es justo lo que busca el fraude.' } }
 ];
 
+/* ===== Contenido fiscal y de operación del servicio (comentarios de la presentación, nov 2026) =====
+   Todo el contenido fiscal de este archivo debe revisarlo el contador antes del piloto. */
+
+FUENTES.cff = { t: 'Código Fiscal de la Federación, artículos 17-D, 17-H, 17-H Bis, 17-J, 17-K, 28, 30 y 69-B, Cámara de Diputados', u: 'https://www.diputados.gob.mx/LeyesBiblio/pdf/CFF.pdf' };
+FUENTES.imcp = { t: 'IMCP · Código de Ética Profesional 2026', u: 'https://imcp.org.mx/codigo-de-etica-profesional-2026/' };
+FUENTES.regDatos = { t: 'Reglamento de la LFPDPPP, artículo 65: lo mínimo que se informa al titular ante una vulneración', u: 'https://mley.mx/Reg_LFPDPPP/articulo/65/' };
+
+/* ---- Fundamento de cada hallazgo: obligación legal, ética profesional o buena práctica ---- */
+const NORMAS = {
+  'CFF 17-D': { tipo: 'ley', t: 'CFF, art. 17-D', d: 'La e.firma sustituye a la firma autógrafa y produce los mismos efectos. Su uso es responsabilidad de su titular.' },
+  'CFF 17-H': { tipo: 'ley', t: 'CFF, art. 17-H, fr. I', d: 'El titular puede pedir que su certificado quede sin efectos, por ejemplo si se perdió o se filtró.' },
+  'CFF 17-H Bis': { tipo: 'ley', t: 'CFF, art. 17-H Bis', d: 'El SAT puede restringir temporalmente el certificado de sello digital. Hay 40 días hábiles para presentar la aclaración; al día siguiente de presentarla se restablece su uso mientras se resuelve.' },
+  'CFF 17-K': { tipo: 'ley', t: 'CFF, art. 17-K', d: 'El buzón tributario es el medio por el que el SAT notifica y envía avisos al contribuyente.' },
+  'CFF 28': { tipo: 'ley', t: 'CFF, art. 28', d: 'La contabilidad incluye registros, papeles de trabajo, estados de cuenta y documentación comprobatoria, y se lleva en medios electrónicos.' },
+  'CFF 30': { tipo: 'ley', t: 'CFF, art. 30', d: 'La contabilidad y su documentación se conservan, por regla general, cinco años desde que se presentó la declaración.' },
+  'CFF 69-B': { tipo: 'ley', t: 'CFF, art. 69-B', d: 'Operaciones inexistentes: si un proveedor aparece en el listado definitivo, quien usó sus facturas tiene 30 días para acreditar la operación o corregir su situación.' },
+  'RCFF 34': { tipo: 'ley', t: 'Reglamento del CFF, art. 34', d: 'Forma parte de la contabilidad la documentación del sistema electrónico donde se registran y procesan los datos contables.' },
+  'LFPDPPP 14-15': { tipo: 'ley', t: 'LFPDPPP, arts. 14 y 15', d: 'Aviso de privacidad y su contenido mínimo.' },
+  'LFPDPPP 18': { tipo: 'ley', t: 'LFPDPPP, art. 18', d: 'Medidas de seguridad administrativas, técnicas y físicas para proteger los datos personales.' },
+  'LFPDPPP 19': { tipo: 'ley', t: 'LFPDPPP, art. 19', d: 'Las vulneraciones que afecten de forma significativa los derechos de las personas se les informan de inmediato.' },
+  'LFPDPPP 20': { tipo: 'ley', t: 'LFPDPPP, art. 20', d: 'Quienes tratan datos personales guardan confidencialidad, incluso después de terminar la relación.' },
+  'IMCP': { tipo: 'etica', t: 'Código de Ética Profesional del IMCP', d: 'Confidencialidad y secreto profesional; competencia y diligencia profesional.' },
+  'NIST GV': { tipo: 'practica', t: 'NIST CSF 2.0 · Gobernar', d: 'Marco voluntario de buenas prácticas: responsables, reglas y supervisión.' },
+  'NIST ID': { tipo: 'practica', t: 'NIST CSF 2.0 · Identificar', d: 'Marco voluntario de buenas prácticas: saber qué se tiene y qué riesgos hay.' },
+  'NIST PR': { tipo: 'practica', t: 'NIST CSF 2.0 · Proteger', d: 'Marco voluntario de buenas prácticas: accesos, capacitación y protección de equipos y datos.' },
+  'NIST DE': { tipo: 'practica', t: 'NIST CSF 2.0 · Detectar', d: 'Marco voluntario de buenas prácticas: notar a tiempo lo que no es normal.' },
+  'NIST RS': { tipo: 'practica', t: 'NIST CSF 2.0 · Responder', d: 'Marco voluntario de buenas prácticas: qué hacer durante un incidente.' },
+  'NIST RC': { tipo: 'practica', t: 'NIST CSF 2.0 · Recuperar', d: 'Marco voluntario de buenas prácticas: volver a operar después de un incidente.' }
+};
+const TIPO_NORMA = { ley: 'Obligación legal', etica: 'Ética profesional', practica: 'Buena práctica' };
+
+/* ---- Diagnóstico: área 7 ---- */
+DOMINIOS.push({ n: 'Obligaciones fiscales digitales', nist: 'Gobernar (GV) y Responder (RS)' });
+DIAG.push(
+  { q: '¿Se revisa al menos cada semana el buzón tributario de los clientes (o los clientes reenvían sus avisos) para detectar a tiempo requerimientos o restricciones?', h: 'Buzón tributario de clientes sin revisión periódica', r: 'Un aviso de restricción o un requerimiento puede pasar días sin atenderse mientras corren los plazos.', g: 'alta', a0: 'Asignar a una persona la revisión semanal del buzón de cada cliente y anotar lo que encuentre.', a1: 'Llevar una agenda compartida de plazos por cliente, con recordatorios.' },
+  { q: '¿Se revisa a los proveedores de los clientes contra el listado del artículo 69-B (empresas que facturan operaciones simuladas) antes de registrar sus facturas?', h: 'Proveedores de clientes sin revisar contra el listado 69-B', r: 'Si un proveedor aparece en el listado definitivo, el cliente tiene un plazo corto para acreditar la operación o corregir; si no lo hace, el SAT puede restringir su sello.', g: 'alta', a0: 'Revisar cada mes el listado del SAT para los proveedores nuevos y los de mayor monto (anexo 7 del kit).', a1: 'Usar la consulta automática del software contable o del proveedor de facturación, si la ofrece.' },
+  { q: '¿La contabilidad y los XML de cada cliente se conservan completos y recuperables por al menos cinco años?', h: 'Contabilidad y XML sin garantía de conservación por cinco años', r: 'Si se pierden, el cliente no puede comprobar deducciones o saldos ante una revisión del SAT.', g: 'alta', a0: 'Confirmar que la contabilidad y los XML de los últimos cinco ejercicios están en el respaldo y que se pueden abrir.', a1: 'Respaldo automático con versiones y conservación de al menos cinco años, con una copia fuera de la oficina.', d: 'RESP' },
+  { q: '¿El sistema contable guarda una bitácora de quién capturó o modificó cada póliza, y alguien la revisa?', h: 'Sin bitácora de cambios en el sistema contable', r: 'Ante un error o una modificación indebida no se puede saber quién la hizo ni cuándo.', g: 'media', a0: 'Activar la bitácora o el registro de usuarios del sistema contable y revisarla en cada cierre.', a1: 'Usar un sistema contable con usuarios individuales y registro de cambios.' },
+  { q: '¿El despacho sabe qué hacer si el SAT restringe el certificado de sello digital de un cliente (40 días hábiles para presentar la aclaración)?', h: 'Sin procedimiento ante la restricción de un sello', r: 'El cliente no puede facturar hasta que se presenta la aclaración; si vence el plazo, el certificado queda sin efectos.', g: 'alta', a0: 'Adoptar el procedimiento del anexo 5 del kit y nombrar a quién le toca.', a1: 'Practicarlo con el personal en el Módulo 9.' }
+);
+const FUND_D = [['NIST GV', 'LFPDPPP 18'], ['LFPDPPP 18', 'IMCP'], ['LFPDPPP 14-15'], ['LFPDPPP 19', 'NIST RS'], ['LFPDPPP 20', 'IMCP'],
+  ['LFPDPPP 18', 'NIST PR'], ['NIST PR'], ['NIST PR'], ['NIST DE', 'NIST RS'], ['LFPDPPP 20', 'NIST PR'],
+  ['CFF 17-D', 'LFPDPPP 18'], ['NIST PR'], ['NIST PR'], ['NIST PR'], ['LFPDPPP 18', 'NIST PR'],
+  ['NIST ID'], ['NIST PR'], ['NIST DE'], ['LFPDPPP 18'], ['NIST DE'],
+  ['CFF 30', 'NIST RC'], ['CFF 30', 'NIST RC'], ['NIST RC'], ['NIST RC'], ['NIST RC'],
+  ['IMCP', 'NIST GV'], ['NIST ID'], ['LFPDPPP 18', 'IMCP'], ['IMCP'], ['IMCP'],
+  ['CFF 17-K', 'CFF 17-H Bis'], ['CFF 69-B', 'CFF 17-H Bis'], ['CFF 28', 'CFF 30'], ['RCFF 34', 'NIST DE'], ['CFF 17-H Bis']];
+DIAG.forEach((x, i) => { x.f = FUND_D[i] || []; });
+Object.assign(RIESGOS_PROCESO.find(x => x.k === 'canal'), { f: ['LFPDPPP 18'] });
+RIESGOS_PROCESO.forEach(x => { if (!x.f) x.f = { cifrado: ['LFPDPPP 18'], acceso: ['LFPDPPP 18'], respaldo: ['CFF 30', 'NIST RC'], usb: ['LFPDPPP 18'], ia: ['LFPDPPP 18', 'IMCP'], papel: ['LFPDPPP 18'], eliminacion: ['NIST PR'] }[x.k] || []; });
+Object.assign(REGLAS_EQ.viejo, { f: ['NIST ID'] }); Object.assign(REGLAS_EQ.sinresp, { f: ['CFF 30', 'NIST RC'] }); Object.assign(REGLAS_EQ.sinprot, { f: ['NIST PR'] }); Object.assign(REGLAS_EQ.compartido, { f: ['LFPDPPP 18'] });
+
+/* ---- e.firmas y sellos de clientes (lo contesta el dueño o socio; sin RFC ni nombres) ---- */
+const EF_CONTEOS = [
+  { k: 'efirmas', q: '¿Cuántas e.firmas de clientes guarda el despacho?', o: ['Ninguna', '1 a 10', '11 a 50', 'Más de 50'] },
+  { k: 'csd', q: '¿Cuántos certificados de sello digital (CSD) de clientes guarda?', o: ['Ninguno', '1 a 10', '11 a 50', 'Más de 50'] },
+  { k: 'personas', q: '¿Cuántas personas del despacho pueden abrir esos archivos?', o: ['Solo una', '2 o 3', 'Más de 3', 'Todo el personal'] }
+];
+const EF_PREG = [
+  { q: '¿Los archivos de cada e.firma y sello (.key y .cer) están en una carpeta cifrada o una bóveda, y no en el correo, WhatsApp, memorias USB o carpetas compartidas abiertas?', h: 'Archivos de e.firma y sello en lugares sin protección', r: 'Quien obtenga el archivo y su contraseña puede presentar trámites y tramitar sellos a nombre del cliente.', g: 'alta', a0: 'Mover los archivos a una carpeta cifrada con acceso solo para quien los usa, y borrarlos del correo, WhatsApp y memorias USB.', a1: 'Usar una bóveda que guarde archivos cifrados y registre quién los abre.', d: 'GEST', f: ['CFF 17-D', 'LFPDPPP 18'] },
+  { q: '¿Las contraseñas de las e.firmas se guardan separadas de los archivos, en un gestor de contraseñas (no en hojas de cálculo, notas o junto al archivo)?', h: 'Contraseñas de e.firma junto a los archivos o en hojas de cálculo', r: 'Si alguien copia la carpeta, se lleva el archivo y la contraseña al mismo tiempo.', g: 'alta', a0: 'Pasar las contraseñas a un gestor de contraseñas y borrarlas de hojas de cálculo y notas.', a1: 'Gestor de contraseñas para equipos, con permisos por cliente.', f: ['CFF 17-D', 'LFPDPPP 18'] },
+  { q: '¿Solo pueden abrirlas las personas que hacen los trámites de ese cliente?', h: 'Más personas con acceso a las e.firmas de las necesarias', r: 'Cada persona con acceso es un punto más por donde puede salir una e.firma.', g: 'media', a0: 'Dejar el acceso solo a quien hace los trámites de cada cliente y revisar la lista cada trimestre.', a1: 'Organizar la bóveda por cliente, con permisos individuales.', f: ['LFPDPPP 18', 'NIST PR'] },
+  { q: '¿Cada cliente autorizó por escrito que el despacho guarde y use su e.firma, y para qué trámites?', h: 'Sin autorización escrita para guardar y usar la e.firma de clientes', r: 'Ante un uso indebido no queda claro qué autorizó el cliente ni a qué se comprometió el despacho.', g: 'media', a0: 'Agregar a la carta de servicios una cláusula sobre el resguardo y uso de la e.firma: para qué trámites, quién la usa y cómo se devuelve.', a1: 'Revisar la cláusula con un asesor legal.', f: ['CFF 17-D', 'IMCP'] },
+  { q: '¿Se lleva un registro de quién usó cada e.firma, cuándo y para qué trámite?', h: 'Sin registro de uso de las e.firmas', r: 'Si aparece un trámite que nadie reconoce, no hay forma de saber quién usó la e.firma ni cuándo.', g: 'media', a0: 'Llevar una bitácora sencilla: cliente, trámite, fecha y quién usó la e.firma.', a1: 'Usar una herramienta que registre cada uso de forma automática.', f: ['LFPDPPP 18', 'NIST DE'] },
+  { q: '¿Se lleva control de vencimientos y se avisa al cliente antes de que venza su e.firma o su sello?', h: 'Sin control de vencimientos de e.firmas y sellos', r: 'Un certificado vencido detiene declaraciones o facturación justo cuando se necesita.', g: 'baja', a0: 'Anotar el vencimiento de cada e.firma y sello y avisar al cliente con un mes de anticipación.', a1: 'Recordatorios automáticos en el calendario del despacho.', f: ['NIST ID'] },
+  { q: 'Cuando alguien deja el despacho, ¿se revisa ese mismo día qué e.firmas y contraseñas conocía, y se actúa?', h: 'e.firmas expuestas cuando sale personal', r: 'Una persona que ya no trabaja en el despacho podría conservar copias de e.firmas y contraseñas de clientes.', g: 'alta', a0: 'Al salir alguien, revisar ese día qué e.firmas conocía. Si pudo copiar archivo y contraseña, avisar al cliente y pedir que la deje sin efectos y tramite una nueva.', a1: 'Bóveda con acceso individual que se retira en un solo paso.', f: ['CFF 17-H', 'LFPDPPP 20'] },
+  { q: 'Al terminar la relación con un cliente, ¿se borran del despacho sus archivos de e.firma y sello, y se le deja constancia?', h: 'Archivos de clientes anteriores siguen en el despacho', r: 'Se acumulan e.firmas de clientes que ya no se atienden, expuestas sin necesidad.', g: 'media', a0: 'Al terminar el servicio, borrar los archivos y dejar constancia por escrito al cliente.', a1: 'Revisión anual de la bóveda para retirar lo que ya no se usa.', f: ['LFPDPPP 20'] },
+  { q: '¿El despacho sabe cómo pedir que una e.firma quede sin efectos si se pierde o se filtra?', h: 'Sin procedimiento ante la pérdida o filtración de una e.firma', r: 'Mientras se averigua qué hacer, quien tenga la e.firma puede seguir usándola.', g: 'alta', a0: 'Adoptar el procedimiento del anexo 5 del kit y tenerlo impreso.', a1: 'Practicarlo con el personal en el Módulo 9.', f: ['CFF 17-H'] }
+];
+
+/* ---- Cuestionario de tecnología: lo contesta quien da soporte técnico (interno o externo) ---- */
+const TI_DATOS = [
+  { k: 'soporte', q: '¿Quién da soporte técnico al despacho?', o: ['Personal del despacho', 'Un proveedor externo', 'Un familiar o conocido', 'Nadie en particular'] },
+  { k: 'equipos', q: '¿Cuántas computadoras usa el despacho?', num: true },
+  { k: 'viejos', q: '¿Cuántas de ellas tienen más de 4 años?', num: true },
+  { k: 'so', q: '¿Qué sistemas operativos usan? Marca todos los que haya.', multi: ['Windows 11', 'Windows 10', 'macOS', 'Otro'] },
+  { k: 'datos', q: '¿Dónde se guarda la información de los clientes?', o: ['En un servidor o NAS de la oficina', 'En la nube (OneDrive, Google Drive, Dropbox u otra)', 'En cada computadora', 'En varios de esos lugares'] },
+  { k: 'contable', q: '¿Cómo se usa el sistema contable?', o: ['En la nube', 'Instalado en un servidor del despacho', 'Instalado en cada computadora'] },
+  { k: 'respaldo', q: '¿Qué respaldo tienen hoy?', o: ['Ninguno', 'Un disco externo que alguien conecta', 'Automático en la oficina (servidor o NAS)', 'Automático en la nube', 'Automático en la oficina y en la nube'] }
+];
+const TI_PREG = [
+  { q: '¿El Wi-Fi de invitados está separado de la red donde trabajan las computadoras del despacho?', h: 'Wi-Fi de invitados en la misma red que los equipos', r: 'Un visitante o un dispositivo infectado queda en la misma red que la información de los clientes.', g: 'media', a0: 'Crear una red de invitados separada en el módem o router.', a1: 'Router con redes separadas y administración central.', f: ['NIST PR'] },
+  { q: '¿El trabajo desde casa se hace por una conexión segura (VPN o servicio con verificación en dos pasos), y no con programas de control remoto abiertos?', h: 'Acceso remoto sin protección', r: 'Los programas de control remoto expuestos son una vía común de entrada para el ransomware.', g: 'alta', a0: 'Desinstalar los programas de control remoto que no se usen y activar la verificación en dos pasos en los que sí.', a1: 'Acceso remoto por VPN o servicio administrado, con registro de conexiones.', d: 'GEST', f: ['NIST PR'] },
+  { q: '¿El personal trabaja con usuarios sin permisos de administrador en sus computadoras?', h: 'Personal con permisos de administrador', r: 'Un programa malicioso que abre el usuario se instala con permisos completos.', g: 'media', a0: 'Dejar una cuenta de administrador por equipo que no se usa para el trabajo diario.', a1: 'Administración central de los equipos.', d: 'GEST', f: ['NIST PR'] },
+  { q: '¿El correo del despacho tiene activados los filtros contra fraude y suplantación de su proveedor?', h: 'Correo sin filtros contra suplantación', r: 'Llegan más correos falsos que se hacen pasar por el SAT, bancos o clientes.', g: 'media', a0: 'Activar los filtros de fraude y suplantación que incluye el proveedor de correo.', a1: 'Configurar el dominio del despacho con los registros que validan al remitente (SPF, DKIM y DMARC).', f: ['NIST PR'] },
+  { q: '¿El módem o router tiene una contraseña de administración distinta a la de fábrica y está actualizado?', h: 'Módem o router con la configuración de fábrica', r: 'Las contraseñas de fábrica y los equipos sin actualizar facilitan entrar a la red del despacho.', g: 'media', a0: 'Cambiar la contraseña de administración del módem y revisar que tenga la versión más reciente.', a1: 'Router de uso empresarial con actualizaciones.', f: ['NIST PR'] },
+  { q: '¿Todos los programas instalados tienen licencia y soporte vigente?', h: 'Programas sin licencia o sin soporte', r: 'No reciben actualizaciones de seguridad y pueden traer programas maliciosos.', g: 'media', a0: 'Hacer la lista de programas instalados y retirar los que no tengan licencia o soporte.', a1: 'Licencias por suscripción, con actualizaciones incluidas.', f: ['NIST PR'] }
+];
+const TI_REGLAS = {
+  sinSoporte: { h: 'Nadie da soporte técnico al despacho', r: 'Ante una falla o un ataque no hay a quién llamar, y cada hora cuenta.', g: 'alta', a0: 'Identificar a un proveedor de soporte y anotarlo en el plan de respuesta.', a1: 'Contratar soporte con un tiempo de respuesta acordado.', d: 'MDR', f: ['NIST RS'] },
+  win10: { h: 'Computadoras con Windows 10', r: 'Windows 10 dejó de recibir soporte de Microsoft en octubre de 2025, salvo con el programa de actualizaciones extendidas.', g: 'alta', a0: 'Revisar qué equipos pueden actualizarse a Windows 11 y hacerlo.', a1: 'Renovar los equipos que no pueden actualizarse.', d: 'RENOV', f: ['NIST PR'] },
+  viejos: { h: 'Computadoras con más de 4 años', r: 'Los equipos antiguos fallan más y pueden dejar de recibir actualizaciones de seguridad.', g: 'media', a0: 'Revisar si aún reciben actualizaciones y planear su sustitución.', a1: 'Renovación escalonada, empezando por los equipos que guardan información de clientes.', d: 'RENOV', f: ['NIST ID'] }
+};
+
+/* ---- Módulo 9 ---- */
+MODULOS.push({
+  n: 9, titulo: 'Sellos, e.firma y facturas apócrifas: el riesgo fiscal de un incidente', tema: 'e.firma, sellos digitales y listado 69-B', lugar: 'Autoaprendizaje · se muestra en la sesión en vivo', min: 14,
+  solo: 'Es complementario. El simulador también se puede recorrer en grupo durante la sesión en vivo, con la pantalla compartida.',
+  ejercicio: 'Simulador «Un día sin sello»',
+  guia: ['¿Dónde están hoy las e.firmas de los clientes y quién puede abrirlas?', '¿Qué haría el despacho mañana si un cliente no puede facturar?', '¿Quién revisa los buzones tributarios y cada cuánto?'],
+  leccion: [
+    ['Por qué le importa a tu despacho', 'El despacho guarda las llaves fiscales de sus clientes: e.firmas, sellos digitales y contraseñas. Si una se filtra, alguien puede presentar trámites o emitir facturas a nombre del cliente. Y si el SAT restringe el sello de un cliente, ese cliente no puede facturar. Un incidente de seguridad se vuelve, muy rápido, un problema fiscal.'],
+    ['e.firma, sello y Contraseña: qué abre cada uno', '<ul><li><b>e.firma:</b> sustituye a la firma autógrafa (art. 17-D del CFF). Con ella se presentan trámites y declaraciones y se pueden tramitar sellos digitales. Su uso es responsabilidad de su titular.</li><li><b>Certificado de sello digital (CSD):</b> sirve para emitir facturas.</li><li><b>Contraseña (antes CIEC):</b> da acceso al portal del SAT.</li></ul><p>Cambiar la contraseña de una e.firma no sirve si alguien ya copió el archivo con su contraseña anterior. Si se pierde o se filtra, el titular puede pedir que quede sin efectos (art. 17-H, fr. I del CFF) y tramitar una nueva.</p>'],
+    ['Cuando el SAT restringe un sello', '<p>El artículo 17-H Bis del CFF permite al SAT restringir temporalmente un sello por causas como no presentar declaraciones, no ser localizado, que los ingresos declarados no coincidan con las facturas, recibir facturas de un proveedor del listado 69-B sin corregir, o tener mal los medios de contacto del buzón tributario.</p><ul><li>Hay <b>40 días hábiles</b> para presentar la aclaración.</li><li>Al día siguiente de presentarla se restablece el uso del sello mientras el SAT resuelve.</li><li>Si no se presenta en el plazo, o no se corrige, el certificado queda sin efectos.</li></ul><p>La notificación llega al buzón tributario. Revisarlo cada semana es lo que da tiempo de reaccionar.</p>'],
+    ['Facturas apócrifas: el listado 69-B', '<p>El SAT publica a quienes presume que facturan operaciones inexistentes y, después, el listado definitivo. Si un proveedor de tu cliente aparece en el listado definitivo, tu cliente tiene <b>30 días</b> para demostrar que la operación sí ocurrió o corregir su situación. Si no lo hace, su sello puede restringirse.</p><p>Por eso conviene revisar a los proveedores nuevos y a los de mayor monto contra el listado del SAT antes de registrar sus facturas.</p>'],
+    ['Lo que el despacho sí controla', '<ol><li>e.firmas y sellos en una carpeta cifrada, con acceso solo para quien hace los trámites.</li><li>Contraseñas en un gestor, separadas de los archivos.</li><li>Registro de quién usó cada e.firma y para qué.</li><li>Ese mismo día, revisar qué conocía quien deja el despacho.</li><li>Revisar los buzones tributarios cada semana.</li><li>Tener impreso el procedimiento del kit para cuando algo se pierda.</li></ol>']
+  ],
+  clave: ['La e.firma vale como la firma del cliente: se guarda cifrada, con acceso mínimo y separada de su contraseña.', 'Si se pierde o se filtra, se pide que quede sin efectos; cambiarle la contraseña no basta.', 'Ante una restricción del sello hay 40 días hábiles para aclarar; el buzón tributario se revisa cada semana.'],
+  fuentes: ['cff', 'satPortal']
+});
+
+/* Simulador «Un día sin sello»: [texto, correcto, retroalimentación, días que el cliente no factura] */
+const SELLO = {
+  intro: 'Escenario ficticio para capacitación. Lunes, 9:00. Un cliente persona moral llama: su sistema rechaza las facturas y en el portal del SAT aparece que su certificado de sello digital está restringido. Hace un mes dejó el despacho un auxiliar que llevaba sus trámites. La e.firma del cliente estaba en una carpeta compartida y su contraseña, en una hoja de cálculo.',
+  pasos: [
+    { q: '1. ¿Qué hacen primero?', o: [
+      ['Tramitar hoy mismo un sello nuevo con la e.firma del cliente, para que vuelva a facturar.', false, 'Mientras no se atienda la causa, un sello nuevo no resuelve el problema. Y si la e.firma se filtró, quien la tenga también puede tramitar sellos.', 3],
+      ['Revisar el buzón tributario del cliente: qué causa señala el SAT y desde qué fecha corre el plazo.', true, 'Correcto. La notificación dice la causa y desde cuándo corren los 40 días hábiles para presentar la aclaración.', 0.5],
+      ['Esperar dos o tres días: a veces es una falla del portal y se arregla sola.', false, 'Puede ser una falla, pero hay que confirmarlo hoy. Si es una restricción, el plazo ya está corriendo y el cliente no factura.', 3]] },
+    { q: '2. El aviso dice que los ingresos declarados no coinciden con las facturas emitidas. En el portal aparecen facturas a nombre del cliente que nadie reconoce. ¿Qué hacen con la e.firma?', o: [
+      ['Cambiar la contraseña de la e.firma y seguir usándola.', false, 'Si alguien copió el archivo con su contraseña anterior, cambiarla no lo detiene. La e.firma comprometida se deja sin efectos.', 4],
+      ['Con el cliente, pedir que su e.firma quede sin efectos y tramitar una nueva; descargar y guardar las facturas que no reconoce.', true, 'Correcto. El titular puede pedir que su certificado quede sin efectos (art. 17-H, fr. I del CFF). Las facturas descargadas son evidencia para la aclaración.', 1],
+      ['Cancelar de inmediato todas esas facturas desde el portal.', false, 'Cancelar sin analizar no atiende la causa y no siempre es posible sin la aceptación de quien las recibió. Primero se documentan y se analizan con el cliente.', 3]] },
+    { q: '3. ¿Cómo averiguan por dónde salió la e.firma?', o: [
+      ['Revisan quién tenía acceso al archivo y a la contraseña, y desde cuándo: la carpeta compartida, la hoja de contraseñas y el auxiliar que se fue.', true, 'Correcto. Saber cómo salió evita que vuelva a pasar con otros clientes.', 0],
+      ['No hace falta: con la e.firma nueva el problema quedó resuelto.', false, 'La causa sigue ahí. Las demás e.firmas están en la misma carpeta y con la misma hoja de contraseñas.', 2],
+      ['Suponen que fue el cliente quien la compartió y se lo dicen.', false, 'Culpar sin revisar daña la relación, y la e.firma estaba bajo resguardo del despacho.', 2]] },
+    { q: '4. ¿Qué le dicen al cliente?', o: [
+      ['Nada hasta tener todo resuelto, para no alarmarlo.', false, 'El cliente necesita saberlo para protegerse. La ley de datos personales pide informar de inmediato las vulneraciones que afecten de forma significativa a la persona.', 2],
+      ['Le explican con hechos qué pasó, qué pudo verse afectado, qué están haciendo y qué le recomiendan, y lo dejan por escrito.', true, 'Correcto. Es lo que pide la LFPDPPP y lo que conserva la confianza. El kit trae una plantilla de aviso (anexo 6).', 0],
+      ['Que fue un error del SAT y que ya lo están arreglando.', false, 'No es cierto y deja al cliente sin las recomendaciones para protegerse.', 2]] },
+    { q: '5. ¿Cómo atienden la restricción del sello?', o: [
+      ['Presentan la aclaración con sus pruebas dentro de los 40 días hábiles.', true, 'Correcto. Según el art. 17-H Bis del CFF, al día siguiente de presentarla se restablece el uso del sello mientras el SAT resuelve.', 1],
+      ['Esperan a que pasen los 40 días: después el sello se reactiva solo.', false, 'Es al revés: si no se presenta la aclaración en el plazo, el SAT deja sin efectos el certificado.', 20],
+      ['Mientras se resuelve, el cliente factura con el RFC de un familiar.', false, 'Eso sería simular operaciones: agrava el problema fiscal del cliente y del familiar.', 15]] },
+    { q: '6. ¿Y las demás e.firmas que guarda el despacho?', o: [
+      ['Solo cambian la de este cliente: las demás no han tenido problemas.', false, 'Estaban en la misma carpeta y con la misma hoja de contraseñas. Si salió una, pudieron salir todas.', 5],
+      ['Revisan todas: dónde están, quién tiene acceso y quién se fue. Las mueven a un lugar cifrado y, si alguna pudo filtrarse, avisan a ese cliente.', true, 'Correcto. Es justo lo que revisa la sección «e.firmas y sellos» del diagnóstico.', 0],
+      ['Borran todas las e.firmas del despacho y piden a cada cliente que haga sus trámites en persona.', false, 'Detiene el riesgo, pero también el servicio. Mejor resguardarlas bien y limitar el acceso.', 3]] }
+  ]
+};
+
+RETOS.push(
+  { m: 9, q: 'Un auxiliar dejó el despacho y conocía la contraseña de la e.firma de un cliente. ¿Qué basta hacer?', o: ['Cambiar la contraseña de la e.firma.', 'Revisar si pudo copiar el archivo; si pudo, el cliente pide que quede sin efectos y tramita una nueva.', 'Nada, si se fue en buenos términos.'], c: 1, e: 'Si copió el archivo con la contraseña anterior, cambiarla no lo detiene. La e.firma comprometida se deja sin efectos.' },
+  { m: 9, q: 'El SAT restringió el sello de un cliente. ¿Cuánto tiempo hay para presentar la aclaración?', o: ['40 días hábiles.', '5 días naturales.', 'No hay plazo: el sello se reactiva solo.'], c: 0, e: 'El art. 17-H Bis del CFF da 40 días hábiles. Al día siguiente de presentar la aclaración se restablece su uso mientras se resuelve.' },
+  { m: 9, q: 'Un proveedor nuevo de un cliente factura montos altos. ¿Qué revisas antes de registrar sus facturas?', o: ['Que el XML abra bien.', 'Que el proveedor no esté en el listado del artículo 69-B del SAT.', 'Que la factura tenga logotipo.'], c: 1, e: 'Si el proveedor aparece en el listado definitivo, el cliente tendría que acreditar la operación o corregir, y su sello puede restringirse.' }
+);
+
+/* ---- Qué te ayudamos a cumplir (estado según las respuestas del despacho) ---- */
+const CUMPLE = [
+  { t: 'Resguardo de e.firmas y sellos de clientes', n: ['CFF 17-D', 'CFF 17-H'], d: [11], ef: true, como: 'Sección «e.firmas y sellos», Módulo 9 y anexo 5 del kit' },
+  { t: 'Atención a restricciones de sellos y al listado 69-B', n: ['CFF 17-H Bis', 'CFF 69-B', 'CFF 17-K'], d: [31, 32, 35], como: 'Módulo 9 y anexos 5 y 7 del kit' },
+  { t: 'Conservación de la contabilidad y los XML por cinco años', n: ['CFF 28', 'CFF 30'], d: [21, 22, 33], como: 'Módulo 3, prueba de restauración y anexo 3 del kit' },
+  { t: 'Medidas de seguridad para los datos personales', n: ['LFPDPPP 18'], d: [2, 6, 13, 14, 15, 19], como: 'Diagnóstico, capacitación y plan de 30 días' },
+  { t: 'Aviso a los afectados si hay una vulneración', n: ['LFPDPPP 19'], d: [4], como: 'Plan de respuesta (anexo 1) y plantilla de aviso (anexo 6)' },
+  { t: 'Confidencialidad y secreto profesional', n: ['LFPDPPP 20', 'IMCP'], d: [5, 10, 28], como: 'Módulos 6, 7 y 8 y política de uso de IA (anexo 4)' },
+  { t: 'Aviso de privacidad', n: ['LFPDPPP 14-15'], d: [3], como: 'Acción en el plan de 30 días' }
+];
+
+/* ---- Ruta tecnológica: opciones genéricas por necesidad; los precios los confirma el partner ---- */
+const RUTA_TEC = {
+  RESP: { nec: 'Respaldo y recuperación', chica: 'Respaldo automático en la nube como servicio, con versiones y conservación de al menos cinco años.', grande: 'Equipo de respaldo en la oficina, con una copia adicional en la nube.', ej: 'Ejemplos del portafolio Dell, a validar con el partner: Dell APEX Backup Services (nube) o equipos PowerProtect o PowerVault (en la oficina).' },
+  RENOV: { nec: 'Renovación de equipos', chica: 'Equipos comerciales con soporte y actualizaciones vigentes, empezando por los que guardan información de clientes.', ej: 'Modelos y configuración a definir con el partner.' },
+  PROT: { nec: 'Protección de equipos', chica: 'Antivirus administrado desde una consola central.', ej: 'A definir con el partner.' },
+  GEST: { nec: 'Gestión de equipos y accesos', chica: 'Administración central de equipos, cuentas, bóveda de e.firmas y acceso remoto.', ej: 'A definir con el partner.' },
+  MDR: { nec: 'Detección y respuesta', chica: 'Servicio de detección gestionada: alguien vigila las alertas y responde.', ej: 'Ejemplo a validar con el partner: Dell Managed Detection and Response.' },
+  IA: { nec: 'IA con los datos en el equipo', chica: 'Equipos con capacidad de IA local, para no subir datos de clientes a servicios externos.', ej: 'A definir con el partner.' }
+};
+
+/* ---- Propuesta de servicio (la arma el Equipo DELTA en la reunión de entrega) ---- */
+const PAQUETES = [
+  { k: 'cap', t: 'Capacitación continua', tipo: 'al mes', inc: ['Sesión trimestral en vivo con simulacro', 'Retos de repaso y cápsulas nuevas para todo el personal', 'Módulos nuevos cuando cambien los riesgos o las reglas del SAT', 'Reporte de avance por persona y del despacho'] },
+  { k: 'acomp', t: 'Diagnóstico y acompañamiento', tipo: 'al mes', inc: ['Seguimiento del plan a los 30, 60 y 90 días', 'Rediagnóstico cada seis meses', 'Revisión del resguardo de e.firmas y sellos', 'Actualización del plan de respuesta y de los procedimientos del kit'] },
+  { k: 'tec', t: 'Implementación tecnológica con el partner', tipo: 'pago único', inc: ['Ruta tecnológica del reporte, cotizada por el partner', 'Acompañamiento en la compra y la puesta en marcha', 'Prueba de restauración después de implementar'] }
+];
+const DECISIONES = ['Aprobado', 'Le interesa: pide cotización', 'Lo va a pensar', 'No por ahora'];
+
 /* ===== Estado, almacenamiento y cálculos ===== */
 const LS_KEY = 'delta_crs_v1';
 const POR_DEFINIR = '[POR DEFINIR]';
@@ -1078,8 +1275,8 @@ const ESTADOS = ['Por validar con distribuidor Dell', 'Validado', 'Descartado'];
 const GVAL = { alta: 0, media: 1, baja: 2 };
 
 function blank() {
-  return { v: 2, despachos: {}, participantes: {}, diagnostico: {}, proceso: {}, equipos: {}, kit: {}, encuesta: {}, hids: {}, estados: {}, plan30: {},
-    config: { rangos: '', distribuidor: '' }, ui: { modo: 'despacho', did: null, pid: null } };
+  return { v: 2, despachos: {}, participantes: {}, diagnostico: {}, proceso: {}, equipos: {}, kit: {}, encuesta: {}, hids: {}, estados: {}, plan30: {}, efirma: {}, ti: {}, propuesta: {},
+    config: { rangos: '', distribuidor: '', precios: {} }, ui: { modo: 'despacho', did: null, pid: null } };
 }
 let memStore = null;
 function load() {
@@ -1090,7 +1287,8 @@ function load() {
 const ALMACEN_OK = (() => { try { const k = LS_KEY + '_t'; localStorage.setItem(k, '1'); localStorage.removeItem(k); return true; } catch (e) { return false; } })();
 /* Migración de datos guardados con versiones anteriores de la app */
 function migrar(x) {
-  ['despachos', 'participantes', 'diagnostico', 'proceso', 'equipos', 'kit', 'encuesta', 'hids', 'estados', 'plan30'].forEach(k => { if (!x[k] || typeof x[k] !== 'object') x[k] = {}; });
+  ['despachos', 'participantes', 'diagnostico', 'proceso', 'equipos', 'kit', 'encuesta', 'hids', 'estados', 'plan30', 'efirma', 'ti', 'propuesta'].forEach(k => { if (!x[k] || typeof x[k] !== 'object') x[k] = {}; });
+  x.config = Object.assign({ rangos: '', distribuidor: '', precios: {} }, x.config || {}); if (!x.config.precios) x.config.precios = {};
   x.ui = Object.assign({ modo: 'despacho', did: null, pid: null }, x.ui || {});
   Object.values(x.participantes).forEach(p => { if (!Array.isArray(p.avance)) p.avance = []; });
   x.v = 2; return x;
@@ -1120,7 +1318,7 @@ function setPath(path, val) {
   const ks = path.split('.'); let o = S;
   for (let i = 0; i < ks.length - 1; i++) { if (o[ks[i]] == null || typeof o[ks[i]] !== 'object') o[ks[i]] = {}; o = o[ks[i]]; }
   o[ks[ks.length - 1]] = val;
-  const depth = ks[0] === 'kit' ? 3 : (['despachos', 'participantes', 'diagnostico', 'proceso', 'equipos', 'encuesta', 'plan30'].includes(ks[0]) ? 2 : 0);
+  const depth = ks[0] === 'kit' ? 3 : (['despachos', 'participantes', 'diagnostico', 'proceso', 'equipos', 'encuesta', 'plan30', 'efirma', 'ti', 'propuesta'].includes(ks[0]) ? 2 : 0);
   if (depth && ks.length > depth) { let c = S; for (let i = 0; i < depth; i++) c = c[ks[i]]; if (c && typeof c === 'object') c.ts = Date.now(); }
   save();
 }
@@ -1176,7 +1374,7 @@ function proponerPlan(did) {
   if (!pl.seguimiento) pl.seguimiento = masDias(30);
   pl.ts = Date.now(); save(); return hs.length;
 }
-function diag(did) { if (!S.diagnostico[did]) S.diagnostico[did] = { resp: Array(30).fill(null) }; return S.diagnostico[did]; }
+function diag(did) { if (!S.diagnostico[did]) S.diagnostico[did] = { resp: Array(DIAG.length).fill(null) }; return S.diagnostico[did]; }
 
 /* --- Diagnóstico --- */
 function semaforo(p) { return p == null ? 'gris' : p < 40 ? 'rojo' : p <= 70 ? 'amarillo' : 'verde'; }
@@ -1205,11 +1403,12 @@ function reglasEquipo(e) {
 function hallazgos(did) {
   const out = [];
   const dg = S.diagnostico[did];
-  if (dg) DIAG.forEach((x, i) => { const v = dg.resp[i]; if (v === 0 || v === 1) out.push({ key: 'D' + (i + 1), origen: 'Diagnóstico', det: DOMINIOS[Math.floor(i / 5)].n, titulo: x.h, riesgo: x.r, g: x.g, a0: x.a0, a1: x.a1, d: x.d || null, resp: v }); });
+  if (dg) DIAG.forEach((x, i) => { const v = dg.resp[i]; if (v === 0 || v === 1) out.push({ key: 'D' + (i + 1), origen: 'Diagnóstico', det: DOMINIOS[Math.floor(i / 5)].n, titulo: x.h, riesgo: x.r, g: x.g, a0: x.a0, a1: x.a1, d: x.d || null, f: x.f, resp: v }); });
   const pr = S.proceso[did];
-  if (pr) pr.pasos.forEach((p, pi) => RIESGOS_PROCESO.forEach(x => { if (p.riesgos && p.riesgos[x.k]) out.push({ key: 'P' + (pi + 1) + '-' + x.k, origen: 'Proceso', det: PASOS_PROCESO[pi], titulo: x.h + ' (paso: ' + PASOS_PROCESO[pi].toLowerCase() + ')', riesgo: x.r, g: x.g, a0: x.a0, a1: x.a1, d: x.d || null, resp: 0 }); }));
+  if (pr) pr.pasos.forEach((p, pi) => RIESGOS_PROCESO.forEach(x => { if (p.riesgos && p.riesgos[x.k]) out.push({ key: 'P' + (pi + 1) + '-' + x.k, origen: 'Proceso', det: PASOS_PROCESO[pi], titulo: x.h + ' (paso: ' + PASOS_PROCESO[pi].toLowerCase() + ')', riesgo: x.r, g: x.g, a0: x.a0, a1: x.a1, d: x.d || null, f: x.f, resp: 0 }); }));
   const eq = S.equipos[did];
-  if (eq) eq.items.forEach(e => reglasEquipo(e).forEach(k => { const x = REGLAS_EQ[k]; out.push({ key: 'E' + e.id + '-' + k, origen: 'Inventario', det: e.nombre || 'Equipo sin nombre', titulo: x.h + ': ' + (e.nombre || 'equipo sin nombre'), riesgo: x.r, g: x.g, a0: x.a0, a1: x.a1, d: x.d || null, resp: 0 }); }));
+  if (eq) eq.items.forEach(e => reglasEquipo(e).forEach(k => { const x = REGLAS_EQ[k]; out.push({ key: 'E' + e.id + '-' + k, origen: 'Inventario', det: e.nombre || 'Equipo sin nombre', titulo: x.h + ': ' + (e.nombre || 'equipo sin nombre'), riesgo: x.r, g: x.g, a0: x.a0, a1: x.a1, d: x.d || null, f: x.f, resp: 0 }); }));
+  hallazgosExtra(did, out);
   if (!S.hids[did]) S.hids[did] = { n: 0, m: {} };
   const map = S.hids[did]; let nuevo = false;
   out.forEach(o => {
@@ -1276,6 +1475,7 @@ function filaTablero(did) {
     madurez: dg.total, contestadas: dg.contestadas, hallazgos: hs.length, oportunidades: oportunidadesVivas(did).length,
     utilidad: en.utilidad || null, contrataria: en.contrataria || '', pago: pagoTxt(en), pagos: PAGOS.map(x => en[x[0]] === '' || en[x[0]] == null ? '' : num(en[x[0]])), pagoInicial: en.pagoInicial === '' || en.pagoInicial == null ? '' : num(en.pagoInicial), horas: d.horas || '', esperados: d.esperados || '',
     comp: cm.length, compHechos: cm.filter(x => x.c.hecho).length, seguimiento: (S.plan30[did] || {}).seguimiento || '',
+    efirma: efListo(did), ti: tiListo(did), propuesta: propResumen(did),
     phishing: c.phishing, mfa: c.mfa, reporte: c.reporte, restauracion: !!k.restauracion.ok, plan: !!k.plan.listo, calculadora: calcListo(k.calculadora), politica: !!k.politica.listo };
 }
 function estadoMeta(vals, ok) { // vals: lista por despacho (null = sin datos)
@@ -1304,8 +1504,8 @@ function tablero() {
 }
 function csvTablero() {
   const t = tablero(); const q = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
-  const head = ['Despacho', 'Fecha de sesión', 'Fecha de entrega', 'Días entre sesión y entrega', 'Participantes esperados', 'Participantes', 'Participantes con ambos quiz', 'Promedio inicial (%)', 'Promedio final (%)', 'Mejora (puntos porcentuales)', 'Madurez (%)', 'Hallazgos', 'Oportunidades Dell', 'Utilidad (1-5)', 'Contrataría', 'Precio mensual barato (MXN)', 'Precio mensual razonable (MXN)', 'Precio mensual caro (MXN)', 'Precio mensual demasiado caro (MXN)', 'Precio razonable del paquete inicial (MXN)', 'Acciones comprometidas a 30 días', 'Acciones cumplidas', 'Fecha de seguimiento', 'Horas invertidas por el equipo', 'Phishing identificado (%)', 'Sabe dónde activar MFA (%)', 'Identifica a quién reportar (%)', 'Prueba de restauración', 'Plan de respuesta', 'Calculadora', 'Política de IA'];
-  const rows = t.filas.map(f => [f.nombre, f.fechaSesion, f.fechaEntrega, f.dias, f.esperados, f.participantes, f.pares, f.ini == null ? '' : r1(f.ini), f.fin == null ? '' : r1(f.fin), f.mejora == null ? '' : r1(f.mejora), f.madurez == null ? '' : r1(f.madurez), f.hallazgos, f.oportunidades, f.utilidad, f.contrataria, ...f.pagos, f.pagoInicial, f.comp, f.compHechos, f.seguimiento, f.horas, f.phishing == null ? '' : r1(f.phishing), f.mfa == null ? '' : r1(f.mfa), f.reporte == null ? '' : r1(f.reporte), f.restauracion ? 'Sí' : 'No', f.plan ? 'Sí' : 'No', f.calculadora ? 'Sí' : 'No', f.politica ? 'Sí' : 'No']);
+  const head = ['Despacho', 'Fecha de sesión', 'Fecha de entrega', 'Días entre sesión y entrega', 'Participantes esperados', 'Participantes', 'Participantes con ambos quiz', 'Promedio inicial (%)', 'Promedio final (%)', 'Mejora (puntos porcentuales)', 'Madurez (%)', 'Hallazgos', 'Oportunidades Dell', 'Utilidad (1-5)', 'Contrataría', 'Precio mensual barato (MXN)', 'Precio mensual razonable (MXN)', 'Precio mensual caro (MXN)', 'Precio mensual demasiado caro (MXN)', 'Precio razonable del paquete inicial (MXN)', 'Acciones comprometidas a 30 días', 'Acciones cumplidas', 'Fecha de seguimiento', 'Horas invertidas por el equipo', 'Phishing identificado (%)', 'Sabe dónde activar MFA (%)', 'Identifica a quién reportar (%)', 'Prueba de restauración', 'Plan de respuesta', 'Calculadora', 'Política de IA', 'e.firmas y sellos', 'Cuestionario de TI', 'Propuesta (decisión del dueño)'];
+  const rows = t.filas.map(f => [f.nombre, f.fechaSesion, f.fechaEntrega, f.dias, f.esperados, f.participantes, f.pares, f.ini == null ? '' : r1(f.ini), f.fin == null ? '' : r1(f.fin), f.mejora == null ? '' : r1(f.mejora), f.madurez == null ? '' : r1(f.madurez), f.hallazgos, f.oportunidades, f.utilidad, f.contrataria, ...f.pagos, f.pagoInicial, f.comp, f.compHechos, f.seguimiento, f.horas, f.phishing == null ? '' : r1(f.phishing), f.mfa == null ? '' : r1(f.mfa), f.reporte == null ? '' : r1(f.reporte), f.restauracion ? 'Sí' : 'No', f.plan ? 'Sí' : 'No', f.calculadora ? 'Sí' : 'No', f.politica ? 'Sí' : 'No', f.efirma ? 'Sí' : 'No', f.ti ? 'Sí' : 'No', f.propuesta]);
   const ET = { si: 'Cumplido', no: 'No cumplido', pendiente: 'Pendiente', parcial: 'Cumplido con datos parciales' };
   const extra = [[], ['Cumplimiento del objetivo SMART'], ...t.metas.map(m => [m.t, ET[m.e], m.d]), [], ['Aprendizaje aplicado (metas sugeridas, no estándares)'], ...INDICADORES.map((x, i) => [x[0] + ': ' + x[1], ET[t.ind[i].e], t.ind[i].d])];
   return '﻿' + [head, ...rows, ...extra].map(r => r.map(q).join(',')).join('\r\n');
@@ -1318,7 +1518,7 @@ function combinar(inc) {
   if (!inc || typeof inc !== 'object' || !inc.despachos) throw new Error('El archivo no tiene el formato de esta aplicación.');
   let n = 0;
   Object.entries(inc.despachos || {}).forEach(([id, d]) => { const a = S.despachos[id]; if (!a || (a.stub && !d.stub) || (!!a.stub === !!d.stub && masNuevo(a, d))) { S.despachos[id] = d; n++; } });
-  ['participantes', 'diagnostico', 'proceso', 'equipos', 'encuesta', 'plan30'].forEach(col => Object.entries(inc[col] || {}).forEach(([id, x]) => { if (masNuevo(S[col][id], x)) { S[col][id] = x; n++; } }));
+  ['participantes', 'diagnostico', 'proceso', 'equipos', 'encuesta', 'plan30', 'efirma', 'ti', 'propuesta'].forEach(col => Object.entries(inc[col] || {}).forEach(([id, x]) => { if (masNuevo(S[col][id], x)) { S[col][id] = x; n++; } }));
   Object.entries(inc.kit || {}).forEach(([did, k]) => { if (!S.kit[did]) S.kit[did] = {}; Object.entries(k).forEach(([sec, x]) => { if (masNuevo(S.kit[did][sec], x)) { S.kit[did][sec] = x; n++; } }); });
   Object.entries(inc.hids || {}).forEach(([did, m]) => {
     if (!S.hids[did]) { S.hids[did] = m; return; }
@@ -1326,7 +1526,7 @@ function combinar(inc) {
     Object.entries(m.m || {}).forEach(([k, v]) => { if (loc.m[k]) return; if (usados.has(v)) v = ++loc.n; else loc.n = Math.max(loc.n, v); loc.m[k] = v; usados.add(v); });
   });
   Object.entries(inc.estados || {}).forEach(([did, e]) => { S.estados[did] = Object.assign(S.estados[did] || {}, e); });
-  if (inc.config) { if (!S.config.rangos) S.config.rangos = inc.config.rangos || ''; if (!S.config.distribuidor) S.config.distribuidor = inc.config.distribuidor || ''; }
+  if (inc.config) { if (!S.config.rangos) S.config.rangos = inc.config.rangos || ''; if (!S.config.distribuidor) S.config.distribuidor = inc.config.distribuidor || ''; S.config.precios = Object.assign({}, inc.config.precios || {}, S.config.precios || {}); }
   save();
   return n;
 }
@@ -1338,14 +1538,16 @@ function cargarDemo() {
   const mk = (alias, ini, fin, ph, ord) => { const pid = rid('p_'); const resp = (n, f) => FORMAS[f].map((q, i) => (i < n ? q.c : (q.c + 1) % 4)); S.participantes[pid] = { id: pid, alias, despachoId: id, orden: ord, quizInicial: { forma: ord[0], resp: resp(ini, ord[0]), pct: calificar(resp(ini, ord[0]), ord[0]), fecha: hoy() }, quizFinal: { forma: ord[1], resp: resp(fin, ord[1]), pct: calificar(resp(fin, ord[1]), ord[1]), fecha: hoy() }, phishing: { pct: ph, fecha: hoy() }, avance: [true, true, true, true, false, true, true], ts: Date.now() }; };
   mk('Auxiliar 1 (ejemplo)', 7, 12, 80, 'AB'); mk('Auxiliar 2 (ejemplo)', 8, 13, 90, 'BA'); mk('Titular (ejemplo)', 9, 14, 90, 'AB');
   participantesDe(id).forEach((p, j) => demoEj(p, j));
-  S.diagnostico[id] = { resp: [1, 0, 0, 0, 2, 1, 0, 1, 2, 0, 0, 1, 0, 0, 1, 2, 1, 2, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0], ts: Date.now() };
+  S.diagnostico[id] = { resp: [1, 0, 0, 0, 2, 1, 0, 1, 2, 0, 0, 1, 0, 0, 1, 2, 1, 2, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 2, 0], ts: Date.now() };
+  S.efirma[id] = { c: { efirmas: '11 a 50', csd: '1 a 10', personas: 'Todo el personal' }, resp: [0, 0, 1, 1, 0, 2, 0, 1, 0], ts: Date.now() };
+  S.ti[id] = { datos: { soporte: 'Un familiar o conocido', equipos: 5, viejos: 2, datos: 'En cada computadora', contable: 'Instalado en cada computadora', respaldo: 'Un disco externo que alguien conecta' }, so: { 'Windows 10': true, 'Windows 11': true }, resp: [0, 1, 0, 2, 1, 2], ts: Date.now() };
   const pr = proceso(id); pr.pasos[0].canales = { WhatsApp: true, Correo: true }; pr.pasos[0].riesgos = { canal: true }; pr.pasos[1].riesgos = { respaldo: true }; pr.ts = Date.now();
   S.equipos[id] = { items: [
     { id: 'e1', nombre: 'Recepción', marca: 'Genérica', anios: 6, so: 'Sistema operativo sin soporte', act: 'No', av: 'Sí', resp: 'No', comp: 'Sí', pass: 'No' },
     { id: 'e2', nombre: 'Laptop del titular', marca: 'Genérica', anios: 2, so: 'Sistema operativo vigente', act: 'Sí', av: 'Sí', resp: 'Sí', comp: 'No', pass: 'Sí' }], ts: Date.now() };
   const k = kit(id);
   Object.assign(k.plan, { resp: 'Titular del despacho', sup: 'Auxiliar 1', soporte: POR_DEFINIR, soporteTel: POR_DEFINIR, avisar: 'Clientes con información afectada', respaldos: 'Disco externo en la oficina', prioridad: 'Clientes con vencimiento más cercano', listo: true, ts: Date.now() });
-  Object.assign(k.calculadora, { empleados: 6, costoHora: 120, horasDia: 8, ingresosDia: 9000, recuperacion: 8000, clientesRiesgo: 4, recargoCliente: 1500, fecha: hoy(), ts: Date.now() });
+  Object.assign(k.calculadora, { empleados: 6, costoHora: 120, horasDia: 8, ingresosDia: 9000, recuperacion: 8000, clientesRiesgo: 4, recargoCliente: 1500, utilidadMes: 120000, fecha: hoy(), ts: Date.now() });
   Object.assign(k.politica, { herramientas: 'Las que apruebe el titular', responsable: 'Titular del despacho', informa: 'En la carta de servicios', revision: 'Cada 6 meses', listo: true, ts: Date.now() });
   Object.assign(k.restauracion, { info: { 0: true, 1: true, 2: true }, donde: 'Disco externo', ok: true, fecha: hoy(), tiempo: '15', obs: 'Archivo de prueba recuperado.', ts: Date.now() });
   S.encuesta[id] = { utilidad: 4, modulo: '4', contrataria: 'Tal vez', comentarios: 'Datos de ejemplo. Los precios se dejan en blanco a propósito.', ts: Date.now() };
@@ -1389,9 +1591,9 @@ const b64u = { enc: u8 => { let s = ''; for (let i = 0; i < u8.length; i += 8192
   dec: t => { const b = atob(t.replace(/-/g, '+').replace(/_/g, '/')); const u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; } };
 async function pasar(u8, Clase, fmt) { const st = new Blob([u8]).stream().pipeThrough(new Clase(fmt)); return new Uint8Array(await new Response(st).arrayBuffer()); }
 async function codigoResultados(did) {
-  const pk = { v: 1, despachos: { [did]: S.despachos[did] }, participantes: {}, diagnostico: {}, proceso: {}, equipos: {}, encuesta: {}, kit: {}, hids: {}, estados: {}, plan30: {} };
+  const pk = { v: 1, despachos: { [did]: S.despachos[did] }, participantes: {}, diagnostico: {}, proceso: {}, equipos: {}, encuesta: {}, kit: {}, hids: {}, estados: {}, plan30: {}, efirma: {}, ti: {} };
   participantesDe(did).forEach(p => { pk.participantes[p.id] = p; });
-  ['diagnostico', 'encuesta', 'kit', 'hids', 'estados', 'plan30'].forEach(c => { if (S[c][did]) pk[c][did] = S[c][did]; });
+  ['diagnostico', 'encuesta', 'kit', 'hids', 'estados', 'plan30', 'efirma', 'ti'].forEach(c => { if (S[c][did]) pk[c][did] = S[c][did]; });
   const u8 = new TextEncoder().encode(JSON.stringify(pk));
   try { if (typeof CompressionStream === 'function') return 'DELTA1Z.' + b64u.enc(await pasar(u8, CompressionStream, 'deflate-raw')); } catch (e) {}
   return 'DELTA1J.' + b64u.enc(u8);
@@ -1425,10 +1627,11 @@ function baseURL() {
 /* ===== Pantallas ===== */
 const NAV = {
   despacho: [['inicio', 'Inicio'], ['capacitacion', 'Capacitación'], ['aprender', 'Seguir aprendiendo'], ['diagnostico', 'Diagnóstico'], ['reporte', 'Mi reporte'], ['encuesta', 'Encuesta']],
-  consultor: [['despachos', 'Despachos'], ['resultados', 'Resultados'], ['proceso', 'Proceso clave'], ['inventario', 'Inventario'], ['oportunidades', 'Oportunidades'], ['tablero', 'Tablero'], ['datos', 'Datos']]
+  consultor: [['despachos', 'Despachos'], ['resultados', 'Resultados'], ['proceso', 'Proceso clave'], ['inventario', 'Inventario'], ['oportunidades', 'Oportunidades'], ['propuesta', 'Propuesta'], ['tablero', 'Tablero'], ['datos', 'Datos']]
 };
 function ruta() {
   const h = (location.hash || '').replace('#', '');
+  if (h === 'efirmas' || h === 'ti') { if (S.ui.modo !== 'despacho') { S.ui.modo = 'despacho'; save(); } return 'diagnostico'; }
   for (const m of ['despacho', 'consultor']) if (NAV[m].some(x => x[0] === h)) {
     if (m === 'consultor' && !accesoOk()) { S.ui.modo = 'despacho'; save(); setTimeout(pedirAcceso, 0); return 'inicio'; }
     if (S.ui.modo !== m) { S.ui.modo = m; save(); } return h;
@@ -1464,12 +1667,12 @@ const RUTA = [
   ['Sesión en vivo', [['m', 4], ['m', 6]]],
   ['Después de la sesión', [['m', 8]]],
   ['Antes de la reunión de entrega', [['r', 'repaso'], ['q', 'quizFinal']]],
-  ['Complementario', [['m', 2], ['m', 3], ['m', 7]], true]
+  ['Complementario', [['m', 2], ['m', 3], ['m', 7], ['m', 9]], true]
 ];
 const PASOS_RUTA = RUTA.flatMap(([et, xs, comp]) => xs.map(x => ({ et, t: x[0], v: x[1], comp: !!comp })));
 const MINIMA = PASOS_RUTA.filter(x => !x.comp), COMPL = PASOS_RUTA.filter(x => x.comp);
 const pasoHecho = (p, x) => x.t === 'q' ? !!p[x.v] : x.t === 'r' ? !!p.repaso : !!(p.avance || [])[x.v - 1];
-const pasoTxt = x => x.t === 'q' ? (x.v === 'quizInicial' ? 'Quiz inicial' : 'Quiz final') : x.t === 'r' ? 'Repaso: lo esencial de los 8 módulos' : 'Módulo ' + x.v + '. ' + MODULOS[x.v - 1].titulo;
+const pasoTxt = x => x.t === 'q' ? (x.v === 'quizInicial' ? 'Quiz inicial' : 'Quiz final') : x.t === 'r' ? 'Repaso: lo esencial de los ' + MODULOS.length + ' módulos' : 'Módulo ' + x.v + '. ' + MODULOS[x.v - 1].titulo;
 const pasoMin = x => x.t === 'q' ? 6 : x.t === 'r' ? 5 : MODULOS[x.v - 1].min;
 const pasoDesc = x => x.t === 'q' ? '16 preguntas, unos 6 minutos.' : x.t === 'r' ? 'Los puntos clave de cada módulo, en una sola pantalla. Unos 5 minutos.' : MODULOS[x.v - 1].ejercicio + ' · ' + MODULOS[x.v - 1].min + ' min';
 const siguiente = p => MINIMA.find(x => !pasoHecho(p, x)) || COMPL.find(x => !pasoHecho(p, x));
@@ -1478,7 +1681,7 @@ const minLectura = m => Math.max(1, Math.round(palabras(m) / 180));
 function navEstado(id) {
   const d = D(); if (!d) return '';
   if (id === 'capacitacion') { const p = P(); if (!p) return ''; const n = MINIMA.filter(x => pasoHecho(p, x)).length; return `<span class="st ${n === MINIMA.length ? 'ok' : ''}" title="Pasos de la ruta mínima">${n}/${MINIMA.length}</span>`; }
-  if (id === 'diagnostico') { const n = diag(d.id).resp.filter(x => x != null).length; return n ? `<span class="st ${n === 30 ? 'ok' : ''}">${n}/30</span>` : ''; }
+  if (id === 'diagnostico') { const n = contestadas(diag(d.id).resp), ok = diagListo(d.id) && efListo(d.id); return n ? `<span class="st ${ok ? 'ok' : ''}" title="Diagnóstico: madurez${ok ? ', e.firmas y sellos' : ''}">${ok ? '✓' : n + '/' + DIAG.length}</span>` : ''; }
   if (id === 'encuesta') return (S.encuesta[d.id] || {}).ts ? '<span class="st ok">✓</span>' : '';
   return '';
 }
@@ -1510,12 +1713,12 @@ const sobreServicio = () => `<details class="sobre"><summary>Sobre el servicio: 
       <li><b>Kit del despacho:</b> plan de respuesta, controles prioritarios, procedimiento de recuperación y política de uso de IA.</li></ul>
       <p class="nota">Sin costo durante el piloto académico.</p></div>
     <div class="card"><h2>Cuánto tiempo toma</h2><table class="t"><tbody>
-      <tr><th>Antes de la sesión</th><td>≈ 25 min por persona</td><td>Quiz inicial y Módulo 1 con el simulador de mensajes fraudulentos, cada quien por su cuenta</td></tr>
+      <tr><th>Antes de la sesión</th><td>≈ 27 min por persona</td><td>Autoevaluación, quiz inicial y Módulo 1 con el simulador de mensajes fraudulentos, cada quien por su cuenta</td></tr>
       <tr><th>Sesión en vivo</th><td>60 min, por videollamada</td><td>Phishing y fraude fiscal, simulacro de ransomware y uso de IA, en equipo</td></tr>
       <tr><th>Después de la sesión</th><td>≈ 12 min por persona</td><td>Módulo 8: ejemplos de buen y mal uso de la IA</td></tr>
-      <tr><th>Antes de la reunión de entrega</th><td>≈ 11 min por persona</td><td>Repaso de lo esencial y quiz final. El dueño o socio contesta además el diagnóstico y la calculadora (≈ 25 min)</td></tr>
+      <tr><th>Antes de la reunión de entrega</th><td>≈ 11 min por persona</td><td>Repaso de lo esencial y quiz final. El dueño o socio contesta además el diagnóstico en tres partes y la calculadora (≈ 35 min; la parte de TI la puede contestar su soporte técnico)</td></tr>
       <tr><th>Reunión de entrega</th><td>45 min, por videollamada</td><td>Con el dueño o socio: reporte, plan de 30 días, prueba de restauración y encuesta</td></tr>
-      <tr><th>Complementario</th><td>≈ 25 min, opcional</td><td>Módulos 2, 3 y 7, a su ritmo durante la semana</td></tr></tbody></table><p class="nota">Todo se hace a distancia. No hace falta instalar nada. Lo obligatorio por persona suma unos 48 minutos, más la sesión en vivo. Después siguen los retos de repaso y la biblioteca, en Seguir aprendiendo.</p></div>
+      <tr><th>Complementario</th><td>≈ 40 min, opcional</td><td>Módulos 2, 3, 7 y 9 (sellos, e.firma y facturas apócrifas), a su ritmo durante la semana</td></tr></tbody></table><p class="nota">Todo se hace a distancia. No hace falta instalar nada. Lo obligatorio por persona suma unos 48 minutos, más la sesión en vivo. Después siguen los retos de repaso y la biblioteca, en Seguir aprendiendo.</p></div>
   </div>
   <div class="card"><h2>Lo que incluye la suscripción</h2><p>Después del piloto, el programa completo se imparte en tres sesiones y sigue las seis funciones del NIST Cybersecurity Framework 2.0: gobernar, identificar, proteger, detectar, responder y recuperar.</p>
     <div class="scroll"><table class="t"><thead><tr><th>Sesión</th><th>Duración</th><th>Temas</th></tr></thead><tbody>${PROGRAMA_SUSCRIPCION.map(x => `<tr><th>${x[0]}</th><td>${x[1]}</td><td>${x[2]}</td></tr>`).join('')}</tbody></table></div>
@@ -1542,13 +1745,15 @@ function sigueBloque(p) {
   return `${minOk ? `<div class="fb bien"><b>Terminaste la ruta mínima.</b> Ya cuentas en la medición del piloto y tu constancia está en <a href="#aprender">Seguir aprendiendo</a>. Lo que sigue es complementario: profundiza en lo que más te sirva.</div>` : ''}<div class="sigue ${sig.comp ? 'compl' : ''}"><div><p class="eyebrow">${sig.comp ? 'Complementario · a tu ritmo' : 'Tu siguiente paso · ' + sig.et.toLowerCase()}</p><h2>${pasoTxt(sig)}</h2><p>${pasoDesc(sig)}</p></div><button class="btn p" data-a="paso" data-v="${sig.t}:${sig.v}">${algo ? 'Continuar' : 'Empezar'}</button></div>`;
 }
 function dueno(d) {
-  const n = diag(d.id).resp.filter(x => x != null).length, e = S.encuesta[d.id] || {}, k = kit(d.id), cm = compromisos(d.id).length;
-  const b = (h, t, s, m, ok, extra) => `<a class="big" href="#${h}"${extra || ''}><b>${t}</b><span>${s}</span><span class="meta-b ${ok ? 'ok' : ''}">${m}</span></a>`;
-  return `<div><h2>Para el dueño o socio</h2><p class="nota" style="margin:4px 0 12px">Lo contesta una sola persona por despacho. Los dos primeros, <b>antes</b> de la reunión de entrega; los otros dos, <b>en</b> la reunión. Al terminar cada uno, la app te muestra un código para enviarlo al Equipo DELTA.</p><div class="dueno">
-    ${b('diagnostico', 'Diagnóstico', '30 preguntas sobre cómo opera hoy el despacho. 15 min o menos.', n === 30 ? '✓ Completo' : n ? n + ' de 30 contestadas →' : 'Empezar →', n === 30)}
-    ${b('capacitacion', 'Calculadora de costo', 'Cuánto le costaría al despacho un día sin operar. 8 min, con sus propios números.', calcListo(k.calculadora) ? '✓ Capturada' : 'Capturar →', calcListo(k.calculadora), ' data-a="calc"')}
-    ${b('reporte', 'Mi reporte y plan de 30 días', 'Hallazgos, plan con responsables y fechas, prueba de restauración y kit.', cm ? '✓ ' + cm + ' acciones en el plan' : n ? 'Ver reporte →' : 'Se arma con el diagnóstico', !!cm)}
-    ${b('encuesta', 'Encuesta', 'Tres minutos, al cerrar la reunión de entrega.', e.ts ? '✓ Enviada' : 'Contestar →', !!e.ts)}</div></div>`;
+  const n = contestadas(diag(d.id).resp), e = S.encuesta[d.id] || {}, k = kit(d.id), cm = compromisos(d.id).length, ne = contestadas(efirma(d.id).resp), nt = contestadas(tiDe(d.id).resp);
+  const b = (h, num, t, s, m, ok, extra) => `<a class="big" href="#${h}"${extra || ''}><b><span class="nn">${num}</span> ${t}</b><span>${s}</span><span class="meta-b ${ok ? 'ok' : ''}">${m}</span></a>`;
+  return `<div><h2>Para el dueño o socio</h2><p class="nota" style="margin:4px 0 12px">Lo contesta una sola persona por despacho, en este orden. Los cuatro primeros, <b>antes</b> de la reunión de entrega (unos 35 minutos); los dos últimos, <b>en</b> la reunión. Al terminar cada uno, la app te muestra un código para enviarlo al Equipo DELTA.</p><div class="dueno">
+    ${b('diagnostico', 1, 'Diagnóstico de madurez', DIAG.length + ' preguntas sobre cómo opera hoy el despacho. Unos 17 min.', diagListo(d.id) ? '✓ Completo' : n ? n + ' de ' + DIAG.length + ' contestadas →' : 'Empezar →', diagListo(d.id))}
+    ${b('efirmas', 2, 'e.firmas y sellos de clientes', 'Cómo se guardan y quién puede abrirlas. Sin RFC ni nombres. Unos 5 min.', efListo(d.id) ? '✓ Completo' : ne ? ne + ' de ' + EF_PREG.length + ' →' : 'Empezar →', efListo(d.id))}
+    ${b('ti', 3, 'Tecnología (TI)', 'Lo contesta quien da soporte técnico; si es externo, ahí está el enlace para enviárselo. Unos 6 min.', tiListo(d.id) ? '✓ Completo' : nt ? nt + ' de ' + TI_PREG.length + ' →' : 'Empezar o enviar →', tiListo(d.id))}
+    ${b('capacitacion', 4, 'Calculadora de costo', 'Cuánto le costaría al despacho un día sin operar. 8 min, con sus propios números.', calcListo(k.calculadora) ? '✓ Capturada' : 'Capturar →', calcListo(k.calculadora), ' data-a="calc"')}
+    ${b('reporte', 5, 'Mi reporte y plan de 30 días', 'En la reunión: hallazgos, qué te ayudamos a cumplir, plan con responsables y fechas, y kit.', cm ? '✓ ' + cm + ' acciones en el plan' : n ? 'Ver reporte →' : 'Se arma con el diagnóstico', !!cm)}
+    ${b('encuesta', 6, 'Encuesta', 'Tres minutos, al cerrar la reunión de entrega.', e.ts ? '✓ Enviada' : 'Contestar →', !!e.ts)}</div></div>`;
 }
 
 /* --- Capacitación --- */
@@ -1573,8 +1778,8 @@ V.capacitacion = () => {
     </div>
     <div class="card paso ${qi ? 'hecho' : ''}"><div><h2>Quiz inicial</h2><p>16 preguntas, unos 6 minutos, antes de la sesión en vivo. Contesta lo que sabes hoy; las respuestas se revisan al final del programa.</p></div>
       ${qi ? pill('Completado', 'ok') : '<button class="btn p" data-a="quiz" data-v="quizInicial">Comenzar</button>'}</div>
-    <h2 class="sep">Los 8 módulos <small>1, 4, 6 y 8 son de la ruta mínima · 2, 3 y 7 complementarios · 5 para el dueño o socio</small></h2>
-    <div class="mods">${MODULOS.map((m, i) => `<button class="mod ${av[i] ? 'hecho' : ''}" data-a="mod" data-v="${m.n}"><span class="n">${m.n}</span><span class="tx"><b>${m.titulo}</b><em>${m.ejercicio} · ${m.min} min</em></span><span class="tags">${lpill(m.lugar)}${[2, 3, 7].includes(m.n) ? pill('Complementario') : m.n === 5 ? pill('Dueño o socio') : ''}${av[i] ? pill('Completado', 'ok') : ''}</span></button>`).join('')}</div>
+    <h2 class="sep">Los ${MODULOS.length} módulos <small>1, 4, 6 y 8 son de la ruta mínima · 2, 3, 7 y 9 complementarios · 5 para el dueño o socio</small></h2>
+    <div class="mods">${MODULOS.map((m, i) => `<button class="mod ${av[i] ? 'hecho' : ''}" data-a="mod" data-v="${m.n}"><span class="n">${m.n}</span><span class="tx"><b>${m.titulo}</b><em>${m.ejercicio} · ${m.min} min</em></span><span class="tags">${lpill(m.lugar)}${[2, 3, 7, 9].includes(m.n) ? pill('Complementario') : m.n === 5 ? pill('Dueño o socio') : ''}${av[i] ? pill('Completado', 'ok') : ''}</span></button>`).join('')}</div>
     <div class="card paso ${qf ? 'hecho' : ''}"><div><h2>Quiz final</h2><p>16 preguntas equivalentes a las del inicio, con otros casos. Se contesta antes de la reunión de entrega; al terminar verás tu mejora y la explicación de cada respuesta.</p></div>
       ${qf ? pill('Completado', 'ok') : (qi ? '<button class="btn p" data-a="quiz" data-v="quizFinal">Comenzar</button>' : pill('Primero el quiz inicial'))}</div>
     <div class="card paso"><div><h2>Envía tus resultados</h2><p>Tus respuestas se guardan solo en este dispositivo. Al terminar cada etapa, copia tus resultados y pégalos en un mensaje al Equipo DELTA. No incluyen datos de clientes.</p></div><button class="btn p" data-a="codigo">Copiar mis resultados</button></div>
@@ -1718,7 +1923,7 @@ const EJ = {
     return `<p>Captura los datos de tu despacho. La app no usa cifras externas: todo el cálculo sale de lo que escribas aquí.</p>
       <div class="grid3">${fld('Número de empleados', inp(b + '.empleados', o))}${fld('Costo por hora por empleado (MXN)', inp(b + '.costoHora', o))}${fld('Horas de trabajo por día', inp(b + '.horasDia', o))}
       ${fld('Ingresos diarios aproximados (MXN)', inp(b + '.ingresosDia', o), 'Si esos ingresos se recuperan trabajando después, escribe 0.')}${fld('Costo estimado de recuperación técnica (MXN)', inp(b + '.recuperacion', o), 'Soporte, reinstalación, restauración.')}${fld('Clientes con entregas en riesgo', inp(b + '.clientesRiesgo', o))}
-      ${fld('Posibles recargos por cliente (MXN)', inp(b + '.recargoCliente', o), 'Estimación propia; déjalo en blanco si no aplica.')}</div>
+      ${fld('Posibles recargos por cliente (MXN)', inp(b + '.recargoCliente', o), 'Estimación propia; déjalo en blanco si no aplica.')}${fld('Utilidad o EBITDA mensual aproximado (MXN, opcional)', inp(b + '.utilidadMes', o), 'Para expresar el costo como porcentaje de tu utilidad. Solo lo ve el Equipo DELTA.')}</div>
       <h3 class="parte">Compara dos escenarios</h3>
       <div class="grid2">${fld('Días que hoy tardarían en volver a operar', inp(b + '.diasHoy', o), 'Tu mejor estimación. La prueba de restauración del Módulo 3 ayuda a afinarla.')}${fld('Días que tardarían con las medidas del plan', inp(b + '.diasMeta', o), 'Por ejemplo, con respaldo probado y un equipo de reemplazo.')}</div>
       <div id="upd-calc">${UPD.calc()}</div>
@@ -1738,7 +1943,7 @@ const EJ = {
 
 /* Bloques que se actualizan sin redibujar toda la pantalla */
 const UPD = {
-  diagprog: () => { const n = diag(S.ui.did).resp.filter(x => x != null).length, a = document.querySelector('nav a[href="#diagnostico"]'); if (a) a.innerHTML = 'Diagnóstico' + navEstado('diagnostico'); return `<div class="prog"><i style="width:${n / 30 * 100}%"></i></div><small><b>${n} de 30</b> contestadas${n === 30 ? ' · resultado abajo' : ''}</small>`; },
+  diagprog: () => { const n = contestadas(diag(S.ui.did).resp), N = DIAG.length, a = document.querySelector('nav.tabs a[href="#diagnostico"]'); if (a) a.innerHTML = 'Diagnóstico' + navEstado('diagnostico'); return `<div class="prog"><i style="width:${n / N * 100}%"></i></div><small><b>${n} de ${N}</b> contestadas${n === N ? ' · resultado abajo' : ''}</small>`; },
   rep: () => reporteHTML(S.ui.did),
   mapa: () => {
     const a = kit(S.ui.did).accesos, fs = a.filas.filter(f => (f.puesto || '').trim() || Object.values(f.s || {}).some(Boolean)), n = fs.length;
@@ -1758,30 +1963,21 @@ const UPD = {
       <tr><th>Horas improductivas</th>${r.map(x => `<td>${mxn(x.horas)}</td>`).join('')}</tr><tr><th>Ingresos no generados</th>${r.map(x => `<td>${mxn(x.ingresos)}</td>`).join('')}</tr>
       <tr><th>Recuperación técnica</th>${r.map(x => `<td>${mxn(x.recup)}</td>`).join('')}</tr><tr><th>Posibles recargos</th>${r.map(x => `<td>${mxn(x.recargos)}</td>`).join('')}</tr>
       <tr class="tot"><th>Costo estimado</th>${r.map(x => `<td>${mxn(x.total)}</td>`).join('')}</tr></tbody></table></div>
-      <p class="nota">${pill('Supuestos capturados por el despacho', 'sup')} Fórmula: empleados × costo por hora × horas por día × días + ingresos diarios × días + recuperación técnica + clientes en riesgo × recargo por cliente. No incluye la posible pérdida de clientes.</p>${calcComp(c)}`;
+      <p class="nota">${pill('Supuestos capturados por el despacho', 'sup')} Fórmula: empleados × costo por hora × horas por día × días + ingresos diarios × días + recuperación técnica + clientes en riesgo × recargo por cliente. No incluye la posible pérdida de clientes. ${utilidadTxt(c)}</p>${calcComp(c)}`;
   },
   diagres: () => {
     const did = S.ui.did, st = diagStats(did), hs = ordenGravedad(hallazgos(did).filter(h => h.origen === 'Diagnóstico'));
-    return `<div class="card resumen"><div class="rh"><div><h2>Resultado</h2><p>${st.contestadas} de 30 preguntas contestadas${st.total == null ? '' : ' · madurez general ' + Math.round(st.total) + '%'}</p></div>${sem(st.sem, st.total)}</div>
+    return `<div class="card resumen"><div class="rh"><div><h2>Resultado</h2><p>${st.contestadas} de ${DIAG.length} preguntas contestadas${st.total == null ? '' : ' · madurez general ' + Math.round(st.total) + '%'}</p></div>${sem(st.sem, st.total)}</div>
       <div class="doms">${st.dom.map(d => `<div class="dom"><span>${d.n}</span><div class="bar"><i class="b-${d.sem}" style="width:${d.pct == null ? 0 : Math.max(4, d.pct)}%"></i></div>${sem(d.sem, d.pct)}</div>`).join('')}</div>
       <p class="nota">Semáforo: rojo menos de 40%, amarillo de 40% a 70%, verde más de 70%.</p>
-      <h3>${hs.length} hallazgo(s) generados por el diagnóstico</h3>${hs.length ? `<ul class="hall">${hs.map(h => `<li><b>${h.id}</b> ${esc(h.titulo)} ${gpill(h.g)}</li>`).join('')}</ul><div class="row"><a class="btn" href="#reporte">Ver mi reporte</a>${st.contestadas === 30 ? '<button class="btn p" data-a="codigo" data-v="diag">Enviar mis resultados al Equipo DELTA</button>' : ''}</div>` : '<p class="nota">Cada respuesta "No" o "Parcialmente" genera un hallazgo con acciones sugeridas.</p>'}</div>`;
+      <h3>${hs.length} hallazgo(s) generados por el diagnóstico</h3>${hs.length ? `<ul class="hall">${hs.map(h => `<li><b>${h.id}</b> ${esc(h.titulo)} ${gpill(h.g)}</li>`).join('')}</ul>` : '<p class="nota">Cada respuesta "No" o "Parcialmente" genera un hallazgo con acciones sugeridas.</p>'}<div class="row">${st.contestadas === DIAG.length ? '<button class="btn" data-a="codigo" data-v="diag">Enviar mis resultados al Equipo DELTA</button>' : ''}${siguienteParte(did, 'diagnostico')}</div></div>`;
   },
   prochall: () => listaHall(hallazgos(S.ui.did).filter(h => h.origen === 'Proceso'), 'Marca un riesgo en cualquier paso para generar un hallazgo.'),
   invhall: () => listaHall(hallazgos(S.ui.did).filter(h => h.origen === 'Inventario'), 'Las reglas se aplican solas al capturar cada equipo.')
 };
-const listaHall = (hs, vacio) => `<div class="card"><h2>${hs.length} hallazgo(s)</h2>${hs.length ? `<div class="scroll"><table class="t"><thead><tr><th>ID</th><th>Hallazgo</th><th>Gravedad</th><th>Acción sin costo</th><th>Acción de bajo costo</th><th>Categoría Dell candidata</th></tr></thead><tbody>${ordenGravedad(hs).map(h => `<tr><th>${h.id}</th><td>${esc(h.titulo)}<br><small>${esc(h.riesgo)}</small></td><td>${gpill(h.g)}</td><td>${esc(h.a0)}</td><td>${esc(h.a1)}</td><td>${h.d ? esc(DELL[h.d]) : '—'}</td></tr>`).join('')}</tbody></table></div>` : `<p class="nota">${vacio}</p>`}</div>`;
+const listaHall = (hs, vacio) => `<div class="card"><h2>${hs.length} hallazgo(s)</h2>${hs.length ? `<div class="scroll"><table class="t"><thead><tr><th>ID</th><th>Hallazgo</th><th>Gravedad</th><th>Acción sin costo</th><th>Acción de bajo costo</th><th>Categoría Dell candidata</th></tr></thead><tbody>${ordenGravedad(hs).map(h => `<tr><th>${h.id}</th><td>${esc(h.titulo)}<br><small>${esc(h.riesgo)}</small><br>${fundHTML(h.f)}</td><td>${gpill(h.g)}</td><td>${esc(h.a0)}</td><td>${esc(h.a1)}</td><td>${h.d ? esc(DELL[h.d]) : '—'}</td></tr>`).join('')}</tbody></table></div>` : `<p class="nota">${vacio}</p>`}</div>`;
 
-/* --- Diagnóstico --- */
-V.diagnostico = () => {
-  const d = D(); if (!d) return sinDespacho();
-  const dg = diag(d.id), b = 'diagnostico.' + d.id + '.resp';
-  return `<h1>Diagnóstico de madurez</h1><p class="lead">30 preguntas en 6 áreas. Contesta con lo que pasa hoy en el despacho, no con lo que debería pasar. Toma 15 minutos o menos y no pide datos de clientes. Se guarda solo; puedes dejarlo y volver.</p>
-    <div class="diagbar" id="upd-diagprog">${UPD.diagprog()}</div>
-    ${DOMINIOS.map((dom, di) => `<div class="card dominio"><h2>${di + 1}. ${dom.n}</h2><p class="nist">Función del NIST CSF 2.0: ${dom.nist} <small>(correspondencia orientativa del Equipo DELTA)</small></p>
-      ${DIAG.slice(di * 5, di * 5 + 5).map((q, k) => { const i = di * 5 + k; return `<div class="dq"><p id="dq${i}">${i + 1}. ${q.q}</p><div class="r3" role="radiogroup" aria-labelledby="dq${i}">${['No', 'Parcialmente', 'Sí'].map((t, v) => `<label><input type="radio" name="dq${i}" value="${v}" data-num data-bind="${b}.${i}" data-upd="diagres diagprog" ${dg.resp[i] === v ? 'checked' : ''}><span>${t}</span></label>`).join('')}</div></div>`; }).join('')}</div>`).join('')}
-    <div id="upd-diagres">${UPD.diagres()}</div>${fuentesHTML(['nist', 'lfpdppp'])}`;
-};
+/* --- Diagnóstico: ver fiscal.js (tres partes) --- */
 
 /* --- Encuesta --- */
 V.encuesta = () => {
@@ -1868,7 +2064,7 @@ function reporteHTML(did) {
   const d = S.despachos[did], st = diagStats(did), cs = capStats(did), hs = ordenGravedad(hallazgos(did)), top = hs.slice(0, 5), k = kit(did), c = k.calculadora;
   const altas = hs.filter(h => h.g === 'alta'), ops = oportunidadesVivas(did), cats = [...new Set(ops.map(h => h.d))];
   const cm = compromisos(did), seg = (S.plan30[did] || {}).seguimiento;
-  const l1 = st.total == null ? 'El diagnóstico de madurez aún no se ha contestado.' : `La madurez general del despacho es de ${Math.round(st.total)}% (semáforo ${SEM_TXT[st.sem].toLowerCase()})${st.contestadas < 30 ? ', con ' + st.contestadas + ' de 30 preguntas contestadas' : ''}. Las áreas con más oportunidad son: ${st.dom.filter(x => x.pct != null).sort((a, b) => a.pct - b.pct).slice(0, 2).map(x => x.n.toLowerCase()).join(' y ')}.`;
+  const l1 = st.total == null ? 'El diagnóstico de madurez aún no se ha contestado.' : `La madurez general del despacho es de ${Math.round(st.total)}% (semáforo ${SEM_TXT[st.sem].toLowerCase()})${st.contestadas < DIAG.length ? ', con ' + st.contestadas + ' de ' + DIAG.length + ' preguntas contestadas' : ''}. Las áreas con más oportunidad son: ${st.dom.filter(x => x.pct != null).sort((a, b) => a.pct - b.pct).slice(0, 2).map(x => x.n.toLowerCase()).join(' y ')}.`;
   const l2 = hs.length ? `Se identificaron ${hs.length} hallazgos, ${altas.length} de gravedad alta. El principal: ${top[0].titulo.toLowerCase()} (${top[0].id}).` : 'Todavía no hay hallazgos registrados.';
   const l3 = cs.mejora == null ? 'La capacitación aún no tiene evaluación inicial y final de los mismos participantes.' : `En la capacitación, el equipo pasó de ${r1(cs.ini)}% a ${r1(cs.fin)}% (${cs.mejora >= 0 ? '+' : ''}${r1(cs.mejora)} puntos porcentuales, ${cs.pares} participante(s)).`;
   const sinCosto = altas.slice(0, 3).map(h => h.id).join(', ');
@@ -1880,18 +2076,25 @@ function reporteHTML(did) {
     <div class="cols2r"><div><h2>Semáforo por área</h2><table class="t semt"><tbody>${st.dom.map(x => `<tr><th>${x.n}</th><td><div class="bar"><i class="b-${x.sem}" style="width:${x.pct == null ? 0 : Math.max(4, x.pct)}%"></i></div></td><td>${sem(x.sem, x.pct)}</td></tr>`).join('')}</tbody></table></div>
     <div><h2>Resultado de la capacitación</h2><div class="grid3 res"><div class="tile"><span>Promedio inicial</span><b>${cs.ini == null ? '—' : r1(cs.ini) + '%'}</b></div><div class="tile"><span>Promedio final</span><b>${cs.fin == null ? '—' : r1(cs.fin) + '%'}</b></div><div class="tile"><span>Mejora</span><b>${cs.mejora == null ? '—' : (cs.mejora >= 0 ? '+' : '') + r1(cs.mejora) + ' pts'}</b></div></div>
       <p class="mini">${cs.n} participante(s); ${cs.pares} con evaluación inicial y final. Simulador de phishing: ${cs.phishing == null ? 'sin datos' : r1(cs.phishing) + '% de aciertos'}.</p>
-      <h2>Costo estimado de una interrupción</h2>${calcListo(c) ? `<div class="grid3 res">${[1, 2, 3].map(n => `<div class="tile"><span>${n} día${n > 1 ? 's' : ''}</span><b>${mxn(calcCosto(c, n).total)}</b></div>`).join('')}</div><p class="mini">${pill('Supuestos capturados por el despacho', 'sup')} Fuente: calculadora del Módulo 5, datos del propio despacho${c.fecha ? ', ' + fechaMx(c.fecha) : ''}. No es una cifra externa ni un pronóstico.${num(c.diasHoy) > 0 && c.diasMeta !== '' && c.diasMeta != null ? ` Según el despacho, pasar de ${r1(num(c.diasHoy))} a ${r1(num(c.diasMeta))} día(s) de interrupción evitaría unos ${mxn(calcCosto(c, num(c.diasHoy)).total - calcCosto(c, num(c.diasMeta)).total)} por incidente.` : ''}</p>` : '<p class="mini">Pendiente: el dueño captura sus datos en la calculadora del Módulo 5.</p>'}</div></div>
-    <h2>Los ${top.length || 5} hallazgos principales</h2>${top.length ? `<table class="t"><thead><tr><th>ID</th><th>Hallazgo</th><th>Impacto en el negocio</th><th>Gravedad</th></tr></thead><tbody>${top.map(h => `<tr><th>${h.id}</th><td>${esc(h.titulo)}<br><small>Origen: ${h.origen.toLowerCase()} · ${esc(h.det)}</small></td><td>${esc(h.riesgo)}</td><td>${gpill(h.g)}</td></tr>`).join('')}</tbody></table>` : '<p class="mini">Sin hallazgos todavía.</p>'}
+      <h2>Costo estimado de una interrupción</h2>${calcListo(c) ? `<div class="grid3 res">${[1, 2, 3].map(n => `<div class="tile"><span>${n} día${n > 1 ? 's' : ''}</span><b>${mxn(calcCosto(c, n).total)}</b></div>`).join('')}</div><p class="mini">${pill('Supuestos capturados por el despacho', 'sup')} Fuente: calculadora del Módulo 5, datos del propio despacho${c.fecha ? ', ' + fechaMx(c.fecha) : ''}. No es una cifra externa ni un pronóstico. ${utilidadTxt(c)}${num(c.diasHoy) > 0 && c.diasMeta !== '' && c.diasMeta != null ? ` Según el despacho, pasar de ${r1(num(c.diasHoy))} a ${r1(num(c.diasMeta))} día(s) de interrupción evitaría unos ${mxn(calcCosto(c, num(c.diasHoy)).total - calcCosto(c, num(c.diasMeta)).total)} por incidente.` : ''}</p>` : '<p class="mini">Pendiente: el dueño captura sus datos en la calculadora del Módulo 5.</p>'}</div></div>
+    ${efResumenHTML(did)}
+    <h2>Los ${top.length || 5} hallazgos principales</h2>${top.length ? `<table class="t"><thead><tr><th>ID</th><th>Hallazgo</th><th>Impacto en el negocio</th><th>Fundamento</th><th>Gravedad</th></tr></thead><tbody>${top.map(h => `<tr><th>${h.id}</th><td>${esc(h.titulo)}<br><small>Origen: ${h.origen.toLowerCase()} · ${esc(h.det)}</small></td><td>${esc(h.riesgo)}</td><td>${fundHTML(h.f)}</td><td>${gpill(h.g)}</td></tr>`).join('')}</tbody></table>` : '<p class="mini">Sin hallazgos todavía.</p>'}
+    ${cumpleHTML(did)}
     <h2>Plan priorizado</h2><div class="cols3 plan"><div><h3>Sin costo</h3>${col(hs.slice(0, 5).map(h => `<b>${h.id}</b> ${esc(h.a0)}`))}</div><div><h3>Bajo costo</h3>${col(hs.slice(0, 5).map(h => `<b>${h.id}</b> ${esc(h.a1)}`))}</div>
-      <div><h3>Con inversión</h3>${col(cats.map(cat => `${esc(DELL[cat])} <small>(${ops.filter(h => h.d === cat).map(h => h.id).join(', ')})</small>`))}<p class="mini"><i>Opciones a cotizar con un distribuidor Dell.</i> Distribuidor: ${pd(S.config.distribuidor)}. Son categorías genéricas; el Equipo DELTA no ofrece productos ni precios a nombre de Dell.</p></div></div>
+      <div><h3>Con inversión</h3>${col(cats.map(cat => `${esc(DELL[cat])} <small>(${ops.filter(h => h.d === cat).map(h => h.id).join(', ')})</small>`))}<p class="mini"><i>Opciones a cotizar con un distribuidor Dell.</i> Ver la ruta tecnológica abajo.</p></div></div>
+    ${rutaTecHTML(did)}
     <h2>Plan de 30 días</h2>${cm.length ? `<table class="t"><thead><tr><th>ID</th><th>Acción</th><th>Responsable</th><th>Fecha compromiso</th><th>Estado</th></tr></thead><tbody>${cm.map(h => `<tr><th>${h.id}</th><td>${esc(h.a0)}</td><td>${blanco(h.c.resp)}</td><td>${h.c.fecha ? fechaMx(h.c.fecha) : '<span class="linea">por definir</span>'}</td><td>${h.c.hecho ? pill('Hecho', 'ok') : '<span class="nw"><span class="box"></span> Pendiente</span>'}</td></tr>`).join('')}</tbody></table>` : '<p class="mini">Pendiente: el dueño o socio elige de 3 a 5 acciones, con responsable y fecha, en la pantalla Mi reporte.</p>'}
     <p class="mini">Llamada de seguimiento con el Equipo DELTA: ${seg ? fechaMx(seg) : '<span class="linea">fecha por definir</span>'}. En ella se revisa qué se cumplió y qué estorbó.</p>
     <h2>Siguiente paso recomendado</h2><p>${paso}</p>
+    <h2>Fundamento de los hallazgos</h2>${leyendaNormas(normasUsadas(hs.concat(CUMPLE.map(c => ({ f: c.n })))))}
     <p class="mini"><b>Alcance.</b> Este reporte es una orientación basada en lo que el despacho contestó y en lo observado durante el piloto académico. No es una auditoría, una prueba técnica de los equipos ni asesoría legal o fiscal.</p></div>
     <div class="pb"></div><div class="docp"><p class="eyebrow">Kit del despacho · Anexo 1</p></div>${planHTML(did)}
     <div class="pb"></div><div class="docp"><p class="eyebrow">Kit del despacho · Anexo 2</p></div>${controlesHTML(did)}
     <div class="pb"></div><div class="docp"><p class="eyebrow">Kit del despacho · Anexo 3</p></div>${procedimientoHTML(did)}
-    <div class="pb"></div><div class="docp"><p class="eyebrow">Kit del despacho · Anexo 4</p></div>${politicaHTML(did)}`;
+    <div class="pb"></div><div class="docp"><p class="eyebrow">Kit del despacho · Anexo 4</p></div>${politicaHTML(did)}
+    <div class="pb"></div><div class="docp"><p class="eyebrow">Kit del despacho · Anexo 5</p></div>${efirmaProcHTML(did)}
+    <div class="pb"></div><div class="docp"><p class="eyebrow">Kit del despacho · Anexo 6</p></div>${avisoHTML(did)}
+    <div class="pb"></div><div class="docp"><p class="eyebrow">Kit del despacho · Anexo 7</p></div>${lista69bHTML(did)}`;
 }
 
 /* ================= MODO CONSULTOR ================= */
@@ -1911,15 +2114,15 @@ V.despachos = () => {
 };
 /* Quién ha enviado qué: para saber a quién recordar */
 function seguimiento(d) {
-  const ps = participantesDe(d.id).sort((a, b) => a.alias.localeCompare(b.alias, 'es')), esp = num(d.esperados), dg = diag(d.id), nd = dg.resp.filter(x => x != null).length, k = kit(d.id), en = S.encuesta[d.id] || {};
+  const ps = participantesDe(d.id).sort((a, b) => a.alias.localeCompare(b.alias, 'es')), esp = num(d.esperados), dg = diag(d.id), nd = contestadas(dg.resp), k = kit(d.id), en = S.encuesta[d.id] || {};
   const ini = ps.filter(p => p.quizInicial).length, fin = ps.filter(p => p.quizFinal).length, par = ps.filter(p => p.quizInicial && p.quizFinal).length;
   const de = n => esp ? `<b>${n} de ${esp}</b>` : `<b>${n}</b>`, si = (x, t) => x ? `<span class="ok-t">✓ ${t || ''}</span>` : '<span class="falta">Falta</span>';
   const ult = p => { const t = p.ts; if (!t) return '—'; const f = new Date(t); return String(f.getDate()).padStart(2, '0') + '/' + String(f.getMonth() + 1).padStart(2, '0') + ' ' + String(f.getHours()).padStart(2, '0') + ':' + String(f.getMinutes()).padStart(2, '0'); };
   return `<div class="segui"><div class="row between"><h3>Quién ha enviado resultados</h3><div class="f" style="max-width:220px">${fld('Participantes esperados', inp('despachos.' + d.id + '.esperados', { type: 'number', min: 0, ph: 'Ej. 6' }))}</div></div>
-    <div class="grid4 res"><div class="tile ${esp && ini >= esp ? 'ok' : ''}"><span>Quiz inicial</span><b>${de(ini)}</b></div><div class="tile ${esp && fin >= esp ? 'ok' : ''}"><span>Quiz final</span><b>${de(fin)}</b></div><div class="tile"><span>Con los dos (cuentan para la mejora)</span><b>${de(par)}</b></div><div class="tile ${nd === 30 && en.ts ? 'ok' : ''}"><span>Dueño o socio</span><b style="font-size:1rem">Diagnóstico ${nd}/30 · ${en.ts ? 'encuesta ✓' : 'sin encuesta'}</b></div></div>
+    <div class="grid4 res"><div class="tile ${esp && ini >= esp ? 'ok' : ''}"><span>Quiz inicial</span><b>${de(ini)}</b></div><div class="tile ${esp && fin >= esp ? 'ok' : ''}"><span>Quiz final</span><b>${de(fin)}</b></div><div class="tile"><span>Con los dos (cuentan para la mejora)</span><b>${de(par)}</b></div><div class="tile ${diagListo(d.id) && efListo(d.id) && tiListo(d.id) && en.ts ? 'ok' : ''}"><span>Dueño o socio</span><b style="font-size:1rem">Diagnóstico ${nd}/${DIAG.length} · e.firmas ${efListo(d.id) ? '✓' : 'falta'} · TI ${tiListo(d.id) ? '✓' : 'falta'} · ${en.ts ? 'encuesta ✓' : 'sin encuesta'}</b></div></div>
     ${esp && ini < esp ? `<p class="fb mal">Faltan ${esp - ini} persona(s) por enviar el quiz inicial. Si alguien no aparece en la lista, todavía no ha mandado ningún código.</p>` : ''}
     ${ps.length ? `<div class="scroll"><table class="t segt"><thead><tr><th>Alias</th><th>Quiz inicial</th><th>Módulo 1</th><th>Sesión en vivo (4 y 6)</th><th>Quiz final</th><th>Última actividad</th></tr></thead><tbody>${ps.map(p => { const av = p.avance || []; return `<tr><th><button class="lnk" data-a="rp" data-v="${p.id}">${esc(p.alias)}</button></th><td>${si(p.quizInicial, p.quizInicial ? r1(p.quizInicial.pct) + '%' : '')}</td><td>${si(av[0])}</td><td>${av[3] && av[5] ? si(1) : av[3] || av[5] ? '<span class="ok-t">1 de 2</span>' : '<span class="falta">Falta</span>'}</td><td>${si(p.quizFinal, p.quizFinal ? r1(p.quizFinal.pct) + '%' : '')}</td><td>${ult(p)}</td></tr>`; }).join('')}</tbody></table></div>` : '<p class="nota">Aún no llega ningún código de este despacho. Se importan en Datos.</p>'}
-    <p class="mini">Diagnóstico ${nd === 30 ? 'completo' : nd + ' de 30'} · calculadora ${calcListo(k.calculadora) ? 'capturada' : 'pendiente'} · encuesta ${en.ts ? 'enviada' : 'pendiente'}. "Última actividad" es la hora en que la persona contestó algo en su dispositivo, según el último código recibido.</p></div>`;
+    <p class="mini">Diagnóstico ${nd === DIAG.length ? 'completo' : nd + ' de ' + DIAG.length} · e.firmas y sellos ${efListo(d.id) ? 'completo' : 'pendiente'} · TI ${tiListo(d.id) ? 'completo' : 'pendiente'} · calculadora ${calcListo(k.calculadora) ? 'capturada' : 'pendiente'} · encuesta ${en.ts ? 'enviada' : 'pendiente'}. "Última actividad" es la hora en que la persona contestó algo en su dispositivo, según el último código recibido.</p></div>`;
 }
 const enlaceDespacho = id => baseURL() + '?d=' + id;
 const sinDespachoC = () => `<div class="card aviso"><h2>Elige un despacho</h2><p>Registra o selecciona un despacho en la pantalla <a href="#despachos">Despachos</a>.</p></div>`;
@@ -1947,6 +2150,7 @@ V.oportunidades = () => {
   const ds = Object.values(S.despachos), tot = ds.reduce((a, d) => a + oportunidadesVivas(d.id).length, 0);
   return `<div class="row between"><h1>Oportunidades</h1><div class="tile ${tot ? 'ok' : ''} cont"><span>Oportunidades sin descartar</span><b>${tot}</b></div></div>
     <p class="lead">Hallazgos con una categoría de solución Dell candidata. Son categorías genéricas: los productos, precios y disponibilidad los define el distribuidor (${pd(S.config.distribuidor)}).</p>
+    <details class="card"><summary><b>Precios de referencia por categoría</b> · aparecen en la ruta tecnológica del reporte</summary><p class="mini">Captúralos después de hablar con el partner, como rango y con la fecha (por ejemplo: "$1,500 a $2,500 al mes, nov 2026"). Si se dejan en blanco, el reporte dice "A cotizar con el partner".</p><div class="grid2">${Object.keys(RUTA_TEC).map(c => fld(RUTA_TEC[c].nec, inp('config.precios.' + c, { ph: 'Rango indicativo y fecha' }))).join('')}</div></details>
     ${ds.length ? ds.map(d => { const ops = oportunidades(d.id), cats = [...new Set(ops.map(h => h.d))]; return `<div class="card"><h2>${esc(d.nombre)} <small>${ops.length} oportunidad(es)</small></h2>${ops.length ? cats.map(c => `<h3>${DELL[c]}</h3><div class="scroll"><table class="t"><thead><tr><th>ID</th><th>Hallazgo</th><th>Origen</th><th>Gravedad</th><th>Estado</th></tr></thead><tbody>${ops.filter(h => h.d === c).map(h => `<tr><th>${h.id}</th><td>${esc(h.titulo)}</td><td>${h.origen}</td><td>${gpill(h.g)}</td><td><select aria-label="Estado de ${h.id}" data-bind="estados.${d.id}.${h.key}" data-r>${ESTADOS.map(e => `<option${h.estado === e ? ' selected' : ''}>${e}</option>`).join('')}</select></td></tr>`).join('')}</tbody></table></div>`).join('') : '<p class="nota">Sin oportunidades todavía. Aparecen al contestar el diagnóstico, el proceso o el inventario.</p>'}</div>`; }).join('') : sinDespachoC()}`;
 };
 const EPILL = { si: ['Cumplido', 'ok'], no: ['No cumplido', 'g-alta'], pendiente: ['Pendiente', ''], parcial: ['Cumplido con datos parciales', 'g-media'] };
@@ -1954,8 +2158,8 @@ V.tablero = () => {
   const t = tablero(), p = v => v == null ? '—' : r1(v) + '%';
   return `<div class="row between"><h1>Tablero del piloto</h1><button class="btn p" data-a="csv">Exportar a CSV</button></div>
     <div class="card"><h2>Cumplimiento del objetivo</h2><p class="mini">Objetivo SMART al 4 de diciembre de 2026, con 2 despachos. La mejora compara dos formas equivalentes del quiz (A y B), asignadas al azar en orden cruzado. Con pocos participantes, léela junto con su n: uno o dos casos mueven el promedio.</p>${t.metas.map((m, i) => `<div class="meta"><div><b>${i + 1}. ${m.t}</b><br><small>${esc(m.d) || 'Sin despachos registrados'}</small></div>${pill(...EPILL[m.e])}</div>`).join('')}</div>
-    <div class="card"><h2>Despachos</h2><div class="scroll"><table class="t tab"><thead><tr><th>Despacho</th><th>Sesión</th><th>Participantes</th><th>Con ambos quiz (n)</th><th>Inicial</th><th>Final</th><th>Mejora</th><th>Madurez</th><th>Hallazgos</th><th>Oport. Dell</th><th>Utilidad</th><th>Precio mensual (MXN)</th><th>Paquete inicial</th><th>Plan 30 días</th><th>Días a la entrega</th><th>Horas del equipo</th></tr></thead><tbody>
-      ${t.filas.map(f => `<tr><th>${esc(f.nombre)}</th><td>${fechaMx(f.fechaSesion)}</td><td>${f.participantes}</td><td>${f.pares}</td><td>${p(f.ini)}</td><td>${p(f.fin)}</td><td>${f.mejora == null ? '—' : r1(f.mejora) + ' pts'}</td><td>${p(f.madurez)}</td><td>${f.hallazgos}</td><td>${f.oportunidades}</td><td>${f.utilidad || '—'}</td><td>${esc([f.contrataria, f.pago].filter(Boolean).join(' · ')) || '—'}</td><td>${f.pagoInicial === '' ? '—' : mxn(f.pagoInicial)}</td><td>${f.comp ? f.compHechos + ' de ' + f.comp + ' hechas' : '—'}</td><td>${f.dias == null ? '—' : f.dias}</td><td>${inp('despachos.' + f.did + '.horas', { type: 'number', min: 0 })}</td></tr>`).join('') || '<tr><td colspan="16" class="nota">Registra un despacho para empezar.</td></tr>'}</tbody></table></div></div>
+    <div class="card"><h2>Despachos</h2><div class="scroll"><table class="t tab"><thead><tr><th>Despacho</th><th>Sesión</th><th>Participantes</th><th>Con ambos quiz (n)</th><th>Inicial</th><th>Final</th><th>Mejora</th><th>Madurez</th><th>Hallazgos</th><th>Oport. Dell</th><th>Utilidad</th><th>Precio mensual (MXN)</th><th>Paquete inicial</th><th>Plan 30 días</th><th>Propuesta</th><th>Días a la entrega</th><th>Horas del equipo</th></tr></thead><tbody>
+      ${t.filas.map(f => `<tr><th>${esc(f.nombre)}</th><td>${fechaMx(f.fechaSesion)}</td><td>${f.participantes}</td><td>${f.pares}</td><td>${p(f.ini)}</td><td>${p(f.fin)}</td><td>${f.mejora == null ? '—' : r1(f.mejora) + ' pts'}</td><td>${p(f.madurez)}</td><td>${f.hallazgos}</td><td>${f.oportunidades}</td><td>${f.utilidad || '—'}</td><td>${esc([f.contrataria, f.pago].filter(Boolean).join(' · ')) || '—'}</td><td>${f.pagoInicial === '' ? '—' : mxn(f.pagoInicial)}</td><td>${f.comp ? f.compHechos + ' de ' + f.comp + ' hechas' : '—'}</td><td>${esc(f.propuesta) || '—'}</td><td>${f.dias == null ? '—' : f.dias}</td><td>${inp('despachos.' + f.did + '.horas', { type: 'number', min: 0 })}</td></tr>`).join('') || '<tr><td colspan="17" class="nota">Registra un despacho para empezar.</td></tr>'}</tbody></table></div></div>
     <div class="card"><h2>Aprendizaje aplicado</h2><p class="mini">${pill('Metas sugeridas', 'sup')} Son metas propuestas para el piloto, no estándares ni resultados observados.</p>${INDICADORES.map((x, i) => `<div class="meta"><div><b>${x[0]}</b> · meta sugerida: ${x[1]}<br><small>${esc(t.ind[i].d) || 'Sin datos'} · Se mide con: ${x[2]}</small></div>${pill(...EPILL[t.ind[i].e])}</div>`).join('')}</div>`;
 };
 V.datos = () => `<h1>Datos</h1>
@@ -2005,7 +2209,7 @@ const retoFecha = (p, k) => p.quizFinal ? sumaDias(p.quizFinal.fecha || hoy(), R
 const retoHecho = (p, k) => (p.retos || []).some(r => r.k === k);
 const retoListo = (p, k) => p.quizFinal && !retoHecho(p, k) && retoFecha(p, k) <= hoy();
 function elegirRetos(p) { // 5 preguntas, más peso a los módulos donde la persona falló
-  const w = {}; for (let m = 1; m <= 8; m++) w[m] = 1;
+  const w = {}; for (let m = 1; m <= MODULOS.length; m++) w[m] = 1;
   if (p.quizFinal) forma(p.quizFinal).forEach((q, i) => { if (p.quizFinal.resp[i] !== q.c) w[q.m] += 2; });
   const ult = {}; (p.retos || []).forEach(r => r.items.forEach((ix, j) => { ult[ix] = r.resp[j] === RETOS[ix].c; if (!ult[ix]) w[RETOS[ix].m] += 2; }));
   const pool = RETOS.map((x, i) => i).filter(i => ult[i] !== true), sel = [], porMod = {};
@@ -2048,7 +2252,7 @@ function niveles(p) {
     { n: 1, t: 'En formación', d: 'Empezaste tu capacitación.', req: [] },
     { n: 2, t: 'Alerta', d: 'Reconoces los riesgos principales y sabes cómo actuar.', req: [['Completar la ruta mínima', minOk]] },
     { n: 3, t: 'Practicante', d: 'Llevas lo aprendido a tu trabajo diario.', req: [['Elegir tus hábitos', !!(m.habitos && m.habitos.length)], ['Reto de los 7 días', retoHecho(p, 0)], ['Leer 2 cápsulas de la biblioteca', capsLeidas(p) >= 2]] },
-    { n: 4, t: 'Guardián', d: 'Dominas los temas complementarios y los sostienes en el tiempo.', req: [['Reto de los 30 días', retoHecho(p, 1)], ['Módulos complementarios 2, 3 y 7', !!(av[1] && av[2] && av[6])], ['Leer 5 cápsulas', capsLeidas(p) >= 5]] },
+    { n: 4, t: 'Guardián', d: 'Dominas los temas complementarios y los sostienes en el tiempo.', req: [['Reto de los 30 días', retoHecho(p, 1)], ['Módulos complementarios 2, 3, 7 y 9', !!(av[1] && av[2] && av[6] && av[8])], ['Leer 5 cápsulas', capsLeidas(p) >= 5]] },
     { n: 5, t: 'Referente', d: 'Puedes orientar a tus compañeros.', req: [['Reto de los 90 días', retoHecho(p, 2)], ['Revisar tus hábitos', !!m.revision], ['Leer toda la biblioteca', capsLeidas(p) >= CAPSULAS.length]] }
   ];
 }
@@ -2108,6 +2312,205 @@ function vConstancia(p) {
       <div class="row"><input id="in-nom" maxlength="80" placeholder="${esc(p.alias)}" aria-label="Nombre para la constancia" style="max-width:340px"><button class="btn" data-a="constver">Actualizar vista</button><button class="btn p" data-a="constpdf">Guardar en PDF</button></div></div>
     <div class="paper" id="const-prev">${constanciaHTML(p, T.nomConst || '')}</div>`;
 }
+
+/* ===== e.firmas y sellos, cuestionario de TI, Módulo 9, cumplimiento, ruta tecnológica, anexos y propuesta ===== */
+
+/* ---------- Datos ---------- */
+function efirma(did) { if (!S.efirma[did]) S.efirma[did] = { c: {}, resp: [] }; const e = S.efirma[did]; e.c = e.c || {}; e.resp = e.resp || []; return e; }
+function tiDe(did) { if (!S.ti[did]) S.ti[did] = { datos: {}, so: {}, resp: [] }; const t = S.ti[did]; t.datos = t.datos || {}; t.so = t.so || {}; t.resp = t.resp || []; return t; }
+function propuesta(did) { if (!S.propuesta[did]) S.propuesta[did] = { precios: {}, incluir: { cap: true, acomp: true, tec: true }, decision: {}, notas: '' }; const p = S.propuesta[did]; ['precios', 'incluir', 'decision'].forEach(k => { p[k] = p[k] || {}; }); return p; }
+const contestadas = r => (r || []).filter(x => x === 0 || x === 1 || x === 2).length;
+const efListo = did => { const e = S.efirma[did]; return !!e && contestadas(e.resp) === EF_PREG.length && EF_CONTEOS.every(c => e.c && e.c[c.k]); };
+const tiListo = did => { const t = S.ti[did]; return !!t && contestadas(t.resp) === TI_PREG.length && ['soporte', 'datos', 'respaldo'].every(k => t.datos && t.datos[k]); };
+const diagListo = did => contestadas(diag(did).resp) === DIAG.length;
+
+/* Hallazgos de las secciones nuevas (los llama hallazgos() en core.js) */
+function hallazgosExtra(did, out) {
+  const ef = S.efirma[did];
+  if (ef) EF_PREG.forEach((x, i) => { const v = ef.resp[i]; if (v === 0 || v === 1) out.push({ key: 'F' + (i + 1), origen: 'e.firmas y sellos', det: 'Resguardo de e.firmas y sellos', titulo: x.h, riesgo: x.r, g: x.g, a0: x.a0, a1: x.a1, d: x.d || null, f: x.f, resp: v }); });
+  const ti = S.ti[did];
+  if (ti) {
+    TI_PREG.forEach((x, i) => { const v = ti.resp[i]; if (v === 0 || v === 1) out.push({ key: 'T' + (i + 1), origen: 'Tecnología', det: 'Cuestionario de TI', titulo: x.h, riesgo: x.r, g: x.g, a0: x.a0, a1: x.a1, d: x.d || null, f: x.f, resp: v }); });
+    const dd = ti.datos || {}, add = (k, x, extra) => out.push({ key: 'T-' + k, origen: 'Tecnología', det: 'Cuestionario de TI', titulo: x.h + (extra || ''), riesgo: x.r, g: x.g, a0: x.a0, a1: x.a1, d: x.d || null, f: x.f, resp: 0 });
+    if (dd.soporte === 'Nadie en particular') add('soporte', TI_REGLAS.sinSoporte);
+    if (ti.so && ti.so['Windows 10']) add('w10', TI_REGLAS.win10);
+    const sinInv = !(S.equipos[did] && S.equipos[did].items && S.equipos[did].items.length);
+    if (sinInv && num(dd.viejos) > 0) add('viejos', TI_REGLAS.viejos, ': ' + num(dd.viejos) + ' de ' + (num(dd.equipos) || '?'));
+  }
+}
+
+/* ---------- Fundamento ---------- */
+const fundHTML = fs => (fs || []).filter(k => NORMAS[k]).map(k => `<span class="norma n-${NORMAS[k].tipo}" title="${esc(TIPO_NORMA[NORMAS[k].tipo] + ' · ' + NORMAS[k].t + ': ' + NORMAS[k].d)}">${esc(k)}</span>`).join(' ');
+function normasUsadas(hs) { const s = new Set(); hs.forEach(h => (h.f || []).forEach(k => s.add(k))); const o = { ley: 0, etica: 1, practica: 2 }; return [...s].filter(k => NORMAS[k]).sort((a, b) => o[NORMAS[a].tipo] - o[NORMAS[b].tipo] || a.localeCompare(b, 'es', { numeric: true })); }
+const leyendaNormas = ks => ks.length ? `<table class="t fund"><thead><tr><th>Clave</th><th>Tipo</th><th>Qué establece</th></tr></thead><tbody>${ks.map(k => `<tr><th>${esc(k)}</th><td>${TIPO_NORMA[NORMAS[k].tipo]}</td><td>${esc(NORMAS[k].t)}. ${esc(NORMAS[k].d)}</td></tr>`).join('')}</tbody></table><p class="mini">Las obligaciones legales aplican al despacho; NIST CSF 2.0 es un marco voluntario de buenas prácticas. La relación entre cada hallazgo y su fundamento es una orientación del Equipo DELTA, no una opinión legal.</p>` : '';
+
+/* ---------- Pantalla Diagnóstico: tres partes ---------- */
+function subtabs(act, did) {
+  const nd = contestadas(diag(did).resp), ne = contestadas(efirma(did).resp), nt = contestadas(tiDe(did).resp);
+  const t = (h, n, txt, ok, st) => `<a href="#${h}" class="${act === h ? 'on' : ''}"${act === h ? ' aria-current="page"' : ''}><span class="nn">${n}</span><span><b>${txt}</b><small>${ok ? '✓ Completo' : st}</small></span></a>`;
+  return `<nav class="subtabs" aria-label="Partes del diagnóstico">${t('diagnostico', 1, 'Madurez del despacho', diagListo(did), nd + ' de ' + DIAG.length)}${t('efirmas', 2, 'e.firmas y sellos', efListo(did), ne + ' de ' + EF_PREG.length)}${t('ti', 3, 'Tecnología (TI)', tiListo(did), nt ? nt + ' de ' + TI_PREG.length : 'Lo contesta quien da soporte')}</nav>`;
+}
+function siguienteParte(did, act) {
+  const ps = [['diagnostico', diagListo(did), 'Madurez del despacho'], ['efirmas', efListo(did), 'e.firmas y sellos'], ['ti', tiListo(did), 'Tecnología (TI)']];
+  const sig = ps.find(x => x[0] !== act && !x[1]);
+  return sig ? `<a class="btn p" href="#${sig[0]}">Seguir con: ${sig[2]} →</a>` : `<a class="btn p" href="#reporte">Ver mi reporte →</a>`;
+}
+V.diagnostico = () => {
+  const d = D(); if (!d) return sinDespacho();
+  const tab = ({ '#efirmas': 'efirmas', '#ti': 'ti' })[location.hash] || 'diagnostico';
+  const head = `<h1>Diagnóstico</h1><p class="lead">Tres partes, unos 30 minutos en total. Contesta con lo que pasa hoy, no con lo que debería pasar. Nada pide datos de clientes, y se guarda solo: puedes dejarlo y volver.</p>${subtabs(tab, d.id)}`;
+  if (tab === 'efirmas') return head + vEfirmas(d);
+  if (tab === 'ti') return head + vTI(d);
+  const dg = diag(d.id), b = 'diagnostico.' + d.id + '.resp';
+  return head + `<p class="nota">${DIAG.length} preguntas en ${DOMINIOS.length} áreas, unos 17 minutos. La contesta el dueño o socio.</p>
+    <div class="diagbar" id="upd-diagprog">${UPD.diagprog()}</div>
+    ${DOMINIOS.map((dom, di) => `<div class="card dominio"><h2>${di + 1}. ${dom.n}</h2><p class="nist">Función del NIST CSF 2.0: ${dom.nist} <small>(correspondencia orientativa del Equipo DELTA)</small></p>
+      ${DIAG.slice(di * 5, di * 5 + 5).map((q, k) => { const i = di * 5 + k; return `<div class="dq"><p id="dq${i}">${i + 1}. ${q.q} ${fundHTML(q.f)}</p>${r3(`${b}.${i}`, 'dq' + i, dg.resp[i], 'diagres diagprog')}</div>`; }).join('')}</div>`).join('')}
+    <div id="upd-diagres">${UPD.diagres()}</div>${fuentesHTML(['nist', 'lfpdppp', 'cff'])}`;
+};
+const r3 = (path, name, v, upd) => `<div class="r3" role="radiogroup" aria-labelledby="${name}">${['No', 'Parcialmente', 'Sí'].map((t, k) => `<label><input type="radio" name="${name}" value="${k}" data-num data-bind="${path}" data-upd="${upd}" ${v === k ? 'checked' : ''}><span>${t}</span></label>`).join('')}</div>`;
+
+function vEfirmas(d) {
+  const e = efirma(d.id), b = 'efirma.' + d.id;
+  return `<div class="card"><h2>Resguardo de e.firmas y sellos de clientes</h2><p>Unos 5 minutos. Lo contesta el dueño o socio. <b>No escribas RFC, nombres ni contraseñas</b>: solo cuántas hay y cómo se guardan.</p>
+      <p class="nota">Por qué importa: la e.firma vale como la firma autógrafa de tu cliente (art. 17-D del CFF). Quien tenga el archivo y su contraseña puede presentar trámites y tramitar sellos a su nombre.</p>
+      <div class="grid3">${EF_CONTEOS.map(c => fld(c.q, sel(`${b}.c.${c.k}`, c.o, { upd: 'efres' }))).join('')}</div></div>
+    <div class="card dominio"><h2>Cómo se guardan y se usan</h2>${EF_PREG.map((q, i) => `<div class="dq"><p id="ef${i}">${i + 1}. ${q.q} ${fundHTML(q.f)}</p>${r3(`${b}.resp.${i}`, 'ef' + i, e.resp[i], 'efres')}</div>`).join('')}</div>
+    <div id="upd-efres">${UPD.efres()}</div>
+    <details class="card"><summary><b>Anexo 5 del kit:</b> qué hacer si se pierde o se filtra una e.firma o un sello</summary>${efirmaProcHTML(d.id)}<div class="row end"><button class="btn" data-a="pdf" data-v="efirma">Guardar en PDF</button></div></details>
+    ${fuentesHTML(['cff', 'satPortal'])}`;
+}
+function vTI(d) {
+  const t = tiDe(d.id), b = 'ti.' + d.id, link = enlaceDespacho(d.id) + '#ti';
+  return `<div class="card"><h2>Tecnología del despacho</h2><p>Unos 6 minutos. Lo contesta <b>quien da soporte técnico</b> al despacho, sea del equipo o externo. Sirve para recomendar la tecnología adecuada al tamaño del despacho y para pedir cotizaciones.</p>
+      <div class="f"><label>Si lo contesta alguien externo, envíale este enlace</label><div class="enlace"><input readonly value="${esc(link)}" aria-label="Enlace para soporte técnico"><button class="btn sm" data-a="copiar" data-v="${esc(link)}">Copiar enlace</button></div><small>Abre directo esta parte, sin alias. Al terminar, la app le muestra un código para enviarlo al Equipo DELTA.</small></div></div>
+    <div class="card"><h2>Datos generales</h2><div class="grid2">${TI_DATOS.map(x => x.multi ? `<div class="f"><label>${x.q}</label><div class="chips">${x.multi.map(o => chk(`${b}.so.${o}`, o, { upd: 'tires' })).join('')}</div></div>` : fld(x.q, x.num ? inp(`${b}.datos.${x.k}`, { type: 'number', min: 0, upd: 'tires' }) : sel(`${b}.datos.${x.k}`, x.o, { upd: 'tires' }))).join('')}</div></div>
+    <div class="card dominio"><h2>Red, accesos y programas</h2>${TI_PREG.map((q, i) => `<div class="dq"><p id="ti${i}">${i + 1}. ${q.q}</p>${r3(`${b}.resp.${i}`, 'ti' + i, t.resp[i], 'tires')}</div>`).join('')}</div>
+    <div id="upd-tires">${UPD.tires()}</div>`;
+}
+UPD.efres = () => {
+  const did = S.ui.did, hs = ordenGravedad(hallazgos(did).filter(h => h.origen === 'e.firmas y sellos')), n = contestadas(efirma(did).resp), ok = efListo(did);
+  return `<div class="card resumen"><h2>Resultado</h2><p>${n} de ${EF_PREG.length} preguntas contestadas${ok ? '' : ' · contesta también los tres conteos de arriba'}.</p>
+    ${hs.length ? `<ul class="hall">${hs.map(h => `<li><b>${h.id}</b> ${esc(h.titulo)} ${gpill(h.g)}</li>`).join('')}</ul>` : `<p class="nota">${n ? 'Sin hallazgos en esta parte.' : 'Cada respuesta "No" o "Parcialmente" genera un hallazgo con acciones sugeridas.'}</p>`}
+    <div class="row">${ok ? '<button class="btn" data-a="codigo" data-v="efirma">Enviar mis resultados al Equipo DELTA</button>' : ''}${siguienteParte(did, 'efirmas')}</div></div>`;
+};
+UPD.tires = () => {
+  const did = S.ui.did, hs = ordenGravedad(hallazgos(did).filter(h => h.origen === 'Tecnología')), n = contestadas(tiDe(did).resp), ok = tiListo(did);
+  return `<div class="card resumen"><h2>Resultado</h2><p>${n} de ${TI_PREG.length} preguntas contestadas${ok ? '' : ' · faltan datos generales: soporte, dónde se guarda la información y respaldo'}.</p>
+    ${hs.length ? `<ul class="hall">${hs.map(h => `<li><b>${h.id}</b> ${esc(h.titulo)} ${gpill(h.g)}</li>`).join('')}</ul>` : `<p class="nota">${n ? 'Sin hallazgos en esta parte.' : 'Cada respuesta "No" o "Parcialmente" genera un hallazgo con acciones sugeridas.'}</p>`}
+    <div class="row">${ok ? '<button class="btn p" data-a="codigo" data-v="ti">Enviar mis resultados al Equipo DELTA</button>' : ''}${P() || !ok ? siguienteParte(did, 'ti') : ''}</div></div>`;
+};
+
+/* ---------- Módulo 9: simulador «Un día sin sello» ---------- */
+ITEMS.sello = SELLO.pasos.map(x => ({ q: x.q, o: x.o.map(y => y[0]), c: x.o.findIndex(y => y[1]), fb: k => x.o[k][2], h: x.o.map(y => y[3] || 0) }));
+const SELLO_MEJOR = ITEMS.sello.reduce((a, x) => a + x.h[x.c], 0);
+const diasTxt = n => (Math.round(n * 10) / 10) + (n === 1 ? ' día' : ' días');
+EJ[9] = (p, did) => `<p class="escenario">${SELLO.intro}</p>` + pasos('sello', ITEMS.sello, s => {
+  const extra = s.h - SELLO_MEJOR;
+  return `<div class="grid3 res"><div class="tile ${s.ok === ITEMS.sello.length ? 'ok' : ''}"><span>Decisiones acertadas</span><b>${s.ok} de ${ITEMS.sello.length}</b></div><div class="tile"><span>Días que tu cliente no pudo facturar</span><b>${diasTxt(s.h)}</b></div><div class="tile"><span>El mejor camino</span><b>${diasTxt(SELLO_MEJOR)}</b></div></div>
+    <p>${extra > 0 ? `Tus decisiones sumaron <b>${diasTxt(extra)}</b> sin facturación para el cliente.` : 'Seguiste el camino más corto.'} Los días son ilustrativos: sirven para comparar decisiones, no son un pronóstico.</p>
+    <h3 class="parte">Ahora, tu despacho</h3><p>El dueño o socio revisa cómo están guardadas las e.firmas en <a href="#efirmas">Diagnóstico → e.firmas y sellos</a>. El procedimiento completo está en el kit:</p>
+    <details class="card"><summary><b>Anexo 5:</b> qué hacer si se pierde o se filtra una e.firma o un sello</summary>${efirmaProcHTML(did)}</details>
+    <div class="row end"><button class="btn" data-a="strein">Repetir el simulador</button>${p ? `<button class="btn p" data-a="hecho" data-v="9">Marcar el módulo como completado</button>` : ''}</div>`;
+}, { extra: s => `<p class="reloj" title="Días sin facturar acumulados">Sin facturar: <b>${diasTxt(s.h)}</b></p>` });
+
+/* ---------- Kit: anexos 5, 6 y 7 ---------- */
+function efirmaProcHTML(did) {
+  const k = kit(did).plan;
+  return `<div class="docp">${docHead('Qué hacer si se pierde o se filtra una e.firma o un sello', did)}
+    <p><b>Cuándo usarlo:</b> se perdió o robaron un equipo o una memoria con e.firmas; alguien que conocía una contraseña dejó el despacho; aparecen trámites o facturas que nadie reconoce; el SAT restringió el sello de un cliente.</p>
+    <ol class="pasosdoc"><li><b>Avisa de inmediato</b> a ${blanco(k.resp)} (responsable de incidentes) y anota qué pasó, cuándo y qué e.firmas o sellos pudieron verse afectados.</li>
+    <li><b>Revisa el buzón tributario</b> de cada cliente afectado: si hay una restricción, anota la causa y la fecha de notificación. Desde ahí corren <b>40 días hábiles</b> para presentar la aclaración (art. 17-H Bis del CFF).</li>
+    <li><b>Deja sin efectos la e.firma comprometida.</b> El titular puede pedirlo (art. 17-H, fr. I del CFF): en línea si aún tiene los archivos y la contraseña, o con cita en el SAT si no. Cambiar la contraseña no basta si alguien copió el archivo.</li>
+    <li><b>Revisa y descarga</b> las facturas emitidas y recibidas que el cliente no reconozca. No las canceles sin analizarlas: son la evidencia.</li>
+    <li><b>Informa al cliente por escrito</b> qué pasó, qué pudo verse afectado, qué se está haciendo y qué le recomiendan (plantilla del anexo 6).</li>
+    <li><b>Presenta la aclaración</b> con sus pruebas dentro del plazo. Al día siguiente de presentarla se restablece el uso del sello mientras el SAT resuelve.</li>
+    <li><b>El cliente tramita su nueva e.firma</b> y, con ella, un sello nuevo. La nueva se guarda cifrada y con acceso mínimo.</li>
+    <li><b>Revisa todas las demás</b> e.firmas que guarda el despacho: dónde están, quién tiene acceso y quién se fue. Si alguna pudo filtrarse, se repite este procedimiento con ese cliente.</li>
+    <li><b>Aprende.</b> Una semana después, revisen qué falló y actualicen este procedimiento y el plan de respuesta.</li></ol>
+    <table class="t"><thead><tr><th>Cliente (clave interna)</th><th>Qué pasó</th><th>Fecha de notificación</th><th>Vence la aclaración</th><th>Responsable</th></tr></thead><tbody>${[1, 2, 3].map(() => '<tr><td><span class="linea">&nbsp;</span></td><td><span class="linea">&nbsp;</span></td><td><span class="linea">&nbsp;</span></td><td><span class="linea">&nbsp;</span></td><td><span class="linea">&nbsp;</span></td></tr>').join('')}</tbody></table>
+    <p class="mini">Fundamento: CFF arts. 17-D, 17-H y 17-H Bis; LFPDPPP art. 19. Procedimiento orientativo del Equipo DELTA: confirmen los pasos y plazos vigentes en el portal del SAT y con su contador o asesor fiscal.</p></div>`;
+}
+function avisoHTML(did) {
+  const l = '<span class="linea">por capturar</span>';
+  return `<div class="docp">${docHead('Aviso de vulneración de seguridad (plantilla)', did)}
+    <p class="mini">Para informar a un cliente o a cualquier persona cuyos datos pudieron verse afectados. La LFPDPPP pide informarlo de inmediato cuando la vulneración afecte de forma significativa sus derechos (art. 19). Lleva, al menos, los cinco puntos de abajo (Reglamento de la LFPDPPP, art. 65).</p>
+    <p>Estimado(a) ${l}:</p>
+    <p>Le informamos que el ${l} detectamos un incidente de seguridad en ${esc(S.despachos[did].nombre)} que pudo afectar información suya.</p>
+    <p><b>1. Qué ocurrió:</b> ${l}</p>
+    <p><b>2. Qué datos pudieron verse afectados:</b> ${l}</p>
+    <p><b>3. Qué le recomendamos hacer:</b> ${l} <small>(por ejemplo: revisar su buzón tributario y sus facturas emitidas, cambiar contraseñas, avisarnos de cualquier movimiento que no reconozca)</small></p>
+    <p><b>4. Qué hicimos de inmediato:</b> ${l}</p>
+    <p><b>5. Dónde puede obtener más información:</b> ${l} <small>(persona, teléfono y correo del despacho)</small></p>
+    <p>Lamentamos lo ocurrido. Seguiremos informándole de cualquier novedad.</p>
+    <div class="firmas"><div>Nombre y firma del responsable</div><div>Fecha</div></div>
+    <p class="mini">Plantilla generada por la app del Equipo DELTA. Conviene revisarla con un asesor legal antes de usarla.</p></div>`;
+}
+function lista69bHTML(did) {
+  return `<div class="docp">${docHead('Revisión de proveedores contra el listado 69-B', did)}
+    <p><b>Para qué sirve:</b> detectar a tiempo si un proveedor de un cliente aparece en el listado del SAT de quienes facturan operaciones inexistentes (art. 69-B del CFF).</p>
+    <p><b>Cuándo revisar:</b> al dar de alta un proveedor nuevo, antes de registrar facturas de montos altos y una vez al mes para los proveedores principales.</p>
+    <ol class="pasosdoc"><li>Consulta el listado en el portal del SAT y busca al proveedor por su RFC.</li>
+    <li><b>Si aparece como presunto:</b> avisa al cliente, pide al proveedor que lo aclare y pon en pausa nuevas operaciones hasta tener certeza.</li>
+    <li><b>Si aparece como definitivo:</b> el cliente tiene 30 días desde la publicación para acreditar que la operación sí ocurrió o corregir su situación. Si no lo hace, su sello puede restringirse (art. 17-H Bis, fr. V del CFF).</li>
+    <li>Reúne la evidencia de la operación: contrato, entregables, pagos y comunicaciones.</li>
+    <li>Anota la revisión en la tabla de abajo y guarda la evidencia junto a la contabilidad del cliente.</li></ol>
+    <table class="t"><thead><tr><th>Fecha</th><th>Cliente (clave interna)</th><th>Proveedores revisados</th><th>¿Alguno en el listado?</th><th>Qué se hizo</th></tr></thead><tbody>${[1, 2, 3, 4].map(() => '<tr><td><span class="linea">&nbsp;</span></td><td><span class="linea">&nbsp;</span></td><td><span class="linea">&nbsp;</span></td><td><span class="linea">&nbsp;</span></td><td><span class="linea">&nbsp;</span></td></tr>').join('')}</tbody></table>
+    <p class="mini">Procedimiento orientativo del Equipo DELTA. Confirmen plazos y criterios vigentes con su contador o asesor fiscal.</p></div>`;
+}
+
+/* ---------- Reporte: cumplimiento, e.firmas, ruta tecnológica y costo frente a la utilidad ---------- */
+function cumpleEstado(c, did) {
+  const r = (S.diagnostico[did] || {}).resp || [], vals = c.d.map(i => r[i - 1]).filter(v => v === 0 || v === 1 || v === 2);
+  if (c.ef && S.efirma[did]) S.efirma[did].resp.forEach(v => { if (v === 0 || v === 1 || v === 2) vals.push(v); });
+  if (!vals.length) return ['Sin datos', 'gris'];
+  const p = vals.reduce((a, b) => a + b, 0) / (vals.length * 2) * 100;
+  return p >= 90 ? ['Se cumple', 'ok'] : p >= 40 ? ['Parcial', 'g-media'] : ['Pendiente', 'g-alta'];
+}
+const cumpleHTML = did => `<h2>Qué te ayudamos a cumplir</h2><table class="t cumple"><thead><tr><th>Obligación</th><th>Fundamento</th><th>Cómo está hoy</th><th>Con qué te ayuda el servicio</th></tr></thead><tbody>${CUMPLE.map(c => { const [t, cl] = cumpleEstado(c, did); return `<tr><th>${c.t}</th><td>${fundHTML(c.n)}</td><td>${cl === 'gris' ? '<span class="mini">Sin datos</span>' : pill(t, cl)}</td><td>${c.como}</td></tr>`; }).join('')}</tbody></table><p class="mini">"Cómo está hoy" se calcula con las respuestas del propio despacho al diagnóstico. Es una orientación, no una auditoría de cumplimiento ni asesoría legal.</p>`;
+function efResumenHTML(did) {
+  const e = S.efirma[did]; if (!e || !Object.keys(e.c || {}).length) return '';
+  const hs = hallazgos(did).filter(h => h.origen === 'e.firmas y sellos');
+  return `<h2>Resguardo de e.firmas y sellos</h2><p>El despacho guarda <b>${esc((e.c.efirmas || 'sin dato').toLowerCase())}</b> e.firma(s) y <b>${esc((e.c.csd || 'sin dato').toLowerCase())}</b> sello(s) de clientes; pueden abrirlos: <b>${esc((e.c.personas || 'sin dato').toLowerCase())}</b>. ${hs.length ? hs.length + ' hallazgo(s) en esta parte: ' + hs.map(h => h.id).join(', ') + '.' : 'Sin hallazgos en esta parte.'}</p>`;
+}
+function escalon(did) { const t = S.ti[did], dd = (t && t.datos) || {}, n = num(dd.equipos) || num((S.despachos[did] || {}).computadoras); return n > 10 || dd.datos === 'En un servidor o NAS de la oficina' || dd.contable === 'Instalado en un servidor del despacho' ? 'grande' : 'chica'; }
+function rutaTecHTML(did) {
+  const ops = oportunidadesVivas(did), cats = [...new Set(ops.map(h => h.d))].filter(c => RUTA_TEC[c]); if (!cats.length) return '';
+  const esc1 = escalon(did), pr = (S.config && S.config.precios) || {};
+  return `<h2>Ruta tecnológica recomendada</h2><table class="t"><thead><tr><th>Necesidad</th><th>Por qué</th><th>Qué se recomienda</th><th>Precio de referencia</th></tr></thead><tbody>${cats.map(c => { const r = RUTA_TEC[c]; return `<tr><th>${r.nec}</th><td>${ops.filter(h => h.d === c).map(h => h.id).join(', ')}</td><td>${esc(esc1 === 'grande' && r.grande ? r.grande : r.chica)}<br><small>${esc(r.ej)}</small></td><td>${pr[c] ? esc(pr[c]) + '<br><small>indicativo</small>' : '<span class="mini">A cotizar con el partner</span>'}</td></tr>`; }).join('')}</tbody></table>
+    <p class="mini">Recomendación según el tamaño del despacho${S.ti[did] ? ' y el cuestionario de TI' : ''}. Los productos, precios y disponibilidad los confirma el distribuidor o partner (${pd(S.config.distribuidor)}). El Equipo DELTA no vende ni cotiza a nombre de Dell.</p>`;
+}
+const utilidadTxt = c => num(c.utilidadMes) > 0 && calcListo(c) ? `Un día sin operar equivale a <b>${r1(calcCosto(c, 1).total / num(c.utilidadMes) * 100)}%</b> de la utilidad mensual que capturó el despacho (${mxn(num(c.utilidadMes))}).` : '';
+
+/* ---------- Propuesta de servicio (Equipo DELTA) ---------- */
+function paqAtiende(k, did) { return paqAt(k, did).sort((a, b) => +a.slice(1) - +b.slice(1)); }
+function paqAt(k, did) {
+  const hs = ordenGravedad(hallazgos(did));
+  if (k === 'cap') return hs.filter(h => /^D(6|7|8|9|26|27|28|29)$/.test(h.key) || h.origen === 'e.firmas y sellos' && /F(7|9)/.test(h.key)).map(h => h.id);
+  if (k === 'acomp') return hs.filter(h => h.g === 'alta' && !h.d).map(h => h.id);
+  return oportunidadesVivas(did).map(h => h.id);
+}
+V.propuesta = () => {
+  const d = D(); if (!d) return sinDespachoC();
+  const pp = propuesta(d.id), b = 'propuesta.' + d.id, st = diagStats(d.id), en = S.encuesta[d.id] || {}, c = kit(d.id).calculadora, hs = hallazgos(d.id);
+  return `<div class="row between"><h1>Propuesta de servicio</h1><button class="btn p" data-a="pdf" data-v="propuesta">Guardar en PDF</button></div>
+    <p class="lead">Se arma en la reunión de entrega con <b>${esc(d.nombre)}</b>. Elige qué paquetes ofrecer, pon el precio y registra la decisión del dueño.</p>
+    <div class="grid4 res"><div class="tile"><span>Madurez</span><b>${st.total == null ? '—' : Math.round(st.total) + '%'}</b></div><div class="tile"><span>Hallazgos (altos)</span><b>${hs.length} (${hs.filter(h => h.g === 'alta').length})</b></div><div class="tile"><span>Costo de 1 día sin operar</span><b>${calcListo(c) ? mxn(calcCosto(c, 1).total) : '—'}</b></div><div class="tile"><span>Precio mensual que el dueño ve razonable</span><b>${en.pagoRazonable ? mxn(num(en.pagoRazonable)) : '—'}</b></div></div>
+    ${PAQUETES.map(p => { const at = paqAtiende(p.k, d.id); return `<div class="card paq"><div class="row between"><h2>${chk(`${b}.incluir.${p.k}`, p.t)}</h2><small>${p.tipo}</small></div>
+      <ul class="lista">${p.inc.map(x => `<li>${x}</li>`).join('')}</ul><p class="mini">Atiende: ${at.length ? at.join(', ') : 'sin hallazgos asociados'}</p>
+      <div class="grid2">${fld('Precio (' + p.tipo + ')', inp(`${b}.precios.${p.k}`, { ph: p.k === 'tec' ? 'Según cotización del partner' : '$ MXN' }))}${fld('Decisión del dueño', sel(`${b}.decision.${p.k}`, DECISIONES))}</div></div>`; }).join('')}
+    <div class="card">${fld('Notas de la reunión', area(b + '.notas', { rows: 3 }))}${fld('Fecha de la decisión', inp(b + '.fecha', { type: 'date' }))}</div>
+    <p class="mini">El precio de "Implementación tecnológica" sale de la cotización del partner más los honorarios del Equipo DELTA. Registrar la decisión mide la intención de compra con algo más que la encuesta.</p>`;
+};
+function propuestaHTML(did) {
+  const pp = propuesta(did), d = S.despachos[did], sel = PAQUETES.filter(p => pp.incluir[p.k]);
+  return `<div class="docp">${docHead('Propuesta de servicio', did)}
+    <p>Con base en el diagnóstico, la capacitación y el reporte de ${esc(d.nombre)}, el Equipo DELTA propone:</p>
+    ${sel.map(p => { const at = paqAtiende(p.k, did); return `<h2>${p.t}</h2><ul>${p.inc.map(x => `<li>${x}</li>`).join('')}</ul><p><b>Precio:</b> ${pp.precios[p.k] ? esc(pp.precios[p.k]) + ' ' + p.tipo : '<span class="linea">por definir</span>'}${at.length ? ' · <b>Atiende:</b> ' + at.join(', ') : ''}</p><p><span class="box"></span> Aprobado &nbsp; <span class="box"></span> Pide cotización &nbsp; <span class="box"></span> Lo pensará &nbsp; <span class="box"></span> No por ahora</p>`; }).join('') || '<p>Sin paquetes seleccionados.</p>'}
+    <div class="firmas"><div>Dueño o socio del despacho</div><div>Equipo DELTA</div></div>
+    <p class="mini">Propuesta de un proyecto académico. La tecnología la cotiza y vende el partner; el Equipo DELTA no ofrece productos ni precios a nombre de Dell.</p></div>`;
+}
+const propResumen = did => { const pp = S.propuesta[did]; if (!pp || !pp.decision) return ''; const ds = PAQUETES.filter(p => pp.incluir && pp.incluir[p.k] && pp.decision[p.k]).map(p => p.t.split(' ')[0] + ': ' + pp.decision[p.k]); return ds.join(' · '); };
 
 /* ===== Resultados para el Equipo DELTA: reporte colectivo del despacho y reporte individual por alias ===== */
 const pctTxt = (a, n) => n ? Math.round(a / n * 100) + '%' : '—';
@@ -2255,7 +2658,7 @@ V.resultados = () => {
 };
 
 /* ===== Eventos, archivos y arranque ===== */
-const ETQ = { quizInicial: 'quiz inicial', quizFinal: 'quiz final', diag: 'diagnóstico', calc: 'calculadora', encuesta: 'encuesta' };
+const ETQ = { quizInicial: 'quiz inicial', quizFinal: 'quiz final', diag: 'diagnóstico', efirma: 'e.firmas y sellos', ti: 'cuestionario de TI', calc: 'calculadora', encuesta: 'encuesta' };
 const EMBEBIDO = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
 const DLP = (window.claude && typeof window.claude.use === 'function') ? window.claude.use('downloads').catch(() => null) : Promise.resolve(null);
 
@@ -2425,7 +2828,7 @@ const ACC = {
   },
   accfila: () => { const a = kit(S.ui.did).accesos; a.filas.push({ puesto: '', s: {} }); a.ts = Date.now(); save(); render(); },
   encuesta: () => { const e = S.encuesta[S.ui.did] || {}; if (!e.utilidad) return toast('Falta calificar la utilidad del servicio (1 a 5).'); if (!pagoOrden(e)) return toast('Revisa los cuatro precios: deberían ir de menor a mayor.'); e.ts = Date.now(); e.fecha = hoy(); save(); render(); ACC.codigo('encuesta'); },
-  pdf: v => { const did = S.ui.did, n = slug(S.despachos[did].nombre); if (v === 'plan') pdf(planHTML(did), 'plan-de-respuesta-' + n); else if (v === 'politica') pdf(politicaHTML(did), 'politica-de-ia-' + n); else pdf(reporteHTML(did), 'reporte-' + n); },
+  pdf: v => { const did = S.ui.did, n = slug(S.despachos[did].nombre); if (v === 'plan') pdf(planHTML(did), 'plan-de-respuesta-' + n); else if (v === 'efirma') pdf(efirmaProcHTML(did), 'perdida-de-efirma-' + n); else if (v === 'aviso') pdf(avisoHTML(did), 'aviso-de-vulneracion-' + n); else if (v === '69b') pdf(lista69bHTML(did), 'revision-69b-' + n); else if (v === 'propuesta') pdf(propuestaHTML(did), 'propuesta-' + n); else if (v === 'politica') pdf(politicaHTML(did), 'politica-de-ia-' + n); else pdf(reporteHTML(did), 'reporte-' + n); },
   nuevo: () => {
     let id = codigo(); while (S.despachos[id]) id = codigo();
     const g = x => document.getElementById(x).value.trim();
@@ -2438,7 +2841,7 @@ const ACC = {
   eqadd: () => { const e = equipos(S.ui.did); e.items.push({ id: rid('e'), nombre: '', marca: '', anios: '', so: '', act: '', av: '', resp: '', comp: '', pass: '' }); e.ts = Date.now(); save(); render(); },
   eqdel: v => { const e = equipos(S.ui.did); e.items.splice(+v, 1); e.ts = Date.now(); save(); render(); },
   csv: () => guardar('tablero-piloto-' + hoy() + '.csv', csvTablero(), 'text/csv'),
-  codigo: async v => { if (!S.ui.did) return toast('Primero elige tu despacho.'); const c = await codigoResultados(S.ui.did), p = P(); const ant = v === 'quizInicial' ? `<b>Quiz inicial guardado.</b> Ahora envía este código al Equipo DELTA: es lo que permite medir tu avance al final. ` : v === 'quizFinal' ? `<b>Quiz final guardado${p && p.quizInicial ? ': pasaste de ' + r1(p.quizInicial.pct) + '% a ' + r1(p.quizFinal.pct) + '%' : ''}.</b> Envía este código al Equipo DELTA para que tu resultado cuente. ` : v === 'diag' ? `<b>Diagnóstico completo.</b> Envía este código al Equipo DELTA antes de la reunión de entrega: con él preparan tu reporte. ` : v === 'calc' ? `<b>Calculadora guardada.</b> Envía este código al Equipo DELTA para que tu estimación aparezca en el reporte. ` : v === 'encuesta' ? `<b>Gracias, tu encuesta quedó guardada.</b> Envía este código al Equipo DELTA para que la reciban. ` : ''; const d = D(), txt = 'Resultados para el Equipo DELTA · ' + (p ? p.alias : 'Dueño o socio') + ' · ' + (d ? d.nombre + ' (' + d.id + ')' : '') + (ETQ[v] ? ' · ' + ETQ[v] : '') + '\n' + c; T.envio = txt;
+  codigo: async v => { if (!S.ui.did) return toast('Primero elige tu despacho.'); const c = await codigoResultados(S.ui.did), p = P(); const ant = v === 'quizInicial' ? `<b>Quiz inicial guardado.</b> Ahora envía este código al Equipo DELTA: es lo que permite medir tu avance al final. ` : v === 'quizFinal' ? `<b>Quiz final guardado${p && p.quizInicial ? ': pasaste de ' + r1(p.quizInicial.pct) + '% a ' + r1(p.quizFinal.pct) + '%' : ''}.</b> Envía este código al Equipo DELTA para que tu resultado cuente. ` : v === 'diag' ? `<b>Diagnóstico completo.</b> Envía este código al Equipo DELTA antes de la reunión de entrega: con él preparan tu reporte. ` : v === 'efirma' ? `<b>e.firmas y sellos completo.</b> Envía este código al Equipo DELTA antes de la reunión de entrega. No incluye RFC, nombres ni contraseñas. ` : v === 'ti' ? `<b>Cuestionario de TI completo.</b> Envía este código al Equipo DELTA: con él recomiendan la tecnología adecuada para el despacho. ` : v === 'calc' ? `<b>Calculadora guardada.</b> Envía este código al Equipo DELTA para que tu estimación aparezca en el reporte. ` : v === 'encuesta' ? `<b>Gracias, tu encuesta quedó guardada.</b> Envía este código al Equipo DELTA para que la reciban. ` : ''; const d = D(), txt = 'Resultados para el Equipo DELTA · ' + (p ? p.alias : 'Dueño o socio') + ' · ' + (d ? d.nombre + ' (' + d.id + ')' : '') + (ETQ[v] ? ' · ' + ETQ[v] : '') + '\n' + c; T.envio = txt;
     copiaManual(v ? 'Envía tus resultados' : 'Tus resultados', txt, ant + 'Toca <b>Enviar por WhatsApp</b> y elige el chat del Equipo DELTA. Si no se abre, usa <b>Copiar</b> y pégalo en un mensaje (WhatsApp o correo). Contiene tu alias y tus respuestas; no incluye datos de clientes.', true); },
   compartir: () => {
     const txt = T.envio || (document.getElementById('m-txt') || {}).value || '';
@@ -2462,7 +2865,9 @@ function onBind(el) {
   setPath(el.dataset.bind, v);
   if (el.dataset.upd) el.dataset.upd.split(' ').forEach(k => { const t = document.getElementById('upd-' + k); if (t) t.innerHTML = UPD[k](); });
   if (el.hasAttribute('data-r')) render();
-  if (/^diagnostico\./.test(el.dataset.bind)) { const dg = diag(S.ui.did); if (!dg.aviso && dg.resp.every(x => x != null)) { dg.aviso = true; save(); ACC.codigo('diag'); } }
+  if (/^diagnostico\./.test(el.dataset.bind)) { const dg = diag(S.ui.did); if (!dg.aviso && diagListo(S.ui.did)) { dg.aviso = true; save(); ACC.codigo('diag'); } }
+  if (/^efirma\./.test(el.dataset.bind)) { const e = efirma(S.ui.did); if (!e.aviso && efListo(S.ui.did)) { e.aviso = true; save(); ACC.codigo('efirma'); } }
+  if (/^ti\./.test(el.dataset.bind)) { const t = tiDe(S.ui.did); if (!t.aviso && tiListo(S.ui.did)) { t.aviso = true; save(); ACC.codigo('ti'); } }
 }
 const DISCRETO = t => t.type === 'checkbox' || t.type === 'radio' || t.tagName === 'SELECT';
 document.addEventListener('click', e => {
@@ -2491,7 +2896,7 @@ window.addEventListener('afterprint', () => { document.getElementById('print-are
   const c = m[1].toUpperCase();
   if (!S.despachos[c]) S.despachos[c] = { id: c, nombre: 'Despacho ' + c, stub: true, ts: Date.now() };
   S.ui.did = c; S.ui.pid = null; S.ui.modo = 'despacho'; save();
-  try { history.replaceState(null, '', location.pathname + '#inicio'); } catch (e) {}
+  try { history.replaceState(null, '', location.pathname + (/^#(ti|efirmas|diagnostico)$/.test(location.hash) ? location.hash : '#inicio')); } catch (e) {}
 })();
 function medirTop() { const h = document.querySelector('.top'); if (h) document.documentElement.style.setProperty('--topH', h.offsetHeight + 'px'); }
 window.addEventListener('resize', medirTop);

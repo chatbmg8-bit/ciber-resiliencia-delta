@@ -5,8 +5,8 @@ const ESTADOS = ['Por validar con distribuidor Dell', 'Validado', 'Descartado'];
 const GVAL = { alta: 0, media: 1, baja: 2 };
 
 function blank() {
-  return { v: 2, despachos: {}, participantes: {}, diagnostico: {}, proceso: {}, equipos: {}, kit: {}, encuesta: {}, hids: {}, estados: {}, plan30: {},
-    config: { rangos: '', distribuidor: '' }, ui: { modo: 'despacho', did: null, pid: null } };
+  return { v: 2, despachos: {}, participantes: {}, diagnostico: {}, proceso: {}, equipos: {}, kit: {}, encuesta: {}, hids: {}, estados: {}, plan30: {}, efirma: {}, ti: {}, propuesta: {},
+    config: { rangos: '', distribuidor: '', precios: {} }, ui: { modo: 'despacho', did: null, pid: null } };
 }
 let memStore = null;
 function load() {
@@ -17,7 +17,8 @@ function load() {
 const ALMACEN_OK = (() => { try { const k = LS_KEY + '_t'; localStorage.setItem(k, '1'); localStorage.removeItem(k); return true; } catch (e) { return false; } })();
 /* Migración de datos guardados con versiones anteriores de la app */
 function migrar(x) {
-  ['despachos', 'participantes', 'diagnostico', 'proceso', 'equipos', 'kit', 'encuesta', 'hids', 'estados', 'plan30'].forEach(k => { if (!x[k] || typeof x[k] !== 'object') x[k] = {}; });
+  ['despachos', 'participantes', 'diagnostico', 'proceso', 'equipos', 'kit', 'encuesta', 'hids', 'estados', 'plan30', 'efirma', 'ti', 'propuesta'].forEach(k => { if (!x[k] || typeof x[k] !== 'object') x[k] = {}; });
+  x.config = Object.assign({ rangos: '', distribuidor: '', precios: {} }, x.config || {}); if (!x.config.precios) x.config.precios = {};
   x.ui = Object.assign({ modo: 'despacho', did: null, pid: null }, x.ui || {});
   Object.values(x.participantes).forEach(p => { if (!Array.isArray(p.avance)) p.avance = []; });
   x.v = 2; return x;
@@ -47,7 +48,7 @@ function setPath(path, val) {
   const ks = path.split('.'); let o = S;
   for (let i = 0; i < ks.length - 1; i++) { if (o[ks[i]] == null || typeof o[ks[i]] !== 'object') o[ks[i]] = {}; o = o[ks[i]]; }
   o[ks[ks.length - 1]] = val;
-  const depth = ks[0] === 'kit' ? 3 : (['despachos', 'participantes', 'diagnostico', 'proceso', 'equipos', 'encuesta', 'plan30'].includes(ks[0]) ? 2 : 0);
+  const depth = ks[0] === 'kit' ? 3 : (['despachos', 'participantes', 'diagnostico', 'proceso', 'equipos', 'encuesta', 'plan30', 'efirma', 'ti', 'propuesta'].includes(ks[0]) ? 2 : 0);
   if (depth && ks.length > depth) { let c = S; for (let i = 0; i < depth; i++) c = c[ks[i]]; if (c && typeof c === 'object') c.ts = Date.now(); }
   save();
 }
@@ -103,7 +104,7 @@ function proponerPlan(did) {
   if (!pl.seguimiento) pl.seguimiento = masDias(30);
   pl.ts = Date.now(); save(); return hs.length;
 }
-function diag(did) { if (!S.diagnostico[did]) S.diagnostico[did] = { resp: Array(30).fill(null) }; return S.diagnostico[did]; }
+function diag(did) { if (!S.diagnostico[did]) S.diagnostico[did] = { resp: Array(DIAG.length).fill(null) }; return S.diagnostico[did]; }
 
 /* --- Diagnóstico --- */
 function semaforo(p) { return p == null ? 'gris' : p < 40 ? 'rojo' : p <= 70 ? 'amarillo' : 'verde'; }
@@ -132,11 +133,12 @@ function reglasEquipo(e) {
 function hallazgos(did) {
   const out = [];
   const dg = S.diagnostico[did];
-  if (dg) DIAG.forEach((x, i) => { const v = dg.resp[i]; if (v === 0 || v === 1) out.push({ key: 'D' + (i + 1), origen: 'Diagnóstico', det: DOMINIOS[Math.floor(i / 5)].n, titulo: x.h, riesgo: x.r, g: x.g, a0: x.a0, a1: x.a1, d: x.d || null, resp: v }); });
+  if (dg) DIAG.forEach((x, i) => { const v = dg.resp[i]; if (v === 0 || v === 1) out.push({ key: 'D' + (i + 1), origen: 'Diagnóstico', det: DOMINIOS[Math.floor(i / 5)].n, titulo: x.h, riesgo: x.r, g: x.g, a0: x.a0, a1: x.a1, d: x.d || null, f: x.f, resp: v }); });
   const pr = S.proceso[did];
-  if (pr) pr.pasos.forEach((p, pi) => RIESGOS_PROCESO.forEach(x => { if (p.riesgos && p.riesgos[x.k]) out.push({ key: 'P' + (pi + 1) + '-' + x.k, origen: 'Proceso', det: PASOS_PROCESO[pi], titulo: x.h + ' (paso: ' + PASOS_PROCESO[pi].toLowerCase() + ')', riesgo: x.r, g: x.g, a0: x.a0, a1: x.a1, d: x.d || null, resp: 0 }); }));
+  if (pr) pr.pasos.forEach((p, pi) => RIESGOS_PROCESO.forEach(x => { if (p.riesgos && p.riesgos[x.k]) out.push({ key: 'P' + (pi + 1) + '-' + x.k, origen: 'Proceso', det: PASOS_PROCESO[pi], titulo: x.h + ' (paso: ' + PASOS_PROCESO[pi].toLowerCase() + ')', riesgo: x.r, g: x.g, a0: x.a0, a1: x.a1, d: x.d || null, f: x.f, resp: 0 }); }));
   const eq = S.equipos[did];
-  if (eq) eq.items.forEach(e => reglasEquipo(e).forEach(k => { const x = REGLAS_EQ[k]; out.push({ key: 'E' + e.id + '-' + k, origen: 'Inventario', det: e.nombre || 'Equipo sin nombre', titulo: x.h + ': ' + (e.nombre || 'equipo sin nombre'), riesgo: x.r, g: x.g, a0: x.a0, a1: x.a1, d: x.d || null, resp: 0 }); }));
+  if (eq) eq.items.forEach(e => reglasEquipo(e).forEach(k => { const x = REGLAS_EQ[k]; out.push({ key: 'E' + e.id + '-' + k, origen: 'Inventario', det: e.nombre || 'Equipo sin nombre', titulo: x.h + ': ' + (e.nombre || 'equipo sin nombre'), riesgo: x.r, g: x.g, a0: x.a0, a1: x.a1, d: x.d || null, f: x.f, resp: 0 }); }));
+  hallazgosExtra(did, out);
   if (!S.hids[did]) S.hids[did] = { n: 0, m: {} };
   const map = S.hids[did]; let nuevo = false;
   out.forEach(o => {
@@ -203,6 +205,7 @@ function filaTablero(did) {
     madurez: dg.total, contestadas: dg.contestadas, hallazgos: hs.length, oportunidades: oportunidadesVivas(did).length,
     utilidad: en.utilidad || null, contrataria: en.contrataria || '', pago: pagoTxt(en), pagos: PAGOS.map(x => en[x[0]] === '' || en[x[0]] == null ? '' : num(en[x[0]])), pagoInicial: en.pagoInicial === '' || en.pagoInicial == null ? '' : num(en.pagoInicial), horas: d.horas || '', esperados: d.esperados || '',
     comp: cm.length, compHechos: cm.filter(x => x.c.hecho).length, seguimiento: (S.plan30[did] || {}).seguimiento || '',
+    efirma: efListo(did), ti: tiListo(did), propuesta: propResumen(did),
     phishing: c.phishing, mfa: c.mfa, reporte: c.reporte, restauracion: !!k.restauracion.ok, plan: !!k.plan.listo, calculadora: calcListo(k.calculadora), politica: !!k.politica.listo };
 }
 function estadoMeta(vals, ok) { // vals: lista por despacho (null = sin datos)
@@ -231,8 +234,8 @@ function tablero() {
 }
 function csvTablero() {
   const t = tablero(); const q = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
-  const head = ['Despacho', 'Fecha de sesión', 'Fecha de entrega', 'Días entre sesión y entrega', 'Participantes esperados', 'Participantes', 'Participantes con ambos quiz', 'Promedio inicial (%)', 'Promedio final (%)', 'Mejora (puntos porcentuales)', 'Madurez (%)', 'Hallazgos', 'Oportunidades Dell', 'Utilidad (1-5)', 'Contrataría', 'Precio mensual barato (MXN)', 'Precio mensual razonable (MXN)', 'Precio mensual caro (MXN)', 'Precio mensual demasiado caro (MXN)', 'Precio razonable del paquete inicial (MXN)', 'Acciones comprometidas a 30 días', 'Acciones cumplidas', 'Fecha de seguimiento', 'Horas invertidas por el equipo', 'Phishing identificado (%)', 'Sabe dónde activar MFA (%)', 'Identifica a quién reportar (%)', 'Prueba de restauración', 'Plan de respuesta', 'Calculadora', 'Política de IA'];
-  const rows = t.filas.map(f => [f.nombre, f.fechaSesion, f.fechaEntrega, f.dias, f.esperados, f.participantes, f.pares, f.ini == null ? '' : r1(f.ini), f.fin == null ? '' : r1(f.fin), f.mejora == null ? '' : r1(f.mejora), f.madurez == null ? '' : r1(f.madurez), f.hallazgos, f.oportunidades, f.utilidad, f.contrataria, ...f.pagos, f.pagoInicial, f.comp, f.compHechos, f.seguimiento, f.horas, f.phishing == null ? '' : r1(f.phishing), f.mfa == null ? '' : r1(f.mfa), f.reporte == null ? '' : r1(f.reporte), f.restauracion ? 'Sí' : 'No', f.plan ? 'Sí' : 'No', f.calculadora ? 'Sí' : 'No', f.politica ? 'Sí' : 'No']);
+  const head = ['Despacho', 'Fecha de sesión', 'Fecha de entrega', 'Días entre sesión y entrega', 'Participantes esperados', 'Participantes', 'Participantes con ambos quiz', 'Promedio inicial (%)', 'Promedio final (%)', 'Mejora (puntos porcentuales)', 'Madurez (%)', 'Hallazgos', 'Oportunidades Dell', 'Utilidad (1-5)', 'Contrataría', 'Precio mensual barato (MXN)', 'Precio mensual razonable (MXN)', 'Precio mensual caro (MXN)', 'Precio mensual demasiado caro (MXN)', 'Precio razonable del paquete inicial (MXN)', 'Acciones comprometidas a 30 días', 'Acciones cumplidas', 'Fecha de seguimiento', 'Horas invertidas por el equipo', 'Phishing identificado (%)', 'Sabe dónde activar MFA (%)', 'Identifica a quién reportar (%)', 'Prueba de restauración', 'Plan de respuesta', 'Calculadora', 'Política de IA', 'e.firmas y sellos', 'Cuestionario de TI', 'Propuesta (decisión del dueño)'];
+  const rows = t.filas.map(f => [f.nombre, f.fechaSesion, f.fechaEntrega, f.dias, f.esperados, f.participantes, f.pares, f.ini == null ? '' : r1(f.ini), f.fin == null ? '' : r1(f.fin), f.mejora == null ? '' : r1(f.mejora), f.madurez == null ? '' : r1(f.madurez), f.hallazgos, f.oportunidades, f.utilidad, f.contrataria, ...f.pagos, f.pagoInicial, f.comp, f.compHechos, f.seguimiento, f.horas, f.phishing == null ? '' : r1(f.phishing), f.mfa == null ? '' : r1(f.mfa), f.reporte == null ? '' : r1(f.reporte), f.restauracion ? 'Sí' : 'No', f.plan ? 'Sí' : 'No', f.calculadora ? 'Sí' : 'No', f.politica ? 'Sí' : 'No', f.efirma ? 'Sí' : 'No', f.ti ? 'Sí' : 'No', f.propuesta]);
   const ET = { si: 'Cumplido', no: 'No cumplido', pendiente: 'Pendiente', parcial: 'Cumplido con datos parciales' };
   const extra = [[], ['Cumplimiento del objetivo SMART'], ...t.metas.map(m => [m.t, ET[m.e], m.d]), [], ['Aprendizaje aplicado (metas sugeridas, no estándares)'], ...INDICADORES.map((x, i) => [x[0] + ': ' + x[1], ET[t.ind[i].e], t.ind[i].d])];
   return '﻿' + [head, ...rows, ...extra].map(r => r.map(q).join(',')).join('\r\n');
@@ -245,7 +248,7 @@ function combinar(inc) {
   if (!inc || typeof inc !== 'object' || !inc.despachos) throw new Error('El archivo no tiene el formato de esta aplicación.');
   let n = 0;
   Object.entries(inc.despachos || {}).forEach(([id, d]) => { const a = S.despachos[id]; if (!a || (a.stub && !d.stub) || (!!a.stub === !!d.stub && masNuevo(a, d))) { S.despachos[id] = d; n++; } });
-  ['participantes', 'diagnostico', 'proceso', 'equipos', 'encuesta', 'plan30'].forEach(col => Object.entries(inc[col] || {}).forEach(([id, x]) => { if (masNuevo(S[col][id], x)) { S[col][id] = x; n++; } }));
+  ['participantes', 'diagnostico', 'proceso', 'equipos', 'encuesta', 'plan30', 'efirma', 'ti', 'propuesta'].forEach(col => Object.entries(inc[col] || {}).forEach(([id, x]) => { if (masNuevo(S[col][id], x)) { S[col][id] = x; n++; } }));
   Object.entries(inc.kit || {}).forEach(([did, k]) => { if (!S.kit[did]) S.kit[did] = {}; Object.entries(k).forEach(([sec, x]) => { if (masNuevo(S.kit[did][sec], x)) { S.kit[did][sec] = x; n++; } }); });
   Object.entries(inc.hids || {}).forEach(([did, m]) => {
     if (!S.hids[did]) { S.hids[did] = m; return; }
@@ -253,7 +256,7 @@ function combinar(inc) {
     Object.entries(m.m || {}).forEach(([k, v]) => { if (loc.m[k]) return; if (usados.has(v)) v = ++loc.n; else loc.n = Math.max(loc.n, v); loc.m[k] = v; usados.add(v); });
   });
   Object.entries(inc.estados || {}).forEach(([did, e]) => { S.estados[did] = Object.assign(S.estados[did] || {}, e); });
-  if (inc.config) { if (!S.config.rangos) S.config.rangos = inc.config.rangos || ''; if (!S.config.distribuidor) S.config.distribuidor = inc.config.distribuidor || ''; }
+  if (inc.config) { if (!S.config.rangos) S.config.rangos = inc.config.rangos || ''; if (!S.config.distribuidor) S.config.distribuidor = inc.config.distribuidor || ''; S.config.precios = Object.assign({}, inc.config.precios || {}, S.config.precios || {}); }
   save();
   return n;
 }
@@ -265,14 +268,16 @@ function cargarDemo() {
   const mk = (alias, ini, fin, ph, ord) => { const pid = rid('p_'); const resp = (n, f) => FORMAS[f].map((q, i) => (i < n ? q.c : (q.c + 1) % 4)); S.participantes[pid] = { id: pid, alias, despachoId: id, orden: ord, quizInicial: { forma: ord[0], resp: resp(ini, ord[0]), pct: calificar(resp(ini, ord[0]), ord[0]), fecha: hoy() }, quizFinal: { forma: ord[1], resp: resp(fin, ord[1]), pct: calificar(resp(fin, ord[1]), ord[1]), fecha: hoy() }, phishing: { pct: ph, fecha: hoy() }, avance: [true, true, true, true, false, true, true], ts: Date.now() }; };
   mk('Auxiliar 1 (ejemplo)', 7, 12, 80, 'AB'); mk('Auxiliar 2 (ejemplo)', 8, 13, 90, 'BA'); mk('Titular (ejemplo)', 9, 14, 90, 'AB');
   participantesDe(id).forEach((p, j) => demoEj(p, j));
-  S.diagnostico[id] = { resp: [1, 0, 0, 0, 2, 1, 0, 1, 2, 0, 0, 1, 0, 0, 1, 2, 1, 2, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0], ts: Date.now() };
+  S.diagnostico[id] = { resp: [1, 0, 0, 0, 2, 1, 0, 1, 2, 0, 0, 1, 0, 0, 1, 2, 1, 2, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 2, 0], ts: Date.now() };
+  S.efirma[id] = { c: { efirmas: '11 a 50', csd: '1 a 10', personas: 'Todo el personal' }, resp: [0, 0, 1, 1, 0, 2, 0, 1, 0], ts: Date.now() };
+  S.ti[id] = { datos: { soporte: 'Un familiar o conocido', equipos: 5, viejos: 2, datos: 'En cada computadora', contable: 'Instalado en cada computadora', respaldo: 'Un disco externo que alguien conecta' }, so: { 'Windows 10': true, 'Windows 11': true }, resp: [0, 1, 0, 2, 1, 2], ts: Date.now() };
   const pr = proceso(id); pr.pasos[0].canales = { WhatsApp: true, Correo: true }; pr.pasos[0].riesgos = { canal: true }; pr.pasos[1].riesgos = { respaldo: true }; pr.ts = Date.now();
   S.equipos[id] = { items: [
     { id: 'e1', nombre: 'Recepción', marca: 'Genérica', anios: 6, so: 'Sistema operativo sin soporte', act: 'No', av: 'Sí', resp: 'No', comp: 'Sí', pass: 'No' },
     { id: 'e2', nombre: 'Laptop del titular', marca: 'Genérica', anios: 2, so: 'Sistema operativo vigente', act: 'Sí', av: 'Sí', resp: 'Sí', comp: 'No', pass: 'Sí' }], ts: Date.now() };
   const k = kit(id);
   Object.assign(k.plan, { resp: 'Titular del despacho', sup: 'Auxiliar 1', soporte: POR_DEFINIR, soporteTel: POR_DEFINIR, avisar: 'Clientes con información afectada', respaldos: 'Disco externo en la oficina', prioridad: 'Clientes con vencimiento más cercano', listo: true, ts: Date.now() });
-  Object.assign(k.calculadora, { empleados: 6, costoHora: 120, horasDia: 8, ingresosDia: 9000, recuperacion: 8000, clientesRiesgo: 4, recargoCliente: 1500, fecha: hoy(), ts: Date.now() });
+  Object.assign(k.calculadora, { empleados: 6, costoHora: 120, horasDia: 8, ingresosDia: 9000, recuperacion: 8000, clientesRiesgo: 4, recargoCliente: 1500, utilidadMes: 120000, fecha: hoy(), ts: Date.now() });
   Object.assign(k.politica, { herramientas: 'Las que apruebe el titular', responsable: 'Titular del despacho', informa: 'En la carta de servicios', revision: 'Cada 6 meses', listo: true, ts: Date.now() });
   Object.assign(k.restauracion, { info: { 0: true, 1: true, 2: true }, donde: 'Disco externo', ok: true, fecha: hoy(), tiempo: '15', obs: 'Archivo de prueba recuperado.', ts: Date.now() });
   S.encuesta[id] = { utilidad: 4, modulo: '4', contrataria: 'Tal vez', comentarios: 'Datos de ejemplo. Los precios se dejan en blanco a propósito.', ts: Date.now() };
@@ -316,9 +321,9 @@ const b64u = { enc: u8 => { let s = ''; for (let i = 0; i < u8.length; i += 8192
   dec: t => { const b = atob(t.replace(/-/g, '+').replace(/_/g, '/')); const u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; } };
 async function pasar(u8, Clase, fmt) { const st = new Blob([u8]).stream().pipeThrough(new Clase(fmt)); return new Uint8Array(await new Response(st).arrayBuffer()); }
 async function codigoResultados(did) {
-  const pk = { v: 1, despachos: { [did]: S.despachos[did] }, participantes: {}, diagnostico: {}, proceso: {}, equipos: {}, encuesta: {}, kit: {}, hids: {}, estados: {}, plan30: {} };
+  const pk = { v: 1, despachos: { [did]: S.despachos[did] }, participantes: {}, diagnostico: {}, proceso: {}, equipos: {}, encuesta: {}, kit: {}, hids: {}, estados: {}, plan30: {}, efirma: {}, ti: {} };
   participantesDe(did).forEach(p => { pk.participantes[p.id] = p; });
-  ['diagnostico', 'encuesta', 'kit', 'hids', 'estados', 'plan30'].forEach(c => { if (S[c][did]) pk[c][did] = S[c][did]; });
+  ['diagnostico', 'encuesta', 'kit', 'hids', 'estados', 'plan30', 'efirma', 'ti'].forEach(c => { if (S[c][did]) pk[c][did] = S[c][did]; });
   const u8 = new TextEncoder().encode(JSON.stringify(pk));
   try { if (typeof CompressionStream === 'function') return 'DELTA1Z.' + b64u.enc(await pasar(u8, CompressionStream, 'deflate-raw')); } catch (e) {}
   return 'DELTA1J.' + b64u.enc(u8);

@@ -1,5 +1,5 @@
 /* ===== Eventos, archivos y arranque ===== */
-const ETQ = { quizInicial: 'quiz inicial', quizFinal: 'quiz final', diag: 'diagnóstico', calc: 'calculadora', encuesta: 'encuesta' };
+const ETQ = { quizInicial: 'quiz inicial', quizFinal: 'quiz final', diag: 'diagnóstico', efirma: 'e.firmas y sellos', ti: 'cuestionario de TI', calc: 'calculadora', encuesta: 'encuesta' };
 const EMBEBIDO = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
 const DLP = (window.claude && typeof window.claude.use === 'function') ? window.claude.use('downloads').catch(() => null) : Promise.resolve(null);
 
@@ -169,7 +169,7 @@ const ACC = {
   },
   accfila: () => { const a = kit(S.ui.did).accesos; a.filas.push({ puesto: '', s: {} }); a.ts = Date.now(); save(); render(); },
   encuesta: () => { const e = S.encuesta[S.ui.did] || {}; if (!e.utilidad) return toast('Falta calificar la utilidad del servicio (1 a 5).'); if (!pagoOrden(e)) return toast('Revisa los cuatro precios: deberían ir de menor a mayor.'); e.ts = Date.now(); e.fecha = hoy(); save(); render(); ACC.codigo('encuesta'); },
-  pdf: v => { const did = S.ui.did, n = slug(S.despachos[did].nombre); if (v === 'plan') pdf(planHTML(did), 'plan-de-respuesta-' + n); else if (v === 'politica') pdf(politicaHTML(did), 'politica-de-ia-' + n); else pdf(reporteHTML(did), 'reporte-' + n); },
+  pdf: v => { const did = S.ui.did, n = slug(S.despachos[did].nombre); if (v === 'plan') pdf(planHTML(did), 'plan-de-respuesta-' + n); else if (v === 'efirma') pdf(efirmaProcHTML(did), 'perdida-de-efirma-' + n); else if (v === 'aviso') pdf(avisoHTML(did), 'aviso-de-vulneracion-' + n); else if (v === '69b') pdf(lista69bHTML(did), 'revision-69b-' + n); else if (v === 'propuesta') pdf(propuestaHTML(did), 'propuesta-' + n); else if (v === 'politica') pdf(politicaHTML(did), 'politica-de-ia-' + n); else pdf(reporteHTML(did), 'reporte-' + n); },
   nuevo: () => {
     let id = codigo(); while (S.despachos[id]) id = codigo();
     const g = x => document.getElementById(x).value.trim();
@@ -182,7 +182,7 @@ const ACC = {
   eqadd: () => { const e = equipos(S.ui.did); e.items.push({ id: rid('e'), nombre: '', marca: '', anios: '', so: '', act: '', av: '', resp: '', comp: '', pass: '' }); e.ts = Date.now(); save(); render(); },
   eqdel: v => { const e = equipos(S.ui.did); e.items.splice(+v, 1); e.ts = Date.now(); save(); render(); },
   csv: () => guardar('tablero-piloto-' + hoy() + '.csv', csvTablero(), 'text/csv'),
-  codigo: async v => { if (!S.ui.did) return toast('Primero elige tu despacho.'); const c = await codigoResultados(S.ui.did), p = P(); const ant = v === 'quizInicial' ? `<b>Quiz inicial guardado.</b> Ahora envía este código al Equipo DELTA: es lo que permite medir tu avance al final. ` : v === 'quizFinal' ? `<b>Quiz final guardado${p && p.quizInicial ? ': pasaste de ' + r1(p.quizInicial.pct) + '% a ' + r1(p.quizFinal.pct) + '%' : ''}.</b> Envía este código al Equipo DELTA para que tu resultado cuente. ` : v === 'diag' ? `<b>Diagnóstico completo.</b> Envía este código al Equipo DELTA antes de la reunión de entrega: con él preparan tu reporte. ` : v === 'calc' ? `<b>Calculadora guardada.</b> Envía este código al Equipo DELTA para que tu estimación aparezca en el reporte. ` : v === 'encuesta' ? `<b>Gracias, tu encuesta quedó guardada.</b> Envía este código al Equipo DELTA para que la reciban. ` : ''; const d = D(), txt = 'Resultados para el Equipo DELTA · ' + (p ? p.alias : 'Dueño o socio') + ' · ' + (d ? d.nombre + ' (' + d.id + ')' : '') + (ETQ[v] ? ' · ' + ETQ[v] : '') + '\n' + c; T.envio = txt;
+  codigo: async v => { if (!S.ui.did) return toast('Primero elige tu despacho.'); const c = await codigoResultados(S.ui.did), p = P(); const ant = v === 'quizInicial' ? `<b>Quiz inicial guardado.</b> Ahora envía este código al Equipo DELTA: es lo que permite medir tu avance al final. ` : v === 'quizFinal' ? `<b>Quiz final guardado${p && p.quizInicial ? ': pasaste de ' + r1(p.quizInicial.pct) + '% a ' + r1(p.quizFinal.pct) + '%' : ''}.</b> Envía este código al Equipo DELTA para que tu resultado cuente. ` : v === 'diag' ? `<b>Diagnóstico completo.</b> Envía este código al Equipo DELTA antes de la reunión de entrega: con él preparan tu reporte. ` : v === 'efirma' ? `<b>e.firmas y sellos completo.</b> Envía este código al Equipo DELTA antes de la reunión de entrega. No incluye RFC, nombres ni contraseñas. ` : v === 'ti' ? `<b>Cuestionario de TI completo.</b> Envía este código al Equipo DELTA: con él recomiendan la tecnología adecuada para el despacho. ` : v === 'calc' ? `<b>Calculadora guardada.</b> Envía este código al Equipo DELTA para que tu estimación aparezca en el reporte. ` : v === 'encuesta' ? `<b>Gracias, tu encuesta quedó guardada.</b> Envía este código al Equipo DELTA para que la reciban. ` : ''; const d = D(), txt = 'Resultados para el Equipo DELTA · ' + (p ? p.alias : 'Dueño o socio') + ' · ' + (d ? d.nombre + ' (' + d.id + ')' : '') + (ETQ[v] ? ' · ' + ETQ[v] : '') + '\n' + c; T.envio = txt;
     copiaManual(v ? 'Envía tus resultados' : 'Tus resultados', txt, ant + 'Toca <b>Enviar por WhatsApp</b> y elige el chat del Equipo DELTA. Si no se abre, usa <b>Copiar</b> y pégalo en un mensaje (WhatsApp o correo). Contiene tu alias y tus respuestas; no incluye datos de clientes.', true); },
   compartir: () => {
     const txt = T.envio || (document.getElementById('m-txt') || {}).value || '';
@@ -206,7 +206,9 @@ function onBind(el) {
   setPath(el.dataset.bind, v);
   if (el.dataset.upd) el.dataset.upd.split(' ').forEach(k => { const t = document.getElementById('upd-' + k); if (t) t.innerHTML = UPD[k](); });
   if (el.hasAttribute('data-r')) render();
-  if (/^diagnostico\./.test(el.dataset.bind)) { const dg = diag(S.ui.did); if (!dg.aviso && dg.resp.every(x => x != null)) { dg.aviso = true; save(); ACC.codigo('diag'); } }
+  if (/^diagnostico\./.test(el.dataset.bind)) { const dg = diag(S.ui.did); if (!dg.aviso && diagListo(S.ui.did)) { dg.aviso = true; save(); ACC.codigo('diag'); } }
+  if (/^efirma\./.test(el.dataset.bind)) { const e = efirma(S.ui.did); if (!e.aviso && efListo(S.ui.did)) { e.aviso = true; save(); ACC.codigo('efirma'); } }
+  if (/^ti\./.test(el.dataset.bind)) { const t = tiDe(S.ui.did); if (!t.aviso && tiListo(S.ui.did)) { t.aviso = true; save(); ACC.codigo('ti'); } }
 }
 const DISCRETO = t => t.type === 'checkbox' || t.type === 'radio' || t.tagName === 'SELECT';
 document.addEventListener('click', e => {
@@ -235,7 +237,7 @@ window.addEventListener('afterprint', () => { document.getElementById('print-are
   const c = m[1].toUpperCase();
   if (!S.despachos[c]) S.despachos[c] = { id: c, nombre: 'Despacho ' + c, stub: true, ts: Date.now() };
   S.ui.did = c; S.ui.pid = null; S.ui.modo = 'despacho'; save();
-  try { history.replaceState(null, '', location.pathname + '#inicio'); } catch (e) {}
+  try { history.replaceState(null, '', location.pathname + (/^#(ti|efirmas|diagnostico)$/.test(location.hash) ? location.hash : '#inicio')); } catch (e) {}
 })();
 function medirTop() { const h = document.querySelector('.top'); if (h) document.documentElement.style.setProperty('--topH', h.offsetHeight + 'px'); }
 window.addEventListener('resize', medirTop);
